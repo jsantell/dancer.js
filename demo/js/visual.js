@@ -1,5 +1,5 @@
 var options = {
-  groups: 10
+  groups: 1
 }
 
 var container;
@@ -41,13 +41,13 @@ for(var k = 0; k< options.groups; k++) {
 }
 
 for ( var i = 0; i < 1000; i++ ) {
-
-particle = new THREE.Particle( new THREE.ParticleCanvasMaterial( { color: Math.random() * 0x808008 + 0x808080, program: program } ) );
+var colors = [0xaaee22, 0x04dbe5, 0xff0077, 0xffb412, 0xf6c83d];
+particle = new THREE.Particle( new THREE.ParticleCanvasMaterial( { color: colors[random(0,colors.length-1)], program: program } ) );
 particle.position.x = Math.random() * 2000 - 1000;
 particle.position.y = Math.random() * 2000 - 1000;
 particle.position.z = Math.random() * 2000 - 1000;
 particle.scale.x = particle.scale.y = Math.random() * 10 + 5;
-group[random(0,9)].add( particle )
+group[0].add( particle )
 }
 
 for(var j = 0; j < group.length; j++) {
@@ -109,11 +109,6 @@ camera.position.x += ( mouseX - camera.position.x ) * 0.05;
 camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
 camera.lookAt( scene.position );
 
-for(var i = 0;i<group.length;i++) {
-  group[i].position.x += 100.01;
-  group[i].position.y += 100.02;
-  group[i].position.z += 100.03;
-}
 
 
 renderer.render( scene, camera );
