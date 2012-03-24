@@ -1,7 +1,12 @@
 (function() {
-    
-  var audio = new Dance( (new Audio()).src = "lib/setmeonfire.ogg" );
-  audio.onBeat( 0, 50, function( mag ) {
+  var
+    audio = new Audio(),
+    dance;
+  
+  audio.src = "lib/setmeonfire.ogg";
+  dance = new Dance( audio );
+
+  dance.onBeat( 0, 50, function( mag ) {
     console.log( "On beat!", mag );
   }, function( mag ) {
     console.log( mag );
