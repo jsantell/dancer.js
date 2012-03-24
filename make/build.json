@@ -1,0 +1,9 @@
+{
+    "JAVASCRIPT" : {
+        "DIST_DIR" : "./",
+        "dance" : [
+            "./src/dance.js",
+            { "./lib/dsp.js", "jshint": false }
+        ]
+    }
+}
