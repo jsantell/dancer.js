@@ -12,6 +12,7 @@ TODO
 * Better beat detection (configurable decay of highest 'beat', better threshold parameter, focuses on a range of normalized frequencies instead of one?)
 * Shortcuts for frequency slicing, instead of abstract 0 - 1023?
 * Tests!!!
+* Royalty free music for examples
 * Extend to use WebKit's Web Audio API as well
 
 Methods
