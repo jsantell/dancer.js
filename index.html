@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href='http://fonts.googleapis.com/css?family=Duru+Sans' rel='stylesheet' type='text/css'>
+		<style>
+			body {
+				background-color: #212426;
+				margin: 0;
+				padding: 0;
+			}
+			.info {
+				width: 100%;
+				height: 14px;
+				background-color: #ccc;
+				opacity: 0.9;
+				position: bottom left;
+				float: left;
+				padding: 10px;
+				z-index: 5000;
+				font-family: 'Duru Sans', sans-serif;
+			}
+			.info p { margin: 0 20px 0 0; float: left;}
+			.info a {
+				color: #ff0077;
+			}
+		</style>
+	</head>
+	<body style="background-color:#212426;">
+		<div class="info">
+			<p><strong>Dance.js</strong></p>
+			<p>Created by <a href="http://github.com/jsantell">Jordan Santell</a> and <a href="http://github.com/brainss">Brian Hassinger</a> for <a href="http://twitter.com/mozhacks">MDN's</a> NYC Hack Day. <a href="http://github.com/jsantell/dance.js">Make this awesome with us on GitHub!</a></p>
+		</div>
+		<script src="lib/requestAnimationFrame.js"></script>
+		<script src="lib/dsp.js"></script>
+		<script src="lib/Three.js"></script>
+		<script src="src/dance.js"></script>
+		<script src="js/visual.js"></script>
+		<script src="js/demo.js"></script>
+	</body>
+</html>
