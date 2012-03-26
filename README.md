@@ -8,6 +8,7 @@ TODO
 ---
 * More streamlined example
 * What methods should be added to the prototype? onFrequency?
+* Roll 'sections' (from demo) into API
 * Should dance.js use its own render animation frame with events, or tie into an arbitrary render loop, exposing boolean methods instead of firing events?
 * Better beat detection (configurable decay of highest 'beat', better threshold parameter, focuses on a range of normalized frequencies instead of one?)
 * Shortcuts for frequency slicing, instead of abstract 0 - 1023?
