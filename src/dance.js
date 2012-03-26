@@ -67,6 +67,7 @@
     for ( var i = 0, j = this.fbLength / 2; i < j; i++ ) {
       signal[ i ] = ( fb[ 2 * i ] + fb[ 2 * i + 1 ] ) / 2;
     }
+    this.time = t;
     this.fft.forward( signal );
   }
 
