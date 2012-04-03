@@ -14,16 +14,35 @@
     currentSection = 0,
     colors = [ 0xff0077, 0xAAEE22, 0x04DBE5, 0xFFB412 ];
 
-  dance.onBeat( 5, 0.03, function( mag ) {
-    setSize( mag * growScalar );
-    changeSection();
-  }, function( mag ) {
-    decay();
-    changeSection();
-  });
-
   dance.play();
 
+  dance.after( 0, function() {
+    dance.onBeat( 5, 0.03, function( mag ) {
+      setSize( mag * growScalar );
+    }, function( mag ) {
+      decay();
+    });
+  });
+
+  dance.onceAt( 0, function() {
+    rotateSpeed = -1;
+  }).between( 13.2, 27.2, function() {
+    if (rotateSpeed < 1) rotateSpeed += 0.1;
+  }).onceAt( 27.2, function() {
+    for (i = 0; i < pLength; i++) {
+      particles[i].material.color.setRGB(0.9,0.9,0.9);
+    }
+  }).between( 27.2, 40.3, function() {
+    rotateSpeed = dance.time() < 40.3 ? rotateSpeed + 0.003 : 0;
+  }).onceAt( 40.3, function() {
+    rotateSpeed = 1.5;
+    growScalar = 400;
+    limit = 60;
+    for (i = 0; i < pLength; i++) {
+      particles[i].material.color.setHex( colors[i%4] );
+    }
+  });
+  
   function setSize ( mag ) {
     if ( particles[ 0 ].scale.x + mag > limit) {
       decay();
@@ -39,31 +58,6 @@
     if ( particles[ 0 ].scale.x - decayScalar < 0 ) return;
     for ( var i = 0; i < pLength; i++ ) {
       particles[ i ].scale.subSelf( decayVector );
-    }
-  }
-
-  function changeSection () {
-    var i;
-    switch ( currentSection ) {
-      case 0:
-        rotateSpeed = -1;
-        if ( dance.time > 13.2 ) { currentSection = 1; }
-        break;
-      case 1:
-        if (rotateSpeed < 1) rotateSpeed += 0.1;
-        if ( dance.time > 27.2 ) { currentSection = 2; }
-        break;
-      case 2: // Buildup
-        rotateSpeed = dance.time < 40.3 ? rotateSpeed + 0.003 : 0;
-        for (i = 0; i < pLength; i++) { particles[i].material.color.setRGB(0.9,0.9,0.9); }
-        if ( dance.time > 41.2 ) { currentSection = 3; }
-        break;
-      case 3: // Breakdown
-        rotateSpeed = 1.5;
-        growScalar = 400;
-        limit = 60;
-        for (i = 0; i < pLength; i++) { particles[i].material.color.setHex( colors[i%4] ); }
-        break;
     }
   }
 
