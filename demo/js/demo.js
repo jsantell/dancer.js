@@ -1,14 +1,15 @@
 (function() {
 
   var
-    dance       = new Dance( "lib/zircon_devils_spirit.ogg" ),
+    //dance       = new Dance( "lib/zircon_devils_spirit.ogg" ),
+    dance       = new Dance( "lib/anosou_ffvi.ogg" ),
     particles   = group.children,
     pLength     = particles.length,
     canvas      = document.getElementsByTagName('canvas')[0],
     ctx         = canvas.getContext('2d'),
     decayScalar = 2,
     limit       = 40,
-    growScalar  = 250,
+    growScalar  = 0.05,
     growVector  = new THREE.Vector3(10, 10, 10),
     decayVector = new THREE.Vector3(decayScalar, decayScalar, decayScalar),
     currentSection = 0,
@@ -18,12 +19,12 @@
   dance.play();
 
   dance.after( 0, function() {
-    dance.onBeat( 3, 0.05, function( mag ) {
+    dance.onBeat( 0, 230, function( mag ) {
       setSize( mag * growScalar );
     }, function( mag ) {
       decay();
     });
-    dance.onBeat( 0, 0.08, function( mag ) {
+    dance.onBeat( 0, 255, function( mag ) {
       document.getElementsByTagName('body')[0].style.backgroundColor=colorsStrings[ ~~(Math.random() * 4) ];
     }, function( mag ) {
       document.getElementsByTagName('body')[0].style.backgroundColor='#212426';
@@ -31,18 +32,19 @@
   });
 
   dance.onceAt( 0, function() {
+    rotateSpeed = 0.5
     for (i = 0; i < pLength; i++) {
       particles[i].material.color.setRGB(0.9,0.9,0.9);
     }
   }).onceAt( 16.2, function() {
-    if (rotateSpeed < 1) rotateSpeed += 0.1;
+    if (rotateSpeed < 1.5) rotateSpeed += 0.05;
   }).between( 16.8, 27.2, function() {
     for (i = 0; i < pLength; i++) {
       particles[i].material.color.setHex( colors[i%4] );
     }
   }).onceAt( 49, function() {
     rotateSpeed = 0.5;
-    growScalar = 400;
+    growScalar = 0.15;
     limit = 60;
   }).onceAt( 66.5, function() {
       
