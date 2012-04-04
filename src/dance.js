@@ -5,7 +5,7 @@
       new Dance.adapters.webkit( this ) :
       new Dance.adapters.moz( this );
     this.sections = [];
-    this.audioAdapter.init( source );
+    this.audioAdapter.load( source );
   };
   Dance.adapters = {};
 

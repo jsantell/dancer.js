@@ -4,10 +4,12 @@
     this.dance = danceInstance;
     this.audio = new Audio();
     this.loaded = false;
+    window.test = this;
+    this.max = [];
   };
 
   adapter.prototype = {
-    init : function ( path ) {
+    load : function ( path ) {
       var _this = this;
       this.audio.src = path;
       this.audio.addEventListener( 'loadedmetadata', function( e ) {
@@ -22,8 +24,15 @@
       }, false);
     },
     play : function () { this.audio.play(); },
-    stop : function () { this.audio.stop(); },
-    getSpectrum : function () { return this.fft.spectrum; },
+    stop : function () { this.audio.pause(); },
+    getSpectrum : function () {
+      // Modify spectrum to match WebKit's 0-255 range, Float32Array map
+      var spectrumMod = Float32Array( this.fft.spectrum.length );
+      for ( var i = 0, l = spectrumMod.length; i < l; i++ ) {
+        spectrumMod[ i ] = this.fft.spectrum[ i ] * 2048; // Need a more precise modifier
+      }
+      return spectrumMod;
+    },
     getTime : function () { return this.time; },
     update : function ( e ) {
       if ( !this.loaded ) return;
@@ -38,7 +47,7 @@
       }
       this.time = t;
       this.fft.forward( signal );
-
+      this.max.push(Math.max.apply( Math, this.getSpectrum() )); 
       this.dance._update();
     }
   };

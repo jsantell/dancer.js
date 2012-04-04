@@ -2,21 +2,19 @@
   SAMPLE_SIZE = 2048;
 
   var adapter = function ( danceInstance ) {
+    this.danceInstance = danceInstance;
     this.context = new ( window.AudioContext || window.webkitAudioContext )();
-    this.source = this.context.createBufferSource();
-    this.analyser = this.context.createAnalyser();
-    this.loaded = false;
-    this.data   = new Uint8Array( this.analyser.frequencyBinCount );
-    this.analyser.fftSize = SAMPLE_SIZE / 2;
-    this.source.connect( this.analyser );
-    this.analyser.connect( this.context.destination );
+    window.test = this;
   }
 
   adapter.prototype = {
-    init : function ( path, callback ) {
+    load : function ( path, callback ) {
       var
         req = new XMLHttpRequest(),
         _this = this;
+
+      this.source = this.context.createBufferSource();
+      this.loaded = false;
 
       req.open( 'GET', path, true );
       req.responseType = 'arraybuffer';
@@ -31,12 +29,20 @@
         } else {
           _this.source.buffer = _this.context.createBuffer( req.response, false );
         }
+        _this.source.connect( _this.context.destination );
+        _this.source.connect( _this.fft );
+        _this.fft.connect( _this.proc );
+        _this.proc.connect( _this.context.destination );
         _this.loaded = true;
       };
       req.send();
 
-      this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE, 1, 1 );
-      this.proc.onaudioprocess = this.update;
+      this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE / 2, 1, 1 );
+      this.proc.onaudioprocess = function() { _this.update.call( _this ); };
+      this.source.connect( this.context.destination );
+
+      this.fft    = this.context.createAnalyser();
+      this.data   = new Uint8Array( this.fft.frequencyBinCount );
     },
     play : function () {
       var _this = this;
@@ -46,10 +52,12 @@
         }, 10);
       })();
     },
-    stop : function () { },
+    stop : function () { this.source.noteOff(0); },
     getSpectrum : function () { return this.data; },
+    getTime : function () { return this.context.currentTime; },
     update : function ( e ) {
-      this.analyser.getByteFrequencyData( this.data );
+      this.fft.getByteFrequencyData( this.data );
+      this.danceInstance._update();
     }
   };
 
