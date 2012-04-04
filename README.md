@@ -1,18 +1,19 @@
 Dance.js
 ======
 
-Audio visualizer, made in three hours for [MDN's](http://twitter.com/mozhacks) NYC Hack Day, 3/24/2011
+Audio visualizer, started at [MDN's](http://twitter.com/mozhacks) NYC Hack Day, 3/24/2011
 http://jsantell.github.com/dance.js
 
 TODO
 ---
 * Tests!!!
-* Normalized frequency magnitudes
+* Normalized frequency magnitudes (0-255 from WebKit/W3Cs standard? Very different peaks than the dsp.js's FFT in Moz)
 * More streamlined example
 * Better beat detection (configurable decay of highest 'beat', better threshold parameter, focuses on a range of normalized frequencies instead of one?)
 * Shortcuts for frequency slicing, instead of abstract 0 - 1023?
-* Royalty free music for examples
-* Extend to use WebKit's Web Audio API as well (implemented adapters, WebKit does not yet work)
+* Clean up adapters
+* Modules/Plugins - For things like drag & drop loading audio, displaying a FFT, FPS, etc
+* Make script once things stablize a bit
 
 Methods
 ---
@@ -57,8 +58,4 @@ Methods
 
 ### Dependencies 
 
-* [dsp.js](https://github.com/corbanbrook/dsp.js) (only for Mozilla support)
-
-Created
----------
-Created by [Jordan Santell](https://github.com/jsantell) and [Brian Hassinger](https://github.com/brainss), special thanks to all the Mozillians and other jammers at the NYC Hack Day!
+* [fft.js](https://github.com/corbanbrook/dsp.js) (only for Mozilla support, stripped out FFT functions from dsp.js)
