@@ -8,12 +8,10 @@
     this.audioAdapter.load( source );
   };
   Dance.adapters = {};
-
+  
   Dance.prototype = {
-
-
     /* Controls */
-
+  
     play : function () {
       this.audioAdapter.play();
       return this;
@@ -28,7 +26,7 @@
     /* Actions */
 
     onBeat : function ( freq, threshold, onBeatCallback, offBeatCallback ) {
-      var magnitude = this.audioAdapter.getSpectrum()[ freq ];
+      var magnitude = this.spectrum()[ freq ];
       magnitude >= threshold ?
         onBeatCallback( magnitude ) :
         offBeatCallback( magnitude );
@@ -46,13 +44,17 @@
     frequency : function ( freq, endFreq ) {
       var subFreq;
       if ( endFreq !== undefined ) {
-        subFreq = this.audioAdapter.getSpectrum().slice( freq, endFreq + 1 );
+        subFreq = this.spectrum().slice( freq, endFreq + 1 );
         return subFreq.reduce(function( a, b ) {
           return a + b;
         }) / subFreq.length;
       } else {
-        return this.audioAdapter.getSpectrum()[ freq ];
+        return this.spectrum()[ freq ];
       }
+    },
+
+    spectrum : function () {
+      return this.audioAdapter.getSpectrum();
     },
 
 
@@ -92,17 +94,21 @@
     },
 
     onceAt : function ( time, callback ) {
-      var _this = this;
+      var
+        _this = this,
+        thisSection = null;
       this.sections.push({
         condition : function () {
           return _this.time() > time && !this.called;
         },
         callback : function () {
-          callback();
-          this.called = true;
+          callback.call( this );
+          thisSection.called = true;
         },
         called : false
       });
+      // Baking the section in the closure due to callback's this being the dance instance
+      thisSection = this.sections[ this.sections.length - 1 ];
       return this;
     },
 
@@ -113,7 +119,7 @@
     _update : function () {
       for ( var i in this.sections ) {
         if ( this.sections[ i ].condition() )
-          this.sections[ i ].callback();
+          this.sections[ i ].callback.call( this )
       }
     }
   };
