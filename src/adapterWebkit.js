@@ -3,9 +3,10 @@
 
   var adapter = function ( danceInstance ) {
     this.danceInstance = danceInstance;
-    this.context = new ( window.AudioContext || window.webkitAudioContext )();
-    window.test = this;
-  }
+    this.context = window.audioContext ?
+      new window.AudioContext() :
+      new window.webkitAudioContext();
+  };
 
   adapter.prototype = {
     load : function ( path, callback ) {

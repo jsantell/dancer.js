@@ -14,7 +14,7 @@
         _this.channels = _this.audio.mozChannels;
         _this.rate     = _this.audio.mozSampleRate;
         _this.fft      = new FFT( _this.fbLength / _this.channels, _this.rate );
-        _this.signal   = new Float32Array( _this.fbLength / _this.channels ),
+        _this.signal   = new Float32Array( _this.fbLength / _this.channels );
         _this.loaded = true;
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {

@@ -119,7 +119,7 @@
     _update : function () {
       for ( var i in this.sections ) {
         if ( this.sections[ i ].condition() )
-          this.sections[ i ].callback.call( this )
+          this.sections[ i ].callback.call( this );
       }
     }
   };
