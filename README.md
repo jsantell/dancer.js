@@ -21,6 +21,7 @@ Methods
 * `play()` plays the audio and begins the dance.
 * `stop()` stops the madness.
 * `time()` returns the current time.
+* `spectrum()` returns the frequency data array. 
 * `frequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.
 * `after( t, callback )` fires callback on every frame after time `t`. Returns `this`.
 * `before( t, callback )` fires callback on every frame before time `t`. Returns `this`.
@@ -48,7 +49,8 @@ Methods
     // After 10s, let's do something on every frame for the first minute
   }).after( 60, function() {
     // After 60s, let's get this real and map a frequency to an object's y position
-    object.y = dance.frequency( 400 );
+    // Note that the instance of dance is bound to "this"
+    object.y = this.frequency( 400 );
   }).after( 120, function() {
     // After 120s, this will be called every frame. Keep in mind, the previous 'after' will also still be called every frame, since we did not place an ending time on it
   });
