@@ -32,10 +32,10 @@ All controls return `this`.
 
 All section methods return `this` (CHAIN IT UP) and callbacks executed with dance instance as `this`.
 
-* `after( t, callback )` fires callback on every frame after time `t`. Returns `this`.
-* `before( t, callback )` fires callback on every frame before time `t`. Returns `this`.
-* `between( t0, t1, callback )` fires callback on every frame between time `t0` and `t1`. Returns `this`.
-* `onceAt( t, callback )` fires callback once at time `t`. Returns `this`.
+* `after( t, callback )` fires callback on every frame after time `t`.
+* `before( t, callback )` fires callback on every frame before time `t`.
+* `between( t0, t1, callback )` fires callback on every frame between time `t0` and `t1`.
+* `onceAt( t, callback )` fires callback once at time `t`.
 
 ### Bindings
 
