@@ -7,14 +7,20 @@
     this.onBeat    = onBeat;
     this.offBeat   = offBeat;
     this.isOn      = false;
-    
+    this.currentThreshold = threshold;
+
     var _this = this;
     this.dance.bind( 'update', function() {
       if ( !_this.isOn ) { return; }
       var magnitude = _this.dance.spectrum()[ _this.freq ];
-      magnitude >= _this.threshold ?
-        onBeat.call( _this.dance, magnitude ) :
+      if ( magnitude >= _this.currentThreshold &&
+          magnitude >= _this.threshold ) {
+        _this.currentThreshold = magnitude;
+        onBeat.call( _this.dance, magnitude );
+      } else {
         offBeat.call( _this.dance, magnitude );
+        _this.currentThreshold -= _this.decay;
+      }
     });
   };
 
