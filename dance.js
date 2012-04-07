@@ -81,6 +81,10 @@
       return this.audioAdapter.getSpectrum();
     },
 
+    isLoaded : function () {
+      return this.audioAdapter.loaded;
+    },
+
 
     /* Sections */
 
@@ -137,11 +141,11 @@
     }
   };
   
-  Dance.addPlugin = function ( name, callback ) {
+  Dance.addPlugin = function ( name, fn ) {
     if ( Dance.prototype[ name ] === undefined ) {
-      Dance.prototype[ name ] = callback;
+      Dance.prototype[ name ] = fn;
     }
-  }
+  };
 
   function update () {
     for ( var i in this.sections ) {
@@ -152,7 +156,6 @@
 
   window.Dance = Dance;
 })();
-
 
 (function() {
   var Beat = function ( dance, freq, threshold, decay, onBeat, offBeat ) {
@@ -169,8 +172,8 @@
       if ( !_this.isOn ) { return; }
       var magnitude = _this.dance.spectrum()[ _this.freq ];
       magnitude >= _this.threshold ?
-        onBeat( magnitude ) :
-        offBeat( magnitude );
+        onBeat.call( _this.dance, magnitude ) :
+        offBeat.call( _this.dance, magnitude );
     });
   };
 
