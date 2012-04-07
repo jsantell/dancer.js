@@ -6,7 +6,7 @@ http://jsantell.github.com/dance.js
 
 TODO
 ---
-* Tests!!!
+* Tests: Get AudioContext deletion in WebKit for tests in that browser; also beats, adapters and specific plugins (FFT)
 * Normalized frequency magnitudes (0-255 from WebKit/W3Cs standard? Very different peaks than the dsp.js's FFT in Moz)
 * More streamlined example
 * Better beat detection (configurable decay of highest 'beat', better threshold parameter, focuses on a range of normalized frequencies instead of one?)
