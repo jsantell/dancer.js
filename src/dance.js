@@ -81,6 +81,10 @@
       return this.audioAdapter.getSpectrum();
     },
 
+    isLoaded : function () {
+      return this.audioAdapter.loaded;
+    },
+
 
     /* Sections */
 
@@ -141,7 +145,7 @@
     if ( Dance.prototype[ name ] === undefined ) {
       Dance.prototype[ name ] = fn;
     }
-  }
+  };
 
   function update () {
     for ( var i in this.sections ) {
@@ -152,4 +156,3 @@
 
   window.Dance = Dance;
 })();
-
