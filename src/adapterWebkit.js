@@ -58,8 +58,7 @@
     getSpectrum : function () { return this.data; },
     getTime : function () { return this.context.currentTime; },
     update : function ( e ) {
-      //this.fft.getByteFrequencyData( this.data );
-      this.fft.getByteTimeDomainData( this.data );
+      this.fft.getByteFrequencyData( this.data );
       this.dance.trigger( 'update' );
     }
   };
