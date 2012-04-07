@@ -136,6 +136,12 @@
       return this;
     }
   };
+  
+  Dance.addPlugin = function ( name, callback ) {
+    if ( Dance.prototype[ name ] === undefined ) {
+      Dance.prototype[ name ] = callback;
+    }
+  }
 
   function update () {
     for ( var i in this.sections ) {
@@ -382,6 +388,7 @@ FFT.prototype.forward = function(buffer) {
         _this.fft.connect( _this.proc );
         _this.proc.connect( _this.context.destination );
         _this.loaded = true;
+        _this.dance.trigger( 'loaded' );
       };
       req.send();
 
@@ -404,8 +411,7 @@ FFT.prototype.forward = function(buffer) {
     getSpectrum : function () { return this.data; },
     getTime : function () { return this.context.currentTime; },
     update : function ( e ) {
-      //this.fft.getByteFrequencyData( this.data );
-      this.fft.getByteTimeDomainData( this.data );
+      this.fft.getByteFrequencyData( this.data );
       this.dance.trigger( 'update' );
     }
   };
@@ -432,6 +438,7 @@ FFT.prototype.forward = function(buffer) {
         _this.fft      = new FFT( _this.fbLength / _this.channels, _this.rate );
         _this.signal   = new Float32Array( _this.fbLength / _this.channels );
         _this.loaded = true;
+        _this.dance.trigger( 'loaded' );
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
