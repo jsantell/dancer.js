@@ -49,7 +49,8 @@ Basic pub/sub to tie into the dance instance. `update` and `loaded` are predefin
 
 * `createBeat( frequency, threshold, decay, onBeatCallback [, offBeatCallback ] )`  creates and returns a new Dance.Beat instance. Can be toggled with the beat's `on()` and `off()` methods. Fires the `onBeatCallback` when `frequency` has a magnitude greater than the `threshold` and greater than the last beat's magnitude that decreases at the rate of `decay` on every frame. Otherwise, `offBeatCallback` is called if specified.
 
-### Example
+Example
+---
 
 ```javascript
   var
@@ -80,6 +81,11 @@ Basic pub/sub to tie into the dance instance. `update` and `loaded` are predefin
   dance.play();
 ```
 
-### Dependencies 
+Extending/Plugins
+---
 
+You can extend the Dance prototype by calling the static method `addPlugin( name, fn )`. Look in the `plugins` directory for examples. 
+
+Dependencies 
+---
 * [fft.js](https://github.com/corbanbrook/dsp.js) (only for Mozilla support for converting time-domain data to frequency data, FFT subset from dsp.js)
