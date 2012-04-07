@@ -3,6 +3,7 @@
   var
     //dance       = new Dance( "lib/zircon_devils_spirit.ogg" ),
     dance       = new Dance( "lib/anosou_ffvi.ogg" ),
+    //dance       = new Dance( "lib/test.ogg" ),
     particles   = group.children,
     pLength     = particles.length,
     canvas      = document.getElementsByTagName('canvas')[0],
@@ -16,23 +17,38 @@
     colors = [ 0xff0077, 0xAAEE22, 0x04DBE5, 0xFFB412 ];
     colorsStrings = [ '#ff0077', '#AAEE22', '#04DBE5', '#FFB412' ];
 
-  dance.play();
 
-  dance.after( 0, function() {
-    dance.onBeat( 0, 230, function( mag ) {
-      setSize( mag * growScalar );
-    }, function( mag ) {
-      decay();
-    });
-    dance.onBeat( 0, 255, function( mag ) {
+  /* FFT for debugging */
+  var
+    fft = document.getElementById('fft'),
+    ctx = fft.getContext('2d');
+
+  var beat = dance.createBeat( 0, 200, 0.5, function( mag ) {
+    setSize( mag * growScalar );
+  }, function( mag ) {
+    decay();
+  });
+
+  var bgBeat = dance.createBeat( 0, 240, 0.5, function( mag ) {
       document.getElementsByTagName('body')[0].style.backgroundColor=colorsStrings[ ~~(Math.random() * 4) ];
     }, function( mag ) {
       document.getElementsByTagName('body')[0].style.backgroundColor='#212426';
     });
+  dance.onceAt( 0, function() {
+    beat.on();
+    bgBeat.on();
+  });
+  
+  dance.after( 0, function() {
+    var spectrum = this.spectrum();
+    ctx.clearRect(0,0,fft.width,fft.height);
+    for ( var i = 0; i < spectrum.length; i++ ) {
+      ctx.fillRect( i*2, fft.height, 1, -spectrum[ i ]/2)
+    }  
   });
 
   dance.onceAt( 0, function() {
-    rotateSpeed = 0.5
+    rotateSpeed += 0.5
     for (i = 0; i < pLength; i++) {
       particles[i].material.color.setRGB(0.9,0.9,0.9);
     }
@@ -49,6 +65,8 @@
   }).onceAt( 66.5, function() {
       
   });
+  
+  dance.play();
   
   function setSize ( mag ) {
     if ( particles[ 0 ].scale.x + mag > limit) {
