@@ -136,6 +136,12 @@
       return this;
     }
   };
+  
+  Dance.addPlugin = function ( name, callback ) {
+    if ( Dance.prototype[ name ] === undefined ) {
+      Dance.prototype[ name ] = callback;
+    }
+  }
 
   function update () {
     for ( var i in this.sections ) {
