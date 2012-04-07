@@ -14,30 +14,39 @@ TODO
 
 Prototype Methods
 ---
+
 ### Controls
+
 All controls return `this`.
+
 * `play()` plays the audio and begins the dance.
 * `stop()` stops the madness.
 
 ### Getters
+
 * `time()` returns the current time.
 * `spectrum()` returns the frequency data array. 
 * `frequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.
 
 ### Sections
+
 All section methods return `this` (CHAIN IT UP) and callbacks executed with dance instance as `this`.
+
 * `after( t, callback )` fires callback on every frame after time `t`. Returns `this`.
 * `before( t, callback )` fires callback on every frame before time `t`. Returns `this`.
 * `between( t0, t1, callback )` fires callback on every frame between time `t0` and `t1`. Returns `this`.
 * `onceAt( t, callback )` fires callback once at time `t`. Returns `this`.
 
 ### Bindings
+
 Basic pub/sub to tie into the dance instance. `update` and `loaded` are predefined events called within the framework that are published on every frame (update) and on audio file load (loaded). All callbacks executed with dance instance as `this`.
+
 * `bind( name, callback )` subscribes a callback of `name`. Can call this method several times to bind several callbacks of the same name.
 * `unbind( name )` unsubscribes all callbacks of `name`.
 * `trigger( name )` calls all callbacks of `name`.
 
 ### Beats
+
 * `createBeat( frequency, threshold, decay, onBeatCallback [, offBeatCallback ] )`  creates and returns a new Dance.Beat instance. Can be toggled with the beat's `on()` and `off()` methods. Fires the `onBeatCallback` when `frequency` has a magnitude greater than the `threshold` and greater than the last beat's magnitude that decreases at the rate of `decay` on every frame. Otherwise, `offBeatCallback` is called if specified.
 
 ### Example
