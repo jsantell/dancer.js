@@ -1,8 +1,8 @@
 (function() {
   SAMPLE_SIZE = 2048;
 
-  var adapter = function ( danceInstance ) {
-    this.danceInstance = danceInstance;
+  var adapter = function ( dance ) {
+    this.dance = dance;
     this.context = window.audioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
@@ -57,8 +57,9 @@
     getSpectrum : function () { return this.data; },
     getTime : function () { return this.context.currentTime; },
     update : function ( e ) {
-      this.fft.getByteFrequencyData( this.data );
-      this.danceInstance._update();
+      //this.fft.getByteFrequencyData( this.data );
+      this.fft.getByteTimeDomainData( this.data );
+      this.dance.trigger( 'update' );
     }
   };
 

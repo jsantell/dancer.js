@@ -1,6 +1,6 @@
 (function() {
-  var adapter = function ( danceInstance ) {
-    this.dance = danceInstance;
+  var adapter = function ( dance ) {
+    this.dance = dance;
     this.audio = new Audio();
     this.loaded = false;
   };
@@ -43,7 +43,7 @@
       this.time = e.time;
       // Use dsp.js's FFT to convert time-domain data to frequency spectrum
       this.fft.forward( this.signal );
-      this.dance._update();
+      this.dance.trigger( 'update' );
     }
   };
 
