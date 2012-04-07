@@ -13,8 +13,8 @@
       if ( !_this.isOn ) { return; }
       var magnitude = _this.dance.spectrum()[ _this.freq ];
       magnitude >= _this.threshold ?
-        onBeat( magnitude ) :
-        offBeat( magnitude );
+        onBeat.call( _this.dance, magnitude ) :
+        offBeat.call( _this.dance, magnitude );
     });
   };
 
