@@ -39,15 +39,7 @@
     bgBeat.on();
   });
   
-  dance.after( 0, function() {
-    var spectrum = this.spectrum();
-    ctx.clearRect(0,0,fft.width,fft.height);
-    for ( var i = 0; i < spectrum.length; i++ ) {
-      ctx.fillRect( i*2, fft.height, 1, -spectrum[ i ]/2)
-    }  
-  });
-
-  dance.onceAt( 0, function() {
+  dance.fft( fft ).onceAt( 0, function() {
     rotateSpeed += 0.5
     for (i = 0; i < pLength; i++) {
       particles[i].material.color.setRGB(0.9,0.9,0.9);
