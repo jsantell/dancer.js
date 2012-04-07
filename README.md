@@ -27,6 +27,7 @@ All controls return `this`.
 * `time()` returns the current time.
 * `spectrum()` returns the frequency data array. 
 * `frequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.
+* `isLoaded()` returns a boolean value for the dance instance's song load state.
 
 ### Sections
 
