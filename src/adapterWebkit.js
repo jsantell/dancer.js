@@ -35,6 +35,7 @@
         _this.fft.connect( _this.proc );
         _this.proc.connect( _this.context.destination );
         _this.loaded = true;
+        _this.dance.trigger( 'loaded' );
       };
       req.send();
 

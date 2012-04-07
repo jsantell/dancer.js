@@ -16,6 +16,7 @@
         _this.fft      = new FFT( _this.fbLength / _this.channels, _this.rate );
         _this.signal   = new Float32Array( _this.fbLength / _this.channels );
         _this.loaded = true;
+        _this.dance.trigger( 'loaded' );
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
