@@ -137,9 +137,9 @@
     }
   };
   
-  Dance.addPlugin = function ( name, callback ) {
+  Dance.addPlugin = function ( name, fn ) {
     if ( Dance.prototype[ name ] === undefined ) {
-      Dance.prototype[ name ] = callback;
+      Dance.prototype[ name ] = fn;
     }
   }
 
