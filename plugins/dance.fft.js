@@ -11,9 +11,10 @@
 (function() {
   Dance.addPlugin( 'fft', function( canvasEl, freqWidth, spacing ) {
     var
-      ctx = canvasEl.getContext( '2d' ),
-      h = canvasEl.height,
-      w = canvasEl.width;
+      ctx    = canvasEl.getContext( '2d' ),
+      h      = canvasEl.height,
+      w      = canvasEl.width,
+      hRatio = h / 255;
 
     freqWidth = freqWidth || 1;
     spacing = spacing || 0;
@@ -23,7 +24,7 @@
       var spectrum = this.spectrum();
       ctx.clearRect( 0, 0, w, h );
       for ( var i = 0, l = spectrum.length; i < l; i++ ) {
-        ctx.fillRect( i * ( spacing + freqWidth ), h, freqWidth, -spectrum[ i ] / 2 );
+        ctx.fillRect( i * ( spacing + freqWidth ), h, freqWidth, -spectrum[ i ] * hRatio );
       }
     });
 
