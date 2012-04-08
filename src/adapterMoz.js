@@ -17,6 +17,9 @@
         _this.signal   = new Float32Array( _this.fbLength / _this.channels );
         _this.loaded = true;
         _this.dance.trigger( 'loaded' );
+
+        // save this so we're not creating a new one on every frame
+        _this.tempFloat = Float32Array( this.fft.spectrum.length );
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
@@ -24,14 +27,12 @@
     },
     play : function () { this.audio.play(); },
     stop : function () { this.audio.pause(); },
-    // TODO refactor so we're not creating a Float32Array on every frame
     getSpectrum : function () {
       // Modify spectrum to match WebKit's 0-255 range, Float32Array map
-      var spectrumMod = Float32Array( this.fft.spectrum.length );
-      for ( var i = 0, l = spectrumMod.length; i < l; i++ ) {
-        spectrumMod[ i ] = this.fft.spectrum[ i ] * 2048; // Need a more precise modifier
+      for ( var i = 0, l = this.tempFloat.length; i < l; i++ ) {
+        this.tempFloat[ i ] = this.fft.spectrum[ i ] * 2048; // Need a more precise modifier
       }
-      return spectrumMod;
+      return this.tempFloat;
     },
     getTime : function () { return this.time; },
     update : function ( e ) {
