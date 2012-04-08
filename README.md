@@ -1,16 +1,22 @@
 Dance.js
 ======
 
-Audio visualizer, started at [MDN's](http://twitter.com/mozhacks) NYC Hack Day, 3/24/2011
+A JavaScript audio visualization library.
 http://jsantell.github.com/dance.js
+
+Features
+---
+* Use real-time audio frequency data and map it to any arbitrary visualization
+* Leverage beat detection into your visualizations
+* Simple API to time callbacks and events to any section of a song
+* Extensible framework supporting plugins and custom behaviours
 
 TODO
 ---
-* Tests: Get AudioContext deletion in WebKit for tests in that browser; also beats, adapters and specific plugins (FFT)
-* Normalized frequency magnitudes (0-255 from WebKit/W3Cs standard? Very different peaks than the dsp.js's FFT in Moz)
-* More streamlined example
-* Better beat detection (configurable decay of highest 'beat', better threshold parameter, focuses on a range of normalized frequencies instead of one?)
-* Modules/Plugins - For things like drag & drop loading audio, displaying a FFT, FPS, etc
+* Tests
+  * Finish tests for core, beats, adapters, plugins
+  * Get AudioContext deletion in WebKit is not yet implemented, so running the tests in Chrome/Safari leads to errors. [WebAudio issue](http://www.w3.org/2011/audio/track/issues/3)
+* Map the frequency data for Mozilla's Audio Data API (via lib/fft.js) to WebKit's getByteFrequencyData audioContext method more accurately.
 
 Prototype Methods
 ---
@@ -62,10 +68,8 @@ Example
       console.log('no beat :(');
     });
 
-  // The onceAt callback is fired only once, at 0s in this case. This turns on our beat detection.
-  dance.onceAt( 0, function() {
-    beat.on();
-  });
+  // Let's turn this beat on right away
+  beat.on();
 
   dance.onceAt( 10, function() {
     // Let's set up some things once at 10 seconds
@@ -75,8 +79,9 @@ Example
     // After 60s, let's get this real and map a frequency to an object's y position
     // Note that the instance of dance is bound to "this"
     object.y = this.frequency( 400 );
-  }).after( 120, function() {
-    // After 120s, this will be called every frame. Keep in mind, the previous 'after' will also still be called every frame, since we did not place an ending time on it
+  }).onceAt( 120, function() {
+    // After 120s, we'll turn the beat off as another object's y position is still being mapped from the previous "after" method
+    beat.off();
   });
 
   dance.play();
@@ -85,8 +90,8 @@ Example
 Extending/Plugins
 ---
 
-You can extend the Dance prototype by calling the static method `addPlugin( name, fn )`. Look in the `plugins` directory for examples. 
+You can extend the Dance prototype by calling the static method `addPlugin( name, fn )`, which extends the Dance prototype. A Dance instance then can call the function provided in its context and subscribe to a preexisting event like `update`, or make your own. Look in the `plugins/` directory for examples. 
 
-Dependencies 
+Development
 ---
-* [fft.js](https://github.com/corbanbrook/dsp.js) (only for Mozilla support for converting time-domain data to frequency data, FFT subset from dsp.js)
+This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/SpecRunner.html` in Mozilla/WebKit browsers to test.
