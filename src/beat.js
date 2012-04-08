@@ -1,7 +1,7 @@
 (function() {
-  var Beat = function ( dance, freq, threshold, decay, onBeat, offBeat ) {
+  var Beat = function ( dance, frequency, threshold, decay, onBeat, offBeat ) {
     this.dance     = dance;
-    this.freq      = freq;
+    this.frequency = frequency;
     this.threshold = threshold;
     this.decay     = decay;
     this.onBeat    = onBeat;
@@ -12,7 +12,7 @@
     var _this = this;
     this.dance.bind( 'update', function() {
       if ( !_this.isOn ) { return; }
-      var magnitude = _this.dance.spectrum()[ _this.freq ];
+      var magnitude = _this.dance.spectrum()[ _this.frequency ];
       if ( magnitude >= _this.currentThreshold &&
           magnitude >= _this.threshold ) {
         _this.currentThreshold = magnitude;
