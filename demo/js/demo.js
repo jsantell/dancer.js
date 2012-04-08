@@ -18,18 +18,13 @@
     colorsStrings = [ '#ff0077', '#AAEE22', '#04DBE5', '#FFB412' ];
 
 
-  /* FFT for debugging */
-  var
-    fft = document.getElementById('fft'),
-    ctx = fft.getContext('2d');
-
-  var beat = dance.createBeat( 0, 200, 0.5, function( mag ) {
+  var beat = dance.createBeat( 2, 150, 10, function( mag ) {
     setSize( mag * growScalar );
   }, function( mag ) {
     decay();
   });
 
-  var bgBeat = dance.createBeat( 0, 240, 0.5, function( mag ) {
+  var bgBeat = dance.createBeat( 2, 180, 1, function( mag ) {
       document.getElementsByTagName('body')[0].style.backgroundColor=colorsStrings[ ~~(Math.random() * 4) ];
     }, function( mag ) {
       document.getElementsByTagName('body')[0].style.backgroundColor='#212426';
@@ -77,7 +72,7 @@
       particles[ i ].scale.subSelf( decayVector );
     }
   }
-
+  window.dance = dance;
   // Something about THREE.js canvas creation timing, no callback, slopppyyyy fix
   (function composite () {
     setTimeout(function() {

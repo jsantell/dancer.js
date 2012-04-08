@@ -2,39 +2,36 @@
 <html>
 	<head>
 		<link href='http://fonts.googleapis.com/css?family=Duru+Sans' rel='stylesheet' type='text/css'>
-		<style>
-			body {
-				background-color: #212426;
-				margin: 0;
-				padding: 0;
-			}
-			.info {
-				width: 100%;
-				height: 14px;
-				background-color: #ccc;
-				opacity: 0.9;
-				position: bottom left;
-				float: left;
-				padding: 10px;
-				z-index: 5000;
-				font-family: 'Duru Sans', sans-serif;
-			}
-			.info p { margin: 0 20px 0 0; float: left;}
-			.info a {
-				color: #ff0077;
-			}
-		</style>
+		<link href='css/dance.css' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
-		<canvas id="fft" height="128" width="1024"></canvas>
-		<script src="../lib/fft.js"></script>
+		<div id="info">
+			<h1>Dance.js</h1>
+			<h2>A JavaScript Audio Visualizer</h2>
+			<canvas id="fft" height="20" width="256"></canvas>
+		</div>
+		<!-- Demo dependencies -->
 		<script src="lib/Three.js"></script>
+		<script src="lib/dat.gui.min.js"></script>
+		<script src="lib/Stats.js"></script>
+
+		<!-- Dance.js -->
+		<script src="../lib/fft.js"></script>
 		<script src="../src/dance.js"></script>
 		<script src="../src/beat.js"></script>
 		<script src="../src/adapterWebkit.js"></script>
 		<script src="../src/adapterMoz.js"></script>
 		<script src="../plugins/dance.fft.js"></script>
+
+		<!-- Demo stuff -->
+		<script src="js/controller.js"></script>
 		<script src="js/visual.js"></script>
-		<script src="js/demo.js"></script>
+		<script src="js/song.js"></script>
+		<script src="js/song_zircon.js"></script>
+		<script src="js/song_anosou.js"></script>
+		<script src="js/song_dain.js"></script>
+		<script>
+			Song.changeSong( 0 );
+		</script>
 	</body>
 </html>
