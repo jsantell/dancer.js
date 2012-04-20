@@ -16,10 +16,10 @@
         _this.fft      = new FFT( _this.fbLength / _this.channels, _this.rate );
         _this.signal   = new Float32Array( _this.fbLength / _this.channels );
         _this.loaded = true;
-        _this.dance.trigger( 'loaded' );
 
         // save this so we're not creating a new one on every frame
-        _this.tempFloat = Float32Array( this.fft.spectrum.length );
+        _this.tempFloat = Float32Array( _this.fbLength / _this.channels );
+        _this.dance.trigger( 'loaded' );
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
