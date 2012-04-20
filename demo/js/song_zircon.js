@@ -55,7 +55,6 @@
         group.add( column );
       }
     }
-    scene.add(group);
     dance.play();
   }
 

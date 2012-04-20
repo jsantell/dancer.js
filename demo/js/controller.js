@@ -1,9 +1,9 @@
 (function() {
   var Demo = {
     speed         : 0,
-    beatFrequency : 3,
-    beatThreshold : 150,
-    beatDecay     : 8,
+    beatFrequency : 0,//3,
+    beatThreshold : 180,//150,
+    beatDecay     : 2,//8,
     showFFT       : false,
     song          : 0,
     color0        : '#ff0077',
@@ -15,7 +15,7 @@
   var gui = new dat.GUI();
 
   var beatFolder = gui.addFolder( 'Beat' );
-  beatFolder.add( Demo, 'beatFrequency', 1, 1024, 1 ).onChange( changeBeatData );
+  beatFolder.add( Demo, 'beatFrequency', 0, 1023, 1 ).onChange( changeBeatData );
   beatFolder.add( Demo, 'beatThreshold', 0, 255, 5 ).onChange( changeBeatData );
   beatFolder.add( Demo, 'beatDecay', 0, 20 ).onChange( changeBeatData );
   beatFolder.open();

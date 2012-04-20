@@ -1,6 +1,6 @@
 (function() {
   var container;
-  var camera, renderer, particle;
+  var renderer, particle;
   var mouseX = 0, mouseY = 0;
 
   var stats = new Stats();
@@ -14,7 +14,7 @@
   window.rotateSpeed = 1;
   window.scene = new THREE.Scene();
   window.group = new THREE.Object3D();
-  window.program;
+  window.program, window.camera;
   init();
   animate();
 
@@ -25,6 +25,7 @@
     camera.position.z = 1000;
 
     scene.add( camera );
+    scene.add( group );
 
     var PI2 = Math.PI * 2;
     program = function ( context ) {
@@ -72,15 +73,12 @@
 
   var t = 0;
   function render() {
-    camera.position.x = Math.sin(t * 0.005 * rotateSpeed) * 100;
-    camera.position.z = Math.cos(t * 0.005 * rotateSpeed) * 100;
-    camera.position.y += ( - mouseY - camera.position.y ) * 0.01;
+    camera.position.x = Math.sin(t * 0.005 * rotateSpeed) * 1000;
+    camera.position.z = Math.cos(t * 0.005 * rotateSpeed) * 1000;
+//    camera.position.y += ( - mouseY - camera.position.y ) * 0.01;
     camera.lookAt( scene.position );
     t++;
     renderer.render( scene, camera );
-  }
-
-  function random(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min
+    TWEEN.update();
   }
 })();
