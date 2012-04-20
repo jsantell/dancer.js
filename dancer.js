@@ -1,18 +1,18 @@
 (function() {
 
-  var Dance = function ( source ) {
+  var Dancer = function ( source ) {
     this.audioAdapter = window.webkitAudioContext ?
-      new Dance.adapters.webkit( this ) :
-      new Dance.adapters.moz( this );
+      new Dancer.adapters.webkit( this ) :
+      new Dancer.adapters.moz( this );
     this.events = {};
     this.sections = [];
 
     this.bind( 'update', update );
     this.audioAdapter.load( source );
   };
-  Dance.adapters = {};
+  Dancer.adapters = {};
 
-  Dance.prototype = {
+  Dancer.prototype = {
     /* Controls */
 
     play : function () {
@@ -29,7 +29,7 @@
     /* Actions */
 
     createBeat : function ( freq, threshold, decay, onBeat, offBeat ) {
-      return new Dance.Beat( this, freq, threshold, decay, onBeat, offBeat );
+      return new Dancer.Beat( this, freq, threshold, decay, onBeat, offBeat );
     },
 
     bind : function ( name, callback ) {
@@ -135,15 +135,15 @@
         },
         called : false
       });
-      // Baking the section in the closure due to callback's this being the dance instance
+      // Baking the section in the closure due to callback's this being the dancer instance
       thisSection = this.sections[ this.sections.length - 1 ];
       return this;
     }
   };
   
-  Dance.addPlugin = function ( name, fn ) {
-    if ( Dance.prototype[ name ] === undefined ) {
-      Dance.prototype[ name ] = fn;
+  Dancer.addPlugin = function ( name, fn ) {
+    if ( Dancer.prototype[ name ] === undefined ) {
+      Dancer.prototype[ name ] = fn;
     }
   };
 
@@ -154,12 +154,12 @@
     }
   }
 
-  window.Dance = Dance;
+  window.Dancer = Dancer;
 })();
 
 (function() {
-  var Beat = function ( dance, frequency, threshold, decay, onBeat, offBeat ) {
-    this.dance     = dance;
+  var Beat = function ( dancer, frequency, threshold, decay, onBeat, offBeat ) {
+    this.dancer     = dancer;
     this.frequency = frequency;
     this.threshold = threshold;
     this.decay     = decay;
@@ -169,15 +169,15 @@
     this.currentThreshold = threshold;
 
     var _this = this;
-    this.dance.bind( 'update', function() {
+    this.dancer.bind( 'update', function() {
       if ( !_this.isOn ) { return; }
-      var magnitude = _this.dance.spectrum()[ _this.frequency ];
+      var magnitude = _this.dancer.spectrum()[ _this.frequency ];
       if ( magnitude >= _this.currentThreshold &&
           magnitude >= _this.threshold ) {
         _this.currentThreshold = magnitude;
-        onBeat.call( _this.dance, magnitude );
+        onBeat.call( _this.dancer, magnitude );
       } else {
-        offBeat.call( _this.dance, magnitude );
+        offBeat.call( _this.dancer, magnitude );
         _this.currentThreshold -= _this.decay;
       }
     });
@@ -188,7 +188,7 @@
     off : function () { this.isOn = false; }
   };
 
-  window.Dance.Beat = Beat;
+  window.Dancer.Beat = Beat;
 })();
 
 /* 
@@ -363,8 +363,8 @@ FFT.prototype.forward = function(buffer) {
 (function() {
   SAMPLE_SIZE = 2048;
 
-  var adapter = function ( dance ) {
-    this.dance = dance;
+  var adapter = function ( dancer ) {
+    this.dancer = dancer;
     this.context = window.audioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
@@ -397,7 +397,7 @@ FFT.prototype.forward = function(buffer) {
         _this.fft.connect( _this.proc );
         _this.proc.connect( _this.context.destination );
         _this.loaded = true;
-        _this.dance.trigger( 'loaded' );
+        _this.dancer.trigger( 'loaded' );
       };
       req.send();
 
@@ -406,6 +406,7 @@ FFT.prototype.forward = function(buffer) {
       this.source.connect( this.context.destination );
 
       this.fft    = this.context.createAnalyser();
+//      this.data   = new Float32Array( this.fft.frequencyBinCount );
       this.data   = new Uint8Array( this.fft.frequencyBinCount );
     },
     play : function () {
@@ -421,17 +422,18 @@ FFT.prototype.forward = function(buffer) {
     getTime : function () { return this.context.currentTime; },
     update : function ( e ) {
       this.fft.getByteFrequencyData( this.data );
-      this.dance.trigger( 'update' );
+//      this.fft.getFloatFrequencyData( this.data );
+      this.dancer.trigger( 'update' );
     }
   };
 
-  Dance.adapters.webkit = adapter;
+  Dancer.adapters.webkit = adapter;
 
 })();
 
 (function() {
-  var adapter = function ( dance ) {
-    this.dance = dance;
+  var adapter = function ( dancer ) {
+    this.dancer = dancer;
     this.audio = new Audio();
     this.loaded = false;
   };
@@ -447,7 +449,10 @@ FFT.prototype.forward = function(buffer) {
         _this.fft      = new FFT( _this.fbLength / _this.channels, _this.rate );
         _this.signal   = new Float32Array( _this.fbLength / _this.channels );
         _this.loaded = true;
-        _this.dance.trigger( 'loaded' );
+
+        // save this so we're not creating a new one on every frame
+        _this.tempFloat = Float32Array( _this.fbLength / _this.channels );
+        _this.dancer.trigger( 'loaded' );
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
@@ -455,14 +460,12 @@ FFT.prototype.forward = function(buffer) {
     },
     play : function () { this.audio.play(); },
     stop : function () { this.audio.pause(); },
-    // TODO refactor so we're not creating a Float32Array on every frame
     getSpectrum : function () {
       // Modify spectrum to match WebKit's 0-255 range, Float32Array map
-      var spectrumMod = Float32Array( this.fft.spectrum.length );
-      for ( var i = 0, l = spectrumMod.length; i < l; i++ ) {
-        spectrumMod[ i ] = this.fft.spectrum[ i ] * 2048; // Need a more precise modifier
+      for ( var i = 0, l = this.tempFloat.length; i < l; i++ ) {
+        this.tempFloat[ i ] = this.fft.spectrum[ i ] * 2048; // Need a more precise modifier
       }
-      return spectrumMod;
+      return this.tempFloat;
     },
     getTime : function () { return this.time; },
     update : function ( e ) {
@@ -475,10 +478,10 @@ FFT.prototype.forward = function(buffer) {
       this.time = e.time;
       // Use dsp.js's FFT to convert time-domain data to frequency spectrum
       this.fft.forward( this.signal );
-      this.dance.trigger( 'update' );
+      this.dancer.trigger( 'update' );
     }
   };
 
-  Dance.adapters.moz = adapter;
+  Dancer.adapters.moz = adapter;
 
 })();

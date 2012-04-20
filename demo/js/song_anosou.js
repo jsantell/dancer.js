@@ -1,8 +1,8 @@
 (function() {
 
-  var dance = new Dance('songs/anosou_ffvi.ogg');
+  var dancer = new Dancer('songs/anosou_ffvi.ogg');
   var beat;
-  var song = new Song( 1, dance, beat, on, off );
+  var song = new Song( 1, dancer, beat, on, off );
 
   function on() {
     for ( var i = 0; i < 500; i++ ) {
@@ -16,12 +16,12 @@
     }
     scene.add(group);
     
-    dance.play();
+    dancer.play();
   }
 
   function off() {
     group.children.length = 0;
-    dance.stop();
+    dancer.stop();
   }
 
 })();

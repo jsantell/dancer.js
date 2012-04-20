@@ -1,8 +1,8 @@
 (function() {
   SAMPLE_SIZE = 2048;
 
-  var adapter = function ( dance ) {
-    this.dance = dance;
+  var adapter = function ( dancer ) {
+    this.dancer = dancer;
     this.context = window.audioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
@@ -35,7 +35,7 @@
         _this.fft.connect( _this.proc );
         _this.proc.connect( _this.context.destination );
         _this.loaded = true;
-        _this.dance.trigger( 'loaded' );
+        _this.dancer.trigger( 'loaded' );
       };
       req.send();
 
@@ -61,10 +61,10 @@
     update : function ( e ) {
       this.fft.getByteFrequencyData( this.data );
 //      this.fft.getFloatFrequencyData( this.data );
-      this.dance.trigger( 'update' );
+      this.dancer.trigger( 'update' );
     }
   };
 
-  Dance.adapters.webkit = adapter;
+  Dancer.adapters.webkit = adapter;
 
 })();

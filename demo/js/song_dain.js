@@ -2,8 +2,8 @@
 // http://mrdoob.github.com/three.js/examples/canvas_particles_sprites.html
 (function() {
 
-  var dance = new Dance('songs/dainsaint-chandrasekharlimit.ogg');
-  var beat = dance.createBeat( 0, 180, 3, function () {
+  var dancer = new Dancer('songs/dainsaint-chandrasekharlimit.ogg');
+  var beat = dancer.createBeat( 0, 180, 3, function () {
     group.children.forEach(function (p) {
       p.material = pMaterial[ ~~(Math.random() * 4) ]; 
     });
@@ -12,7 +12,7 @@
   });
   beat.on();
  
-  dance.fft( document.getElementById('fft') );
+  dancer.fft( document.getElementById('fft') );
 
   var
     pSize = 10,
@@ -35,12 +35,12 @@
       initParticle( p, i * 10 ); 
       group.add( p );
     }
-    dance.play();
+    dancer.play();
   }
 
   function off () {
     group.children.length = 0;
-    dance.stop();
+    dancer.stop();
   }
 
   function initParticle ( particle, delay ) {
@@ -84,5 +84,5 @@
       return canvas;
   }
 
-  var song = new Song( 2, dance, beat, on, off );
+  var song = new Song( 2, dancer, beat, on, off );
 })();

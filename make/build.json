@@ -1,8 +1,8 @@
 {
     "JAVASCRIPT" : {
         "DIST_DIR" : "./",
-        "dance" : [
-            "./src/dance.js",
+        "dancer" : [
+            "./src/dancer.js",
             "./src/beat.js",
             "./lib/fft.js",
             "./src/adapterWebkit.js",

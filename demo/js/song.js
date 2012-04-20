@@ -1,7 +1,7 @@
 (function() {
-  var Song = function( id, dance, beat, on, off ) {
+  var Song = function( id, dancer, beat, on, off ) {
     this.id = id;
-    this.dance = dance;
+    this.dancer = dancer;
     this.beat = beat;
     this.on = on;
     this.off = off;

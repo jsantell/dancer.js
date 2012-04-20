@@ -1,7 +1,7 @@
 (function() {
 
-  var dance = new Dance('songs/zircon_devils_spirit.ogg');
-  var beat = dance.createBeat( 3, 150, 8, function () {
+  var dancer = new Dancer('songs/zircon_devils_spirit.ogg');
+  var beat = dancer.createBeat( 3, 150, 8, function () {
     for (var i = 0, l = group.children.length; i < l; i++) {
       var t = Math.random()*2 + 1;
       //t = isWebkit ? t * 0.5 : t;
@@ -15,7 +15,7 @@
   });
   
   var isWebkit = !!navigator.userAgent.match(/WebKit/);
-  dance.onceAt( 0, function() {
+  dancer.onceAt( 0, function() {
     beat.on();
   }).after( 5, function() {
     var
@@ -32,7 +32,7 @@
         group.children[ i ].scale.y -= 0.05;
     }*/
   });
-  dance.fft( document.getElementById('fft') );
+  dancer.fft( document.getElementById('fft') );
 
 
 
@@ -55,14 +55,14 @@
         group.add( column );
       }
     }
-    dance.play();
+    dancer.play();
   }
 
   function off() {
     group.children.length = 0;
-    dance.stop();
+    dancer.stop();
   }
 
-  new Song( 0, dance, beat, on, off );
+  new Song( 0, dancer, beat, on, off );
 
 })();

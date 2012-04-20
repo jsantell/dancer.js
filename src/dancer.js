@@ -1,18 +1,18 @@
 (function() {
 
-  var Dance = function ( source ) {
+  var Dancer = function ( source ) {
     this.audioAdapter = window.webkitAudioContext ?
-      new Dance.adapters.webkit( this ) :
-      new Dance.adapters.moz( this );
+      new Dancer.adapters.webkit( this ) :
+      new Dancer.adapters.moz( this );
     this.events = {};
     this.sections = [];
 
     this.bind( 'update', update );
     this.audioAdapter.load( source );
   };
-  Dance.adapters = {};
+  Dancer.adapters = {};
 
-  Dance.prototype = {
+  Dancer.prototype = {
     /* Controls */
 
     play : function () {
@@ -29,7 +29,7 @@
     /* Actions */
 
     createBeat : function ( freq, threshold, decay, onBeat, offBeat ) {
-      return new Dance.Beat( this, freq, threshold, decay, onBeat, offBeat );
+      return new Dancer.Beat( this, freq, threshold, decay, onBeat, offBeat );
     },
 
     bind : function ( name, callback ) {
@@ -135,15 +135,15 @@
         },
         called : false
       });
-      // Baking the section in the closure due to callback's this being the dance instance
+      // Baking the section in the closure due to callback's this being the dancer instance
       thisSection = this.sections[ this.sections.length - 1 ];
       return this;
     }
   };
   
-  Dance.addPlugin = function ( name, fn ) {
-    if ( Dance.prototype[ name ] === undefined ) {
-      Dance.prototype[ name ] = fn;
+  Dancer.addPlugin = function ( name, fn ) {
+    if ( Dancer.prototype[ name ] === undefined ) {
+      Dancer.prototype[ name ] = fn;
     }
   };
 
@@ -154,5 +154,5 @@
     }
   }
 
-  window.Dance = Dance;
+  window.Dancer = Dancer;
 })();

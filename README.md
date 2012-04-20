@@ -1,8 +1,8 @@
-Dance.js
+dancer.js
 ======
 
 A JavaScript audio visualization library.
-http://jsantell.github.com/dance.js
+http://jsantell.github.com/dancer.js
 
 Features
 ---
@@ -17,7 +17,7 @@ TODO
   * Finish tests for core, beats, adapters, plugins
   * Get AudioContext deletion in WebKit is not yet implemented, so running the tests in Chrome/Safari leads to errors. [WebAudio issue](http://www.w3.org/2011/audio/track/issues/3)
 * Map the frequency data for Mozilla's Audio Data API (via lib/fft.js) to WebKit's getByteFrequencyData audioContext method more accurately.
-* Expose additional audio controls (repeat/loop, volume)
+* Expose additional audio controls (repeat/loop, reset, volume)
 
 Prototype Methods
 ---
@@ -34,11 +34,11 @@ All controls return `this`.
 * `time()` returns the current time.
 * `spectrum()` returns the frequency data array. 
 * `frequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.
-* `isLoaded()` returns a boolean value for the dance instance's song load state.
+* `isLoaded()` returns a boolean value for the dancer instance's song load state.
 
 ### Sections
 
-All section methods return `this` (CHAIN IT UP) and callbacks executed with dance instance as `this`.
+All section methods return `this` (CHAIN IT UP) and callbacks executed with `this` referencing the dancer instance.
 
 * `after( t, callback )` fires callback on every frame after time `t`.
 * `before( t, callback )` fires callback on every frame before time `t`.
@@ -47,7 +47,7 @@ All section methods return `this` (CHAIN IT UP) and callbacks executed with danc
 
 ### Bindings
 
-Basic pub/sub to tie into the dance instance. `update` and `loaded` are predefined events called within the framework that are published on every frame (update) and on audio file load (loaded). All callbacks executed with dance instance as `this`.
+Basic pub/sub to tie into the dancer instance. `update` and `loaded` are predefined events called within the framework that are published on every frame (update) and on audio file load (loaded). All callbacks executed with `this` referencing the dancer instance.
 
 * `bind( name, callback )` subscribes a callback of `name`. Can call this method several times to bind several callbacks of the same name.
 * `unbind( name )` unsubscribes all callbacks of `name`.
@@ -55,15 +55,15 @@ Basic pub/sub to tie into the dance instance. `update` and `loaded` are predefin
 
 ### Beats
 
-* `createBeat( frequency, threshold, decay, onBeatCallback [, offBeatCallback ] )`  creates and returns a new Dance.Beat instance. Can be toggled with the beat's `on()` and `off()` methods. Fires the `onBeatCallback` when `frequency` has a magnitude greater than the `threshold` and greater than the last beat's magnitude that decreases at the rate of `decay` on every frame. Otherwise, `offBeatCallback` is called if specified.
+* `createBeat( frequency, threshold, decay, onBeatCallback [, offBeatCallback ] )`  creates and returns a new Dancer.Beat instance. Can be toggled with the beat's `on()` and `off()` methods. Fires the `onBeatCallback` when `frequency` has a magnitude greater than the `threshold` and greater than the last beat's magnitude that decreases at the rate of `decay` on every frame. Otherwise, `offBeatCallback` is called if specified.
 
 Example
 ---
 
 ```javascript
   var
-    dance = new Dance( "sickjams.ogg" ),
-    beat = dance.createBeat( 5, 240, 0.2, function( mag ) {
+    dancer = new Dancer( "sickjams.ogg" ),
+    beat = dancer.createBeat( 5, 240, 0.2, function( mag ) {
       console.log('Beat!');
     }, function( mag ) {
       console.log('no beat :(');
@@ -72,26 +72,26 @@ Example
   // Let's turn this beat on right away
   beat.on();
 
-  dance.onceAt( 10, function() {
+  dancer.onceAt( 10, function() {
     // Let's set up some things once at 10 seconds
   }).between( 10, 60, function() {
     // After 10s, let's do something on every frame for the first minute
   }).after( 60, function() {
     // After 60s, let's get this real and map a frequency to an object's y position
-    // Note that the instance of dance is bound to "this"
+    // Note that the instance of dancer is bound to "this"
     object.y = this.frequency( 400 );
   }).onceAt( 120, function() {
     // After 120s, we'll turn the beat off as another object's y position is still being mapped from the previous "after" method
     beat.off();
   });
 
-  dance.play();
+  dancer.play();
 ```
 
 Extending/Plugins
 ---
 
-You can extend the Dance prototype by calling the static method `addPlugin( name, fn )`, which extends the Dance prototype. A Dance instance then can call the function provided in its context and subscribe to a preexisting event like `update`, or make your own. Look in the `plugins/` directory for examples. 
+You can extend the Dancer prototype by calling the static method `addPlugin( name, fn )`, which extends the Dancer prototype. A Dancer instance then can call the function provided in its context and subscribe to a preexisting event like `update`, or make your own. Look in the `plugins/` directory for examples. 
 
 Development
 ---

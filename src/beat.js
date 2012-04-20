@@ -1,6 +1,6 @@
 (function() {
-  var Beat = function ( dance, frequency, threshold, decay, onBeat, offBeat ) {
-    this.dance     = dance;
+  var Beat = function ( dancer, frequency, threshold, decay, onBeat, offBeat ) {
+    this.dancer     = dancer;
     this.frequency = frequency;
     this.threshold = threshold;
     this.decay     = decay;
@@ -10,15 +10,15 @@
     this.currentThreshold = threshold;
 
     var _this = this;
-    this.dance.bind( 'update', function() {
+    this.dancer.bind( 'update', function() {
       if ( !_this.isOn ) { return; }
-      var magnitude = _this.dance.spectrum()[ _this.frequency ];
+      var magnitude = _this.dancer.spectrum()[ _this.frequency ];
       if ( magnitude >= _this.currentThreshold &&
           magnitude >= _this.threshold ) {
         _this.currentThreshold = magnitude;
-        onBeat.call( _this.dance, magnitude );
+        onBeat.call( _this.dancer, magnitude );
       } else {
-        offBeat.call( _this.dance, magnitude );
+        offBeat.call( _this.dancer, magnitude );
         _this.currentThreshold -= _this.decay;
       }
     });
@@ -29,5 +29,5 @@
     off : function () { this.isOn = false; }
   };
 
-  window.Dance.Beat = Beat;
+  window.Dancer.Beat = Beat;
 })();

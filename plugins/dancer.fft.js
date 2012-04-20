@@ -1,15 +1,15 @@
 /*
- * FFT plugin for dance.js
+ * FFT plugin for dancer.js
  * 
  * Usage of frequencies being 2px with 1px spacing:
  *
- * var dance = new Dance('song.ogg'),
+ * var dancer = new Dancer('song.ogg'),
  *     canvas = document.getElementById('fftcanvas');
- * dance.fft( canvas, 2, 1 );
+ * dancer.fft( canvas, 2, 1 );
  */
 
 (function() {
-  Dance.addPlugin( 'fft', function( canvasEl, freqWidth, spacing ) {
+  Dancer.addPlugin( 'fft', function( canvasEl, freqWidth, spacing ) {
     var
       ctx    = canvasEl.getContext( '2d' ),
       h      = canvasEl.height,

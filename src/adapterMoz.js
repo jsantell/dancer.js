@@ -1,6 +1,6 @@
 (function() {
-  var adapter = function ( dance ) {
-    this.dance = dance;
+  var adapter = function ( dancer ) {
+    this.dancer = dancer;
     this.audio = new Audio();
     this.loaded = false;
   };
@@ -19,7 +19,7 @@
 
         // save this so we're not creating a new one on every frame
         _this.tempFloat = Float32Array( _this.fbLength / _this.channels );
-        _this.dance.trigger( 'loaded' );
+        _this.dancer.trigger( 'loaded' );
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
@@ -45,10 +45,10 @@
       this.time = e.time;
       // Use dsp.js's FFT to convert time-domain data to frequency spectrum
       this.fft.forward( this.signal );
-      this.dance.trigger( 'update' );
+      this.dancer.trigger( 'update' );
     }
   };
 
-  Dance.adapters.moz = adapter;
+  Dancer.adapters.moz = adapter;
 
 })();
