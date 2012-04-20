@@ -44,6 +44,7 @@
       this.source.connect( this.context.destination );
 
       this.fft    = this.context.createAnalyser();
+//      this.data   = new Float32Array( this.fft.frequencyBinCount );
       this.data   = new Uint8Array( this.fft.frequencyBinCount );
     },
     play : function () {
@@ -59,6 +60,7 @@
     getTime : function () { return this.context.currentTime; },
     update : function ( e ) {
       this.fft.getByteFrequencyData( this.data );
+//      this.fft.getFloatFrequencyData( this.data );
       this.dance.trigger( 'update' );
     }
   };
