@@ -17,6 +17,7 @@ TODO
   * Finish tests for core, beats, adapters, plugins
   * Get AudioContext deletion in WebKit is not yet implemented, so running the tests in Chrome/Safari leads to errors. [WebAudio issue](http://www.w3.org/2011/audio/track/issues/3)
 * Map the frequency data for Mozilla's Audio Data API (via lib/fft.js) to WebKit's getByteFrequencyData audioContext method more accurately.
+* Expose additional audio controls (repeat/loop, volume)
 
 Prototype Methods
 ---
