@@ -60,12 +60,12 @@
 
     /* Getters */
 
-    time : function () {
+    getTime : function () {
       return this.audioAdapter.getTime();
     },
 
     // Returns the magnitude of a frequency or average over a range of frequencies
-    frequency : function ( freq, endFreq ) {
+    getFrequency : function ( freq, endFreq ) {
       var subFreq;
       if ( endFreq !== undefined ) {
         subFreq = this.spectrum().slice( freq, endFreq + 1 );
@@ -77,7 +77,7 @@
       }
     },
 
-    spectrum : function () {
+    getSpectrum : function () {
       return this.audioAdapter.getSpectrum();
     },
 
@@ -140,7 +140,7 @@
       return this;
     }
   };
-  
+
   Dancer.addPlugin = function ( name, fn ) {
     if ( Dancer.prototype[ name ] === undefined ) {
       Dancer.prototype[ name ] = fn;

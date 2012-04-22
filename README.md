@@ -31,9 +31,9 @@ All controls return `this`.
 
 ### Getters
 
-* `time()` returns the current time.
-* `spectrum()` returns the frequency data array. 
-* `frequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.
+* `getTime()` returns the current time.
+* `getSpectrum()` returns the frequency data array. 
+* `getFrequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.
 * `isLoaded()` returns a boolean value for the dancer instance's song load state.
 
 ### Sections
