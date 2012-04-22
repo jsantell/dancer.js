@@ -12,7 +12,7 @@
     var _this = this;
     this.dancer.bind( 'update', function() {
       if ( !_this.isOn ) { return; }
-      var magnitude = _this.dancer.spectrum()[ _this.frequency ];
+      var magnitude = _this.dancer.getSpectrum()[ _this.frequency ];
       if ( magnitude >= _this.currentThreshold &&
           magnitude >= _this.threshold ) {
         _this.currentThreshold = magnitude;

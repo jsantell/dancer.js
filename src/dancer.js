@@ -68,12 +68,12 @@
     getFrequency : function ( freq, endFreq ) {
       var subFreq;
       if ( endFreq !== undefined ) {
-        subFreq = this.spectrum().slice( freq, endFreq + 1 );
+        subFreq = this.getSpectrum().slice( freq, endFreq + 1 );
         return subFreq.reduce(function( a, b ) {
           return a + b;
         }) / subFreq.length;
       } else {
-        return this.spectrum()[ freq ];
+        return this.getSpectrum()[ freq ];
       }
     },
 
@@ -92,7 +92,7 @@
       var _this = this;
       this.sections.push({
         condition : function () {
-          return _this.time() > time;
+          return _this.getTime() > time;
         },
         callback : callback
       });
@@ -103,7 +103,7 @@
       var _this = this;
       this.sections.push({
         condition : function () {
-          return _this.time() < time;
+          return _this.getTime() < time;
         },
         callback : callback
       });
@@ -114,7 +114,7 @@
       var _this = this;
       this.sections.push({
         condition : function () {
-          return _this.time() > startTime && _this.time() < endTime;
+          return _this.getTime() > startTime && _this.getTime() < endTime;
         },
         callback : callback
       });
@@ -127,7 +127,7 @@
         thisSection = null;
       this.sections.push({
         condition : function () {
-          return _this.time() > time && !this.called;
+          return _this.getTime() > time && !this.called;
         },
         callback : function () {
           callback.call( this );
