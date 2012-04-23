@@ -1,9 +1,10 @@
 describe('Dancer', function () {
 
   var
-    dancer = null,
-    song  = 'lib/test.ogg';
+    song  = 'lib/440hz_100amp.ogg',
+    dancer = new Dancer(song);
 
+/*
   beforeEach(function () {
     dancer = new Dancer(song);
   });
@@ -11,7 +12,7 @@ describe('Dancer', function () {
   afterEach(function () {
     dancer.stop();
   });
-
+*/
   // TODO WTF http://www.w3.org/2011/audio/track/issues/3?changelog
   it('WEBKIT CANNOT DELETE AUDIO CONTEXTS?', function () {
     expect(navigator.userAgent.match(/WebKit/)).toBeFalsy();
@@ -55,41 +56,77 @@ describe('Dancer', function () {
 
   // TODO async test for getTime();
   describe('Getters', function () {
-    it("Should call adapter's getTime() function from getTime()", function () {
+    it("getTime() should return current time", function () {
       dancer.play();
-      spyOn(dancer.audioAdapter, 'getTime');
 
       waitsFor(function () {
-        return dancer.isLoaded();
-      }, 'Song was never loaded', 3000);
+        return dancer.isLoaded() && dancer.getTime() > 1;
+      }, 'Song was never loaded', 4000);
+      
+      // TODO should compare with audio file's time
+      runs(function () {
+      
+      });
+    });
+    
+    describe("getSpectrum()", function () {
+      var s;
+      waitsFor(function () {
+        return dancer.isLoaded() && dancer.getTime() > 1;
+      }, 'Song never progressed', 3000);
 
       runs(function () {
-        var t = dancer.getTime();
-        expect(dancer.audioAdapter.getTime).toHaveBeenCalled();
-        expect(t).toBeGreaterThan(0);
+        it("should return a Float32Array(1024)", function () {
+          s = dancer.getSpectrum();
+          expect(s.length).toEqual(1024);
+          expect(s instanceof Float32Array).toBeTruthy();
+        });
+    
+        it("should return a correct amplitude for the 440hz pitch (11/1024)", function () {
+          s= dancer.getSpectrum()[10];
+          expect(s).toBeGreaterThan(0.5);
+          expect(s).toBeLessThan(1);
+        });
+      
+        it("should return a correct amplitude for the 440hz pitch (51/1024)", function () {
+          s = dancer.getSpectrum()[50];
+          expect(s).toBeLessThan(0.1);
+        });
       });
     });
 
-    it("Should call audioAdapter's getSpectrum() method from spectrum()", function () {
-      spyOn(dancer.audioAdapter, 'getSpectrum');
-      dancer.spectrum();
-      expect(dancer.audioAdapter.getSpectrum).toHaveBeenCalled();
+    describe("getFrequency()", function () {
+      var f;
+      waitsFor(function () {
+        return dancer.isLoaded() && dancer.getTime() > 1;
+      }, 'Song never progressed', 3000);
+      
+      runs(function () {
+        it("should return a correct amplitude for the 440hz pitch (11/1024)", function () {
+          f = dancer.getFrequency(10);
+          expect(f).toBeGreaterThan(0.5);
+        });
+      
+        it("should return a correct amplitude for the 440hz pitch (51/1024)", function () {
+          f = dancer.getFrequency(50);
+          expect(f).toBeLessThan(0.1);
+        });
+
+        it("Should return the average amplitude over a range of the 440hz pitch", function () {
+          f = dancer.getFrequency(10, 50);
+          expect(f).toBeGreaterThan(0.04);
+          expect(f).toBeLessThan(0.07);
+        });
+      });
     });
 
+    // Also tested implicitly via other tests
     it("Should call adapter's loaded boolean from isLoaded()", function () {
       dancer.audioAdapter.loaded = true;
       expect(dancer.isLoaded()).toBeTruthy();
       dancer.audioAdapter.loaded = false;
       expect(dancer.isLoaded()).toBeFalsy();
     });
-
-    it("Should return the magnitude of the spectrum via frequency(x), and average for frequency(x,y)", function () {
-      var mockSpectrum = [ 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 ];
-      dancer.spectrum = function() { return mockSpectrum; };
-      expect(dancer.frequency(3)).toEqual(8);
-      expect(dancer.frequency(3, 7)).toEqual(10);
-    });
-
   });
 
   // TODO async tests for sections
@@ -97,17 +134,18 @@ describe('Dancer', function () {
 
   });
 
-  // TODO test the prebindings of 'update' and 'loaded'
   describe('Pub/Sub Bindings', function () {
     var
       fn1 = jasmine.createSpy(),
       fn2 = jasmine.createSpy(),
-      fn3 = jasmine.createSpy();
+      fn3 = jasmine.createSpy(),
+      fn4 = jasmine.createSpy();
 
     beforeEach(function () {
-        dancer.bind('eventA', fn1);
-        dancer.bind('eventA', fn2);
-        dancer.bind('eventB', fn3);
+      dancer.bind('eventA', fn1);
+      dancer.bind('eventA', fn2);
+      dancer.bind('eventB', fn3);
+      dancer.bind('update', fn4);
     });
 
     describe('Bind', function () {
@@ -132,6 +170,12 @@ describe('Dancer', function () {
         expect(fn1).toHaveBeenCalled();
         expect(fn2).toHaveBeenCalled();
         expect(fn3).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Update Trigger', function () {
+      it('Should trigger update events as the audio plays', function () {
+        expect(fn4).toHaveBeenCalled();
       });
     });
   });
