@@ -1,5 +1,7 @@
 (function() {
-  SAMPLE_SIZE = 2048;
+  var
+    SAMPLE_SIZE = 2048,
+    SAMPLE_RATE = 44100;
 
   var adapter = function ( dancer ) {
     this.dancer = dancer;
@@ -9,6 +11,7 @@
   };
 
   adapter.prototype = {
+
     load : function ( path, callback ) {
       var
         req = new XMLHttpRequest(),
@@ -31,8 +34,7 @@
           _this.source.buffer = _this.context.createBuffer( req.response, false );
         }
         _this.source.connect( _this.context.destination );
-        _this.source.connect( _this.fft );
-        _this.fft.connect( _this.proc );
+        _this.source.connect( _this.proc );
         _this.proc.connect( _this.context.destination );
         _this.loaded = true;
         _this.dancer.trigger( 'loaded' );
@@ -40,13 +42,14 @@
       req.send();
 
       this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE / 2, 1, 1 );
-      this.proc.onaudioprocess = function() { _this.update.call( _this ); };
+      this.proc.onaudioprocess = function ( e ) {
+        _this.update.call( _this, e );
+      };
       this.source.connect( this.context.destination );
-
-      this.fft    = this.context.createAnalyser();
-//      this.data   = new Float32Array( this.fft.frequencyBinCount );
-      this.data   = new Uint8Array( this.fft.frequencyBinCount );
+      this.fft = new FFT( SAMPLE_SIZE / 2, SAMPLE_RATE );
+      this.signal = new Float32Array( SAMPLE_SIZE / 2 );
     },
+
     play : function () {
       var _this = this;
       (function play() {
@@ -55,12 +58,29 @@
         }, 10);
       })();
     },
-    stop : function () { this.source.noteOff(0); },
-    getSpectrum : function () { return this.data; },
-    getTime : function () { return this.context.currentTime; },
+
+    stop : function () {
+      this.source.noteOff(0);
+    },
+
+    getSpectrum : function () {
+      return this.fft.spectrum;
+    },
+
+    getTime : function () {
+      return this.context.currentTime;
+    },
+
     update : function ( e ) {
-      this.fft.getByteFrequencyData( this.data );
-//      this.fft.getFloatFrequencyData( this.data );
+      var
+        bufferL = e.inputBuffer.getChannelData(0),
+        bufferR = e.inputBuffer.getChannelData(1);
+
+      for ( var i = 0, j = SAMPLE_SIZE / 2; i < j; i++ ) {
+        this.signal[ i ] = ( bufferL[ i ] + bufferR[ i ] ) / 2;
+      }
+
+      this.fft.forward( this.signal );
       this.dancer.trigger( 'update' );
     }
   };
