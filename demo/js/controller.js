@@ -2,7 +2,7 @@
   var Demo = {
     speed         : 0,
     beatFrequency : 0,//3,
-    beatThreshold : 180,//150,
+    beatThreshold : 0.8,//150,
     beatDecay     : 2,//8,
     showFFT       : false,
     song          : 0,
@@ -16,8 +16,8 @@
 
   var beatFolder = gui.addFolder( 'Beat' );
   beatFolder.add( Demo, 'beatFrequency', 0, 1023, 1 ).onChange( changeBeatData );
-  beatFolder.add( Demo, 'beatThreshold', 0, 255, 5 ).onChange( changeBeatData );
-  beatFolder.add( Demo, 'beatDecay', 0, 20 ).onChange( changeBeatData );
+  beatFolder.add( Demo, 'beatThreshold', 0, 1, 0.05 ).onChange( changeBeatData );
+  beatFolder.add( Demo, 'beatDecay', 0, 1 ).onChange( changeBeatData );
   beatFolder.open();
 
   function changeBeatData () {

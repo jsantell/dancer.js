@@ -18,10 +18,6 @@
   dancer.onceAt( 0, function() {
     beat.on();
   }).after( 5, function() {
-    var
-      spectrum = this.spectrum(),
-      skip = 1024 / (planeSize * planeSize),
-      t, y;
  /*   for (var i = 0, l = group.children.length; i < l; i++) {
       t = spectrum[ i * 4 ] * 0.1;
       t = isWebkit ? t * 0.1 : t;
