@@ -55,7 +55,7 @@ describe('Dancer', function () {
 
   // TODO async test for getTime();
   describe('Getters', function () {
-    it("Should call adapter's getTime() function from time()", function () {
+    it("Should call adapter's getTime() function from getTime()", function () {
       dancer.play();
       spyOn(dancer.audioAdapter, 'getTime');
 
@@ -64,7 +64,7 @@ describe('Dancer', function () {
       }, 'Song was never loaded', 3000);
 
       runs(function () {
-        var t = dancer.time();
+        var t = dancer.getTime();
         expect(dancer.audioAdapter.getTime).toHaveBeenCalled();
         expect(t).toBeGreaterThan(0);
       });
