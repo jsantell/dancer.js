@@ -1,6 +1,6 @@
 /*
  * FFT plugin for dancer.js
- * 
+ *
  * Usage of frequencies being 2px with 1px spacing:
  *
  * var dancer = new Dancer('song.ogg'),
@@ -9,22 +9,23 @@
  */
 
 (function() {
-  Dancer.addPlugin( 'fft', function( canvasEl, freqWidth, spacing ) {
+  Dancer.addPlugin( 'fft', function( canvasEl, options ) {
+    options = options || {};
     var
-      ctx    = canvasEl.getContext( '2d' ),
-      h      = canvasEl.height,
-      w      = canvasEl.width,
-      hRatio = h / 255;
+      ctx     = canvasEl.getContext( '2d' ),
+      h       = canvasEl.height,
+      w       = canvasEl.width,
+      width   = options.width || 1,
+      spacing = options.spacing || 0,
+      count   = options.count || 256;
 
-    freqWidth = freqWidth || 1;
-    spacing = spacing || 0;
-    ctx.fillStyle = "white";
+    ctx.fillStyle = options.fillStyle || "white";
 
     this.bind( 'update', function() {
-      var spectrum = this.spectrum();
+      var spectrum = this.getSpectrum();
       ctx.clearRect( 0, 0, w, h );
-      for ( var i = 0, l = spectrum.length; i < l; i++ ) {
-        ctx.fillRect( i * ( spacing + freqWidth ), h, freqWidth, -spectrum[ i ] * hRatio );
+      for ( var i = 0, l = spectrum.length; i < l && i < count; i++ ) {
+        ctx.fillRect( i * ( spacing + width ), h, width, -spectrum[ i ] * h );
       }
     });
 
