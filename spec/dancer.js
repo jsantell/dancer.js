@@ -323,7 +323,7 @@ describe('Dancer', function () {
 
     describe('Update Trigger', function () {
       it('Should trigger update events as the audio plays', function () {
-        waits(1000);
+        waits(100);
         runs(function () {
           expect(fn4).toHaveBeenCalled();
         });
@@ -352,6 +352,13 @@ describe('Dancer', function () {
       Dancer.addPlugin('pluginname', newMethod); // Used in previous test
       expect(dancer.play).toBe(origMethod);
       expect(dancer.pluginname).not.toBe(newMethod);
+    });
+  });
+
+  it("Should stop the goddamn beeping", function() {
+    dancer.stop();
+    runs(function () {
+      expect(0).toBe(0);
     });
   });
 });
