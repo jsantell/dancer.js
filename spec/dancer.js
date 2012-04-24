@@ -1,28 +1,28 @@
 describe('Dancer', function () {
 
   var
-    song  = 'lib/440hz_100amp.ogg',
-    dancer = new Dancer(song);
-
-/*
+    song     = 'lib/440hz_100amp.ogg',
+    dancer   = new Dancer(song),
+    isWebkit = !!window.webkitAudioContext,
+    songReady = function () { return dancer.isLoaded() && dancer.getTime() > 1; }
+  
+  // Define custom matcher
   beforeEach(function () {
-    dancer = new Dancer(song);
+    this.addMatchers({
+      toBeWithin : function (expected, tolerance) {
+        var actual = this.actual;
+        this.message = function () {
+          return "Expected " + actual + " to be within " + tolerance + " of " + expected;
+        };
+        return actual <= expected + tolerance && actual >= expected - tolerance;
+      }
+    });
   });
 
-  afterEach(function () {
-    dancer.stop();
-  });
-*/
-  // TODO WTF http://www.w3.org/2011/audio/track/issues/3?changelog
-  it('WEBKIT CANNOT DELETE AUDIO CONTEXTS?', function () {
-    expect(navigator.userAgent.match(/WebKit/)).toBeFalsy();
-  });
 
   describe('Init', function () {
     it('Should use the correct audio adapter', function () {
-      var adapter = navigator.userAgent.match(/WebKit/) ?
-        Dancer.adapters.webkit :
-        Dancer.adapters.moz;
+      var adapter = Dancer.adapters[ isWebkit ? 'webkit' : 'moz' ];
       expect(dancer.audioAdapter instanceof adapter).toBeTruthy();
     });
 
@@ -32,6 +32,7 @@ describe('Dancer', function () {
   });
 
   describe('Controls', function () {
+    // TODO Should probably check audio output via adapter or spectrum, similar to getTime();
     it("Should call adapter's play/stop method via dancer.play(), dancer.stop()", function () {
       spyOn(dancer.audioAdapter, 'play');
       spyOn(dancer.audioAdapter, 'stop');
@@ -51,44 +52,46 @@ describe('Dancer', function () {
   });
 
   describe('Create Beat', function () {
-
+    it("TODO",function() { });
   });
 
-  // TODO async test for getTime();
   describe('Getters', function () {
-    it("getTime() should return current time", function () {
-      dancer.play();
 
-      waitsFor(function () {
-        return dancer.isLoaded() && dancer.getTime() > 1;
-      }, 'Song was never loaded', 4000);
-      
-      // TODO should compare with audio file's time
-      runs(function () {
-      
+    describe('getTime()', function () {
+      it("getTime() should return current time", function () {
+        dancer.play();
+
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
+          expect(dancer.getTime()).toBeWithin(dancer.audioAdapter[ isWebkit ? 'context' : 'audio' ].currentTime, 0.1);
+        });
       });
     });
-    
+
     describe("getSpectrum()", function () {
       var s;
-      waitsFor(function () {
-        return dancer.isLoaded() && dancer.getTime() > 1;
-      }, 'Song never progressed', 3000);
+      dancer.play();
 
-      runs(function () {
-        it("should return a Float32Array(1024)", function () {
+      it("should return a Float32Array(512)", function () {
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
           s = dancer.getSpectrum();
-          expect(s.length).toEqual(1024);
+          expect(s.length).toEqual(512);
           expect(s instanceof Float32Array).toBeTruthy();
         });
-    
-        it("should return a correct amplitude for the 440hz pitch (11/1024)", function () {
+      });
+
+      it("should return a correct amplitude for the 440hz pitch (11/1024)", function () {
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
           s= dancer.getSpectrum()[10];
-          expect(s).toBeGreaterThan(0.5);
-          expect(s).toBeLessThan(1);
+          expect(s).toBeWithin(0.75, 0.2);
         });
-      
-        it("should return a correct amplitude for the 440hz pitch (51/1024)", function () {
+      });
+
+      it("should return a correct amplitude for the 440hz pitch (51/1024)", function () {
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
           s = dancer.getSpectrum()[50];
           expect(s).toBeLessThan(0.1);
         });
@@ -97,41 +100,186 @@ describe('Dancer', function () {
 
     describe("getFrequency()", function () {
       var f;
-      waitsFor(function () {
-        return dancer.isLoaded() && dancer.getTime() > 1;
-      }, 'Song never progressed', 3000);
-      
-      runs(function () {
-        it("should return a correct amplitude for the 440hz pitch (11/1024)", function () {
+
+      it("should return a correct amplitude for the 440hz pitch (11/1024)", function () {
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
           f = dancer.getFrequency(10);
           expect(f).toBeGreaterThan(0.5);
         });
-      
-        it("should return a correct amplitude for the 440hz pitch (51/1024)", function () {
+      });
+
+      it("should return a correct amplitude for the 440hz pitch (51/1024)", function () {
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
           f = dancer.getFrequency(50);
           expect(f).toBeLessThan(0.1);
         });
+      });
 
-        it("Should return the average amplitude over a range of the 440hz pitch", function () {
+      it("Should return the average amplitude over a range of the 440hz pitch", function () {
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
           f = dancer.getFrequency(10, 50);
-          expect(f).toBeGreaterThan(0.04);
-          expect(f).toBeLessThan(0.07);
+          expect(f).toBeWithin(0.055, 0.015);
         });
       });
     });
 
-    // Also tested implicitly via other tests
-    it("Should call adapter's loaded boolean from isLoaded()", function () {
-      dancer.audioAdapter.loaded = true;
-      expect(dancer.isLoaded()).toBeTruthy();
-      dancer.audioAdapter.loaded = false;
-      expect(dancer.isLoaded()).toBeFalsy();
+    describe("isLoaded()", function () {
+      // Also tested implicitly via other tests
+      it("Should return adapter's loaded boolean from isLoaded()", function () {
+        dancer.audioAdapter.loaded = false;
+        expect(dancer.isLoaded()).toBeFalsy();
+        dancer.audioAdapter.loaded = true;
+        expect(dancer.isLoaded()).toBeTruthy();
+      });
     });
   });
 
-  // TODO async tests for sections
   describe('Sections', function () {
+    var
+      f1Count, f2Count, f3Count, f4Count,
+      ret1, ret2, ret3, ret4,
+      ctx1, ctx2, ctx3, ctx4, t,
+      fn1 = function () { f1Count++; ctx1 = this; },
+      fn2 = function () { f2Count++; ctx2 = this; },
+      fn3 = function () { f3Count++; ctx3 = this; },
+      fn4 = function () { f4Count++; ctx4 = this; };
+    f1Count = f2Count = f3Count = f4Count = 0;
+    ret1 = ret2 = ret3 = ret4 = ctx1 = ctx2 = ctx3 = ctx4 = null;
 
+    describe('after()', function () {
+      it("Should not call 'after' callback before time t", function () {
+        t = dancer.getTime();
+        ret1 = dancer.after(t+1, fn1);
+        waits(100);
+        runs(function () {
+          expect(f1Count).toBe(0);
+        });
+      });
+
+      it("Should call 'after' callback after time t, repeatedly", function () {
+        waitsFor(function () {
+          return dancer.getTime() > t + 1.2;
+        }, 'Wait for time to elapse 2s', 2000);
+        runs(function () {
+          expect(f1Count).toBeGreaterThan(1);
+        });
+      });
+
+      it("Should return dance instance", function () {
+        expect(ret1).toBe(dancer);
+      });
+
+      it("Should have dance instance as the 'this' context in callback", function () {
+        expect(ctx1).toBe(dancer);
+      });
+    });
+
+    describe('before()', function () {
+      it("Should call 'before' callback before time t, repeatedly", function () {
+        t = dancer.getTime();
+        ret2 = dancer.before(t+1, fn2);
+        waits(200);
+        runs(function () {
+          expect(f2Count).toBeGreaterThan(1);
+        });
+      });
+
+      it("Should not call 'before' callback after time t", function () {
+        var stopCounting;
+        waitsFor(function () {
+          stopCounting = f2Count;
+          return dancer.getTime() > t + 1.2;
+        });
+        runs(function () {
+          waits(200);
+          runs(function () {
+            expect(f2Count).toBe(stopCounting);
+          });
+        });
+      });
+
+      it("Should return dance instance", function () {
+        expect(ret2).toBe(dancer);
+      });
+
+      it("Should have dance instance as the 'this' context in callback", function () {
+        expect(ctx2).toBe(dancer);
+      });
+    });
+
+    describe('between()', function () {
+      it("Should not call 'between' callback before time t1", function () {
+        t = dancer.getTime();
+        ret3 = dancer.between(t+1, t+3, fn3);
+        waits(100);
+        runs(function () {
+          expect(f3Count).toBe(0);
+        });
+      });
+      
+      it("Should repeatedly call 'between' callback between time t1,t2", function () {
+        waitsFor(function () {
+          return dancer.getTime() > t + 1.05;
+        });
+        runs(function () {
+          waits(100);
+          runs(function () {
+            expect(f3Count).toBeGreaterThan(1);
+          });
+        });
+      });
+
+      it("Should not call 'between' callback after time t2", function () {
+        var stopCounting;
+        waitsFor(function () {
+          stopCounting = f3Count;
+          return dancer.getTime() > t + 3.1;
+        });
+        runs(function () {
+          waits(200);
+          runs(function () {
+            expect(f3Count).toBe(stopCounting);
+          });
+        });
+      });
+
+      it("Should return dance instance", function () {
+        expect(ret3).toBe(dancer);
+      });
+      
+      it("Should have dance instance as the 'this' context in callback", function () {
+        expect(ctx3).toBe(dancer);
+      });
+    });
+
+    describe('onceAt()', function () {
+      it("Should only call 'onceAt' callback one time at time t", function () {
+        t = dancer.getTime();
+        ret4 = dancer.onceAt(t+1, fn4);
+        waits(100);
+        runs(function () {
+          expect(f4Count).toBe(0);
+        });
+        waitsFor(function () {
+          return dancer.getTime() > t+1.2;
+        });
+        runs(function () {
+          expect(f4Count).toBe(1);
+        });
+      });
+
+      it("Should return dance instance", function () {
+        expect(ret4).toBe(dancer);
+      });
+      
+      it("Should have dance instance as the 'this' context in callback", function () {
+        expect(ctx4).toBe(dancer);
+      });
+
+    });
   });
 
   describe('Pub/Sub Bindings', function () {
@@ -148,7 +296,7 @@ describe('Dancer', function () {
       dancer.bind('update', fn4);
     });
 
-    describe('Bind', function () {
+    describe('bind()', function () {
       it('Should bind several events under the same name and different names', function () {
         expect(dancer.events.eventA[0]).toBe(fn1);
         expect(dancer.events.eventA[1]).toBe(fn2);
@@ -156,7 +304,7 @@ describe('Dancer', function () {
       });
     });
 
-    describe('Unbind', function () {
+    describe('unbind()', function () {
       it('Should unbind all events of a shared name', function () {
         dancer.unbind('eventA');
         expect(dancer.events.eventA).toBeFalsy();
@@ -164,7 +312,7 @@ describe('Dancer', function () {
       });
     });
 
-    describe('Trigger', function () {
+    describe('trigger()', function () {
       it('Should call all events of a shared name, and no others', function () {
         dancer.trigger('eventA');
         expect(fn1).toHaveBeenCalled();
@@ -175,21 +323,24 @@ describe('Dancer', function () {
 
     describe('Update Trigger', function () {
       it('Should trigger update events as the audio plays', function () {
-        expect(fn4).toHaveBeenCalled();
+        waits(1000);
+        runs(function () {
+          expect(fn4).toHaveBeenCalled();
+        });
       });
     });
   });
 
-  describe('Add Plugin', function () {
+  describe('addPlugin()', function () {
     it('Should add a method to the prototype if not in the chain', function () {
       var fn = jasmine.createSpy();
-      Dancer.addPlugin('pluginname', fn); 
+      Dancer.addPlugin('pluginname', fn);
       dancer.pluginname('arggg');
       expect(fn).toHaveBeenCalledWith('arggg');
     });
 
     it('Should pass the dancer instance as the "this" context', function () {
-      Dancer.addPlugin('pluginname2', function() { return this; }); 
+      Dancer.addPlugin('pluginname2', function() { return this; });
       expect(dancer.pluginname2()).toBe(dancer);
     });
 
