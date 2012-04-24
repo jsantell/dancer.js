@@ -32,7 +32,7 @@ describe('Dancer', function () {
   });
 
   describe('Controls', function () {
-    // TODO Should probably check audio output via adapter or spectrum, similar to getTime();
+    // TODO Should probably check audio output via adapter, similar to getTime();
     it("Should call adapter's play/stop method via dancer.play(), dancer.stop()", function () {
       spyOn(dancer.audioAdapter, 'play');
       spyOn(dancer.audioAdapter, 'stop');
@@ -51,8 +51,11 @@ describe('Dancer', function () {
     });
   });
 
-  describe('Create Beat', function () {
-    it("TODO",function() { });
+  describe('createBeat()', function () {
+    var beat = dancer.createBeat();
+    it("Should return a Dancer.Beat instance", function () {
+      expect(beat instanceof Dancer.Beat).toBeTruthy();
+    });
   });
 
   describe('Getters', function () {
