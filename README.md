@@ -3,6 +3,8 @@ dancer.js
 
 A JavaScript audio visualization library.
 http://jsantell.github.com/dancer.js
+_v0.0.1_
+**Under heavy development until release at end of April 2012, fork with caution (and love)**
 
 Features
 ---
@@ -13,10 +15,8 @@ Features
 
 TODO
 ---
-* Tests
-  * Finish tests for core, beats, adapters, plugins
-  * Get AudioContext deletion in WebKit is not yet implemented, so running the tests in Chrome/Safari leads to errors. [WebAudio issue](http://www.w3.org/2011/audio/track/issues/3)
-* Map the frequency data for Mozilla's Audio Data API (via lib/fft.js) to WebKit's getByteFrequencyData audioContext method more accurately.
+* Finish tests for beats, plugin(s)
+* Streamline beat detection?
 * Expose additional audio controls (repeat/loop, reset, volume)
 
 Prototype Methods
