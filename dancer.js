@@ -490,7 +490,7 @@ FFT.prototype.forward = function(buffer) {
     },
 
     getTime : function () {
-      return this.time;
+      return this.audio.currentTime;
     },
 
     update : function ( e ) {
@@ -499,8 +499,6 @@ FFT.prototype.forward = function(buffer) {
       for ( var i = 0, j = this.fbLength / 2; i < j; i++ ) {
         this.signal[ i ] = ( e.frameBuffer[ 2 * i ] + e.frameBuffer[ 2 * i + 1 ] ) / 2;
       }
-
-      this.time = e.time;
 
       this.fft.forward( this.signal );
       this.dancer.trigger( 'update' );
