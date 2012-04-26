@@ -82,7 +82,11 @@
     },
 
     isLoaded : function () {
-      return this.audioAdapter.loaded;
+      return this.audioAdapter.isLoaded;
+    },
+    
+    isPlaying : function () {
+      return this.audioAdapter.isPlaying;
     },
 
 

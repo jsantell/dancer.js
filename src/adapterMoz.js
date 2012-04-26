@@ -2,7 +2,7 @@
   var adapter = function ( dancer ) {
     this.dancer = dancer;
     this.audio = new Audio();
-    this.loaded = false;
+    this.isLoaded = this.isPlaying = false;
   };
 
   adapter.prototype = {
@@ -16,7 +16,7 @@
         _this.rate     = _this.audio.mozSampleRate;
         _this.fft      = new FFT( _this.fbLength / _this.channels, _this.rate );
         _this.signal   = new Float32Array( _this.fbLength / _this.channels );
-        _this.loaded = true;
+        _this.isLoaded = true;
         _this.dancer.trigger( 'loaded' );
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
@@ -26,10 +26,12 @@
 
     play : function () {
       this.audio.play();
+      this.isPlaying = true;
     },
 
     stop : function () {
       this.audio.pause();
+      this.isPlaying = false;
     },
 
     getSpectrum : function () {
@@ -41,7 +43,7 @@
     },
 
     update : function ( e ) {
-      if ( !this.loaded ) return;
+      if ( !this.isLoaded ) return;
 
       for ( var i = 0, j = this.fbLength / 2; i < j; i++ ) {
         this.signal[ i ] = ( e.frameBuffer[ 2 * i ] + e.frameBuffer[ 2 * i + 1 ] ) / 2;

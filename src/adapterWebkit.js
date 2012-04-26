@@ -8,6 +8,8 @@
     this.context = window.audioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
+    this.isLoaded = false;
+    this.isPlaying= false;
   };
 
   adapter.prototype = {
@@ -18,7 +20,6 @@
         _this = this;
 
       this.source = this.context.createBufferSource();
-      this.loaded = false;
 
       req.open( 'GET', path, true );
       req.responseType = 'arraybuffer';
@@ -36,7 +37,7 @@
         _this.source.connect( _this.context.destination );
         _this.source.connect( _this.proc );
         _this.proc.connect( _this.context.destination );
-        _this.loaded = true;
+        _this.isLoaded = true;
         _this.dancer.trigger( 'loaded' );
       };
       req.send();
@@ -54,13 +55,19 @@
       var _this = this;
       (function play() {
         setTimeout(function() {
-          _this.loaded ? _this.source.noteOn( 0.0 ) : play();
+          if ( _this.isLoaded ) {
+            _this.source.noteOn( 0.0 );
+            _this.isPlaying = true;
+          } else {
+            play();
+          }
         }, 10);
       })();
     },
 
     stop : function () {
       this.source.noteOff(0);
+      this.isPlaying = false;
     },
 
     getSpectrum : function () {
@@ -72,6 +79,7 @@
     },
 
     update : function ( e ) {
+      if ( !this.isPlaying ) { return; }
       var
         bufferL = e.inputBuffer.getChannelData(0),
         bufferR = e.inputBuffer.getChannelData(1);
@@ -79,7 +87,7 @@
       for ( var i = 0, j = SAMPLE_SIZE / 2; i < j; i++ ) {
         this.signal[ i ] = ( bufferL[ i ] + bufferR[ i ] ) / 2;
       }
-
+      
       this.fft.forward( this.signal );
       this.dancer.trigger( 'update' );
     }

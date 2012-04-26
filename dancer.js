@@ -82,7 +82,11 @@
     },
 
     isLoaded : function () {
-      return this.audioAdapter.loaded;
+      return this.audioAdapter.isLoaded;
+    },
+    
+    isPlaying : function () {
+      return this.audioAdapter.isPlaying;
     },
 
 
@@ -158,26 +162,27 @@
 })();
 
 (function() {
-  var Beat = function ( dancer, frequency, threshold, decay, onBeat, offBeat ) {
-    this.dancer     = dancer;
-    this.frequency = frequency;
-    this.threshold = threshold;
-    this.decay     = decay;
-    this.onBeat    = onBeat;
-    this.offBeat   = offBeat;
+  var Beat = function ( dancer, options ) {
+    options = options || {};
+    this.dancer    = dancer;
+    this.range     = options.range     || [ 0, 20 ];
+    this.threshold = options.threshold || 0.15;
+    this.decay     = options.decay     || 0.025;
+    this.onBeat    = options.onBeat;
+    this.offBeat   = options.offBeat;
     this.isOn      = false;
-    this.currentThreshold = threshold;
+    this.currentThreshold = this.threshold;
 
     var _this = this;
     this.dancer.bind( 'update', function() {
       if ( !_this.isOn ) { return; }
-      var magnitude = _this.dancer.getSpectrum()[ _this.frequency ];
+      var magnitude = maxAmplitude( _this.dancer.getSpectrum(), _this.range );
       if ( magnitude >= _this.currentThreshold &&
           magnitude >= _this.threshold ) {
         _this.currentThreshold = magnitude;
-        onBeat.call( _this.dancer, magnitude );
+        _this.onBeat && _this.onBeat.call( _this.dancer, magnitude );
       } else {
-        offBeat.call( _this.dancer, magnitude );
+        _this.offBeat && _this.offBeat.call( _this.dancer, magnitude );
         _this.currentThreshold -= _this.decay;
       }
     });
@@ -187,6 +192,18 @@
     on  : function () { this.isOn = true; },
     off : function () { this.isOn = false; }
   };
+
+  function maxAmplitude ( fft, range ) {
+    var max = 0;
+    // Not robust at all array detection, but fast
+    if ( !range.length ) {
+      return fft[ range ];
+    }
+    for ( var i = range[ 0 ], l = range[ 1 ]; i <= l; i++ ) {
+      if ( fft[ i ] > max ) { max = fft[ i ]; }
+    }
+    return max;
+  }
 
   window.Dancer.Beat = Beat;
 })();
@@ -370,6 +387,8 @@ FFT.prototype.forward = function(buffer) {
     this.context = window.audioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
+    this.isLoaded = false;
+    this.isPlaying= false;
   };
 
   adapter.prototype = {
@@ -380,7 +399,6 @@ FFT.prototype.forward = function(buffer) {
         _this = this;
 
       this.source = this.context.createBufferSource();
-      this.loaded = false;
 
       req.open( 'GET', path, true );
       req.responseType = 'arraybuffer';
@@ -398,7 +416,7 @@ FFT.prototype.forward = function(buffer) {
         _this.source.connect( _this.context.destination );
         _this.source.connect( _this.proc );
         _this.proc.connect( _this.context.destination );
-        _this.loaded = true;
+        _this.isLoaded = true;
         _this.dancer.trigger( 'loaded' );
       };
       req.send();
@@ -416,13 +434,19 @@ FFT.prototype.forward = function(buffer) {
       var _this = this;
       (function play() {
         setTimeout(function() {
-          _this.loaded ? _this.source.noteOn( 0.0 ) : play();
+          if ( _this.isLoaded ) {
+            _this.source.noteOn( 0.0 );
+            _this.isPlaying = true;
+          } else {
+            play();
+          }
         }, 10);
       })();
     },
 
     stop : function () {
       this.source.noteOff(0);
+      this.isPlaying = false;
     },
 
     getSpectrum : function () {
@@ -434,6 +458,7 @@ FFT.prototype.forward = function(buffer) {
     },
 
     update : function ( e ) {
+      if ( !this.isPlaying ) { return; }
       var
         bufferL = e.inputBuffer.getChannelData(0),
         bufferR = e.inputBuffer.getChannelData(1);
@@ -441,7 +466,7 @@ FFT.prototype.forward = function(buffer) {
       for ( var i = 0, j = SAMPLE_SIZE / 2; i < j; i++ ) {
         this.signal[ i ] = ( bufferL[ i ] + bufferR[ i ] ) / 2;
       }
-
+      
       this.fft.forward( this.signal );
       this.dancer.trigger( 'update' );
     }
@@ -455,7 +480,7 @@ FFT.prototype.forward = function(buffer) {
   var adapter = function ( dancer ) {
     this.dancer = dancer;
     this.audio = new Audio();
-    this.loaded = false;
+    this.isLoaded = this.isPlaying = false;
   };
 
   adapter.prototype = {
@@ -469,7 +494,7 @@ FFT.prototype.forward = function(buffer) {
         _this.rate     = _this.audio.mozSampleRate;
         _this.fft      = new FFT( _this.fbLength / _this.channels, _this.rate );
         _this.signal   = new Float32Array( _this.fbLength / _this.channels );
-        _this.loaded = true;
+        _this.isLoaded = true;
         _this.dancer.trigger( 'loaded' );
       }, false);
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
@@ -479,10 +504,12 @@ FFT.prototype.forward = function(buffer) {
 
     play : function () {
       this.audio.play();
+      this.isPlaying = true;
     },
 
     stop : function () {
       this.audio.pause();
+      this.isPlaying = false;
     },
 
     getSpectrum : function () {
@@ -494,7 +521,7 @@ FFT.prototype.forward = function(buffer) {
     },
 
     update : function ( e ) {
-      if ( !this.loaded ) return;
+      if ( !this.isLoaded ) return;
 
       for ( var i = 0, j = this.fbLength / 2; i < j; i++ ) {
         this.signal[ i ] = ( e.frameBuffer[ 2 * i ] + e.frameBuffer[ 2 * i + 1 ] ) / 2;
