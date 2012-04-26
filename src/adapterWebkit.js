@@ -53,16 +53,15 @@
 
     play : function () {
       var _this = this;
-      (function play() {
-        setTimeout(function() {
-          if ( _this.isLoaded ) {
-            _this.source.noteOn( 0.0 );
-            _this.isPlaying = true;
-          } else {
-            play();
-          }
-        }, 10);
-      })();
+
+      this.isLoaded ?
+        play() :
+        this.dancer.bind( 'loaded', play );
+
+      function play () {
+        _this.source.noteOn( 0.0 );
+        _this.isPlaying = true;
+      }
     },
 
     stop : function () {
@@ -87,7 +86,7 @@
       for ( var i = 0, j = SAMPLE_SIZE / 2; i < j; i++ ) {
         this.signal[ i ] = ( bufferL[ i ] + bufferR[ i ] ) / 2;
       }
-      
+
       this.fft.forward( this.signal );
       this.dancer.trigger( 'update' );
     }
