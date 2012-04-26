@@ -132,10 +132,22 @@ describe('Dancer', function () {
     describe("isLoaded()", function () {
       // Also tested implicitly via other tests
       it("Should return adapter's loaded boolean from isLoaded()", function () {
-        dancer.audioAdapter.loaded = false;
+        dancer.audioAdapter.isLoaded = false;
         expect(dancer.isLoaded()).toBeFalsy();
-        dancer.audioAdapter.loaded = true;
+        dancer.audioAdapter.isLoaded = true;
         expect(dancer.isLoaded()).toBeTruthy();
+      });
+    });
+    
+    describe("isPlaying()", function () {
+      // Relying on adapter implementation, possibly better way to spec 
+      it("Should be true if playing, false otherwise", function () {
+        dancer.play();
+        expect(dancer.isPlaying()).toBeTruthy();
+        dancer.stop();
+        expect(dancer.isPlaying()).toBeFalsy();
+        dancer.play();
+        expect(dancer.isPlaying()).toBeTruthy();
       });
     });
   });
