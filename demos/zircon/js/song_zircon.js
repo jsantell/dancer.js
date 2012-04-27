@@ -1,16 +1,18 @@
 (function() {
 
   var dancer = new Dancer('songs/zircon_devils_spirit.ogg');
-  var beat = dancer.createBeat( 3, 150, 8, function () {
-    for (var i = 0, l = group.children.length; i < l; i++) {
-      var t = Math.random()*2 + 1;
-      //t = isWebkit ? t * 0.5 : t;
-      group.children[ i ].scale.y = t; 
-    }
-  }, function() {
-    for (var i = 0, l = group.children.length; i < l; i++) {
-      if ( group.children[ i ].scale.y > 1 )
-        group.children[ i ].scale.y -= 0.05; 
+  var beat = dancer.createBeat({
+    onBeat: function () {
+      for (var i = 0, l = group.children.length; i < l; i++) {
+        var t = Math.random()*2 + 1;
+        group.children[ i ].scale.y = t; 
+      }
+    },
+    offBeat: function() {
+      for (var i = 0, l = group.children.length; i < l; i++) {
+        if ( group.children[ i ].scale.y > 1 )
+          group.children[ i ].scale.y -= 0.1; 
+      }
     }
   });
   

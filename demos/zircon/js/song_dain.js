@@ -4,12 +4,12 @@
 
   var dancer = new Dancer('songs/dainsaint-chandrasekharlimit.ogg');
   //var dancer = new Dancer('../spec/lib/440hz_100amp.ogg');
-  var beat = dancer.createBeat( 0, 0.8, 0.1, function () {
-    group.children.forEach(function (p) {
-      p.material = pMaterial[ ~~(Math.random() * 4) ]; 
-    });
-  }, function () {
-      
+  var beat = dancer.createBeat({
+    onBeat: function () {
+      group.children.forEach(function (p) {
+        p.material = pMaterial[ ~~(Math.random() * 4) ]; 
+      });
+    }
   });
   beat.on();
  
