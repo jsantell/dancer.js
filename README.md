@@ -56,10 +56,10 @@ Basic pub/sub to tie into the dancer instance. `update` and `loaded` are predefi
 
 ### Beats
 
-Beats are detected when the amplitude (normalized values between 0 and 1) of a frequency range, on average, is greater than the minimum threshold, as well as greater than the previously registered beat's amplitude, which is decreased by the decay rate per frame.
+Beats are detected when the amplitude (normalized values between 0 and 1) of a specified frequency, or the max amplitude over a range, is greater than the minimum threshold, as well as greater than the previously registered beat's amplitude, which is decreased by the decay rate per frame.
 
 * `createBeat( options )` creates a new beat instance tied to the dancer instance, with an options object passed as an argument. Options listed below.
-  * `range` the frequency (element of the spectrum) to check for a spike. Can be a single frequency (number) or a range (2 element array). Default: `[ 0, 10 ]`
+  * `frequency` the frequency (element of the spectrum) to check for a spike. Can be a single frequency (number) or a range (2 element array) that uses the frequency with highest amplitude. Default: `[ 0, 10 ]`
   * `threshold` the minimum amplitude of the frequency range in order for a beat to occur. Default: `0.2`
   * `decay` the rate that the previously registered beat's amplitude is reduced by on every frame. Default: `0.025`
   * `onBeat` the callback to be called when a beat is detected.
