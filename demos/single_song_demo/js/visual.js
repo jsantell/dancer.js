@@ -79,6 +79,5 @@
     camera.lookAt( scene.position );
     t++;
     renderer.render( scene, camera );
-    TWEEN.update();
   }
 })();
