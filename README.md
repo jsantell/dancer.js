@@ -56,7 +56,21 @@ Basic pub/sub to tie into the dancer instance. `update` and `loaded` are predefi
 
 ### Beats
 
-* `createBeat( frequency, threshold, decay, onBeatCallback [, offBeatCallback ] )`  creates and returns a new Dancer.Beat instance. Can be toggled with the beat's `on()` and `off()` methods. Fires the `onBeatCallback` when `frequency` has a magnitude greater than the `threshold` and greater than the last beat's magnitude that decreases at the rate of `decay` on every frame. Otherwise, `offBeatCallback` is called if specified.
+Beats are detected when the amplitude (normalized values between 0 and 1) of a frequency range, on average, is greater than the minimum threshold, as well as greater than the previously registered beat's amplitude, which is decreased by the decay rate per frame.
+
+* `createBeat( options )` creates a new beat instance tied to the dancer instance, with an options object passed as an argument. Options listed below.
+  * `range` the frequency (element of the spectrum) to check for a spike. Can be a single frequency (number) or a range (2 element array). Default: `[ 0, 10 ]`
+  * `threshold` the minimum amplitude of the frequency range in order for a beat to occur. Default: `0.2`
+  * `decay` the rate that the previously registered beat's amplitude is reduced by on every frame. Default: `0.025`
+  * `onBeat` the callback to be called when a beat is detected.
+  * `offBeat` the callback to be called when there is no beat on the current frame.
+
+#### Beat Methods
+
+These methods can be called on a beat instance to turn on and off the registered callbacks
+
+* `on()` turns on the beat instance's callbacks and detections
+* `off()` turns off the beat instance's callbacks and detections
 
 Example
 ---
@@ -64,10 +78,13 @@ Example
 ```javascript
   var
     dancer = new Dancer( "sickjams.ogg" ),
-    beat = dancer.createBeat( 5, 240, 0.2, function( mag ) {
-      console.log('Beat!');
-    }, function( mag ) {
-      console.log('no beat :(');
+    beat = dancer.createBeat({
+      onBeat: function ( mag ) {
+        console.log('Beat!');
+      },
+      offBeat: function ( mag ) {
+        console.log('no beat :(');
+      }
     });
 
   // Let's turn this beat on right away
