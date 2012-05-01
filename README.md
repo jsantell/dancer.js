@@ -13,12 +13,6 @@ Features
 * Simple API to time callbacks and events to any section of a song
 * Extensible framework supporting plugins and custom behaviours
 
-TODO
----
-* Finish tests for beats, plugin(s)
-* Streamline beat detection?
-* Expose additional audio controls (repeat/loop, reset, volume)
-
 Prototype Methods
 ---
 
