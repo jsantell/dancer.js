@@ -1,10 +1,11 @@
 dancer.js
 ======
 
-A JavaScript audio visualization library.
+A JavaScript audio library.
+
 http://jsantell.github.com/dancer.js
+
 _v0.0.1_
-**Under heavy development until release at end of April 2012, fork with caution (and love)**
 
 Features
 ---
