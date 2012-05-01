@@ -52,6 +52,7 @@
       particle = new THREE.Particle(
         new THREE.ParticleCanvasMaterial({
           color: colors[ ~~( Math.random() * 5 )],
+          blending: THREE.AdditiveBlending,
           program: program
         })
       );
@@ -86,15 +87,6 @@
 
     dancer.play();
 
-    var ctx = document.getElementsByTagName( 'canvas' )[1].getContext( '2d' );
-
-    // Sloppy fix for creation of THREE.js auto canvas, whatev
-    (function composite () {
-      setTimeout(function () {
-        ctx.globalCompositeOperation = 'lighter';
-        if ( ctx.globalCompositeOperation != 'lighter' ) composite();
-      }, 100);
-    })();
   }
 
   function decay () {
