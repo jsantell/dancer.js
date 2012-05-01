@@ -11,6 +11,7 @@ body {
     background-color: #212426;
     margin: 0;
     padding: 0;
+    font-family: Arial;
 }
 #info {
     width: 100%;
@@ -33,14 +34,62 @@ body {
     font-size: 25px;
 }
 
+#info ul {
+    float:right;
+    display-icon-type:none;
+}
+
+#info li {
+    display:block;
+    float:left;
+    margin-right: 15px;
+}
+
+#info li a {
+    color: #ff0077;
+    margin-left: 5px;
+}
+
+#loading {
+    font-size: 60px;
+    color: #fff;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    width: 500px;
+}
+
+#togglefft {
+    float: left;
+    margin: 20px 0 0 10px;
+    color: #ff0077;
+}
+
 #fft { 
     display: none;
     margin: 2px 0 0 10px;
-    float: left;
-    
+    float: left;    
 }
 
 #stats {
     margin: 0 0 0 10px;
     float: left;
+}
+
+#songinfo {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: #111;
+}
+
+#songinfo span, #songinfo h3 {
+    color: #ccc;
+    font-size: 12px;
+    margin: 5px 30px 5px 30px;
+    padding: 0;
+}
+
+#songinfo a {
+    color: #ff0077;
 }

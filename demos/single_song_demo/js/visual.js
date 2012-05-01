@@ -5,7 +5,7 @@
 
   var stats = new Stats();
   stats.domElement.id = 'stats';
-  document.getElementById('info').insertBefore( stats.domElement, document.getElementById('fft') );
+  document.getElementById('info').insertBefore( stats.domElement, document.getElementById('togglefft') );
 
   var windowHalfX = window.innerWidth / 2;
   var windowHalfY = window.innerHeight / 2;
