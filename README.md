@@ -1,7 +1,7 @@
 dancer.js
 ======
 
-A JavaScript audio library.
+dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API and Webkit's Web Audio API, designed to make sweet visualizations.
 
 http://jsantell.github.com/dancer.js
 
