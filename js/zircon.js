@@ -13,7 +13,7 @@
     beamGroup = new THREE.Object3D(),
     colors = [ 0xaaee22, 0x04dbe5, 0xff0077, 0xffb412, 0xf6c83d ];
 
-  var dancer = new Dancer('./songs/zircon_devils_spirit.ogg');
+  var dancer = new Dancer('songs/zircon_devils_spirit.ogg');
   var beat = dancer.createBeat({
     onBeat: function () {
       if ( particles[ 0 ].scale.x > LIMIT ) {
