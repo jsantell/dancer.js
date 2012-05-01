@@ -60,8 +60,8 @@ Beats are detected when the amplitude (normalized values between 0 and 1) of a s
 
 * `createBeat( options )` creates a new beat instance tied to the dancer instance, with an options object passed as an argument. Options listed below.
   * `frequency` the frequency (element of the spectrum) to check for a spike. Can be a single frequency (number) or a range (2 element array) that uses the frequency with highest amplitude. Default: `[ 0, 10 ]`
-  * `threshold` the minimum amplitude of the frequency range in order for a beat to occur. Default: `0.2`
-  * `decay` the rate that the previously registered beat's amplitude is reduced by on every frame. Default: `0.025`
+  * `threshold` the minimum amplitude of the frequency range in order for a beat to occur. Default: `0.3`
+  * `decay` the rate that the previously registered beat's amplitude is reduced by on every frame. Default: `0.02`
   * `onBeat` the callback to be called when a beat is detected.
   * `offBeat` the callback to be called when there is no beat on the current frame.
 
@@ -113,4 +113,4 @@ You can extend the Dancer prototype by calling the static method `addPlugin( nam
 
 Development
 ---
-This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/SpecRunner.html` in Mozilla/WebKit browsers to test.
+This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test.
