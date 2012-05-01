@@ -89,12 +89,12 @@
     var ctx = document.getElementsByTagName( 'canvas' )[1].getContext( '2d' );
 
     // Sloppy fix for creation of THREE.js auto canvas, whatev
-  /*  (function composite () {
+    (function composite () {
       setTimeout(function () {
         ctx.globalCompositeOperation = 'lighter';
         if ( ctx.globalCompositeOperation != 'lighter' ) composite();
       }, 100);
-    })();*/
+    })();
   }
 
   function decay () {
