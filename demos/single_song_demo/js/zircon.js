@@ -1,30 +1,37 @@
 (function () {
 
   var
-    P_COUNT = 400,
-    LIMIT = 50,
-    GROWTH_RATE = 10,
-    DECAY_RATE = 1.5,
-    GROWTH_VECTOR = new THREE.Vector3( GROWTH_RATE, GROWTH_RATE, GROWTH_RATE ),
-    DECAY_VECTOR = new THREE.Vector3( DECAY_RATE, DECAY_RATE, DECAY_RATE ),
-    t, particles = group.children,
-    BEAM_RATE = 0.5,
-    BEAM_COUNT = 20,
-    beamGroup = new THREE.Object3D(),
-    colors = [ 0xaaee22, 0x04dbe5, 0xff0077, 0xffb412, 0xf6c83d ];
+    PARTICLE_COUNT    = 250,
+    MAX_PARTICLE_SIZE = 12,
+    MIN_PARTICLE_SIZE = 2,
+    GROWTH_RATE       = 5,
+    DECAY_RATE        = 0.5,
 
-  var dancer = new Dancer('../songs/zircon_devils_spirit.ogg');
-  var beat = dancer.createBeat({
+    BEAM_RATE         = 0.5,
+    BEAM_COUNT        = 20,
+
+    GROWTH_VECTOR = new THREE.Vector3( GROWTH_RATE, GROWTH_RATE, GROWTH_RATE ),
+    DECAY_VECTOR  = new THREE.Vector3( DECAY_RATE, DECAY_RATE, DECAY_RATE ),
+    beamGroup     = new THREE.Object3D(),
+    particles     = group.children,
+    colors        = [ 0xaaee22, 0x04dbe5, 0xff0077, 0xffb412, 0xf6c83d ],
+    t, dancer, beat;
+
+  dancer = new Dancer('../songs/zircon_devils_spirit.ogg');
+  beat = dancer.createBeat({
     onBeat: function () {
-      if ( particles[ 0 ].scale.x > LIMIT ) {
+      var i;
+      if ( particles[ 0 ].scale.x > MAX_PARTICLE_SIZE ) {
         decay();
-        return;
+      } else {
+        for ( i = PARTICLE_COUNT; i--; ) {
+          particles[ i ].scale.addSelf( GROWTH_VECTOR );
+        }
       }
-      for ( var i = 0; i < P_COUNT; i++ ) {
-        particles[ i ].scale.addSelf( GROWTH_VECTOR );
-      }
-      for ( i = 0; i < BEAM_COUNT; i++ ) {
-        beamGroup.children[ i ].visible = true;
+      if ( !beamGroup.children[ 0 ].visible ) {
+        for ( i = BEAM_COUNT; i--; ) {
+          beamGroup.children[ i ].visible = true;
+        }
       }
     },
     offBeat: decay
@@ -37,6 +44,12 @@
   }).after( 8.2, function () {
     beamGroup.rotation.x += BEAM_RATE;
     beamGroup.rotation.y += BEAM_RATE;
+  }).onceAt( 50, function () {
+    changeParticleMat( 'white' );
+  }).onceAt( 66.5, function () {
+    changeParticleMat( 'pink' );
+  }).onceAt( 75, function () {
+    changeParticleMat();
   }).fft( document.getElementById( 'fft' ) );
 
   if ( !dancer.isLoaded() ) {
@@ -48,14 +61,8 @@
   }
 
   function on () {
-    for ( var i = 0; i < P_COUNT; i++ ) {
-      particle = new THREE.Particle(
-        new THREE.ParticleCanvasMaterial({
-          color: colors[ ~~( Math.random() * 5 )],
-          blending: THREE.AdditiveBlending,
-          program: program
-        })
-      );
+    for ( var i = PARTICLE_COUNT; i--; ) {
+      particle = new THREE.Particle( newParticleMat() );
       particle.position.x = Math.random() * 2000 - 1000;
       particle.position.y = Math.random() * 2000 - 1000;
       particle.position.z = Math.random() * 2000 - 1000;
@@ -65,12 +72,11 @@
     scene.add( group );
 
     // Beam idea from http://www.airtightinteractive.com/demos/js/nebula/
-
     var
       beamGeometry = new THREE.PlaneGeometry( 5000, 50, 1, 1 ),
       beamMaterial, beam;
 
-    for ( i = 0; i < BEAM_COUNT; i++ ) {
+    for ( i = BEAM_COUNT; i--; ) {
       beamMaterial = new THREE.MeshBasicMaterial({
         opacity: 0.5,
         blending: THREE.AdditiveBlending,
@@ -86,19 +92,55 @@
     }
 
     dancer.play();
-
   }
 
   function decay () {
-    if ( particles[ 0 ].scale.x - DECAY_RATE < 0 ) return;
-    for ( var i = 0; i < P_COUNT; i++ ) {
-      particles[ i ].scale.subSelf( DECAY_VECTOR );
+    if ( beamGroup.children[ 0 ].visible ) {
+      for ( i = BEAM_COUNT; i--; ) {
+        beamGroup.children[ i ].visible = false;
+      }
     }
-    if ( !beamGroup.children[ 0 ].visible ) return;
-    for ( i = 0; i < BEAM_COUNT; i++ ) {
-      beamGroup.children[ i ].visible = false;
+
+    if ( particles[ 0 ].scale.x - DECAY_RATE > MIN_PARTICLE_SIZE ) {
+      for ( var i = PARTICLE_COUNT; i--; ) {
+        particles[ i ].scale.subSelf( DECAY_VECTOR );
+      }
     }
   }
 
+  function changeParticleMat ( color ) {
+    var mat = newParticleMat( color );
+    for ( var i = PARTICLE_COUNT; i--; ) {
+      if ( !color ) {
+        mat = newParticleMat();
+      }
+      particles[ i ].material = mat;
+    }
+
+  }
+
+  function newParticleMat( color ) {
+    var
+      sprites = [ 'pink', 'orange', 'yellow', 'blue', 'green' ],
+      sprite = color || sprites[ ~~( Math.random() * 5 )];
+
+    return new THREE.ParticleBasicMaterial({
+      blending: THREE.AdditiveBlending,
+      size: MIN_PARTICLE_SIZE,
+      map: THREE.ImageUtils.loadTexture('images/particle_' + sprite + '.png')
+    });
+    /*
+    return new THREE.ParticleCanvasMaterial({
+      blending: THREE.AdditiveBlending,
+      program: program,
+      color: 0xaaee22
+    });
+   */
+  }
+
   on();
+
+  // For debugging
+  window.dancer = dancer;
+
 })();
