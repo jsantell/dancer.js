@@ -15,6 +15,7 @@
   window.scene = new THREE.Scene();
   window.group = new THREE.Object3D();
   window.program, window.camera;
+
   init();
   animate();
 
@@ -40,8 +41,8 @@
     container.appendChild( renderer.domElement );
 
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-    document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-    document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+    document.addEventListener( 'touchstart', onDocumentTouch, false );
+    document.addEventListener( 'touchmove', onDocumentTouch, false );
   }
 
   function onDocumentMouseMove( event ) {
@@ -49,16 +50,8 @@
     mouseY = event.clientY - windowHalfY;
   }
 
-  function onDocumentTouchStart( event ) {
+  function onDocumentTouch( event ) {
     if ( event.touches.length == 1 ) {
-      event.preventDefault();
-      mouseX = event.touches[ 0 ].pageX - windowHalfX;
-      mouseY = event.touches[ 0 ].pageY - windowHalfY;
-    }
-  }
-
-  function onDocumentTouchMove( event ) {
-    if ( event.touches.length == 1 ) { 
       event.preventDefault();
       mouseX = event.touches[ 0 ].pageX - windowHalfX;
       mouseY = event.touches[ 0 ].pageY - windowHalfY;
