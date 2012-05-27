@@ -184,7 +184,7 @@
     var _this = this;
     this.dancer.bind( 'update', function() {
       if ( !_this.isOn ) { return; }
-      var magnitude = maxAmplitude( _this.dancer.getSpectrum(), _this.frequency );
+      var magnitude = _this.maxAmplitude( _this.frequency );
       if ( magnitude >= _this.currentThreshold &&
           magnitude >= _this.threshold ) {
         _this.currentThreshold = magnitude;
@@ -198,20 +198,25 @@
 
   Beat.prototype = {
     on  : function () { this.isOn = true; },
-    off : function () { this.isOn = false; }
-  };
+    off : function () { this.isOn = false; },
+    maxAmplitude : function ( frequency ) {
+      var
+        max = 0,
+        fft = this.dancer.getSpectrum();
 
-  function maxAmplitude ( fft, frequency ) {
-    var max = 0;
-    // Not robust at all array detection, but fast
-    if ( !frequency.length ) {
-      return fft[ frequency ];
+      // Sloppy array check
+      if ( !frequency.length ) {
+        return frequency < fft.length ?
+          fft[ ~~frequency ] :
+          null;
+      }
+
+      for ( var i = frequency[ 0 ], l = frequency[ 1 ]; i <= l; i++ ) {
+        if ( fft[ i ] > max ) { max = fft[ i ]; }
+      }
+      return max;
     }
-    for ( var i = frequency[ 0 ], l = frequency[ 1 ]; i <= l; i++ ) {
-      if ( fft[ i ] > max ) { max = fft[ i ]; }
-    }
-    return max;
-  }
+  };
 
   window.Dancer.Beat = Beat;
 })();
