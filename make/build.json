@@ -4,9 +4,9 @@
         "dancer" : [
             "./src/dancer.js",
             "./src/beat.js",
-            "./lib/fft.js",
             "./src/adapterWebkit.js",
-            "./src/adapterMoz.js"
+            "./src/adapterMoz.js",
+            "./lib/fft.js"
         ]
     }
 }
