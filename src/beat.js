@@ -11,23 +11,32 @@
     this.currentThreshold = this.threshold;
 
     var _this = this;
-    this.dancer.bind( 'update', function() {
-      if ( !_this.isOn ) { return; }
-      var magnitude = _this.maxAmplitude( _this.frequency );
-      if ( magnitude >= _this.currentThreshold &&
-          magnitude >= _this.threshold ) {
-        _this.currentThreshold = magnitude;
-        _this.onBeat && _this.onBeat.call( _this.dancer, magnitude );
-      } else {
-        _this.offBeat && _this.offBeat.call( _this.dancer, magnitude );
-        _this.currentThreshold -= _this.decay;
-      }
+    this.dancer.bind( 'update', function () {
+      _this.onUpdate();
     });
   };
 
   Beat.prototype = {
-    on  : function () { this.isOn = true; },
-    off : function () { this.isOn = false; },
+    on  : function () { 
+      this.isOn = true;
+      return this;
+    },
+    off : function () {
+      this.isOn = false;
+      return this;
+    },
+    onUpdate : function () {
+      if ( !this.isOn ) { return; }
+      var magnitude = this.maxAmplitude( this.frequency );
+      if ( magnitude >= this.currentThreshold &&
+          magnitude >= this.threshold ) {
+        this.currentThreshold = magnitude;
+        this.onBeat && this.onBeat.call( this.dancer, magnitude );
+      } else {
+        this.offBeat && this.offBeat.call( this.dancer, magnitude );
+        this.currentThreshold -= this.decay;
+      }
+    },
     maxAmplitude : function ( frequency ) {
       var
         max = 0,
