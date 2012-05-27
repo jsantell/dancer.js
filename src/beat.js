@@ -13,7 +13,7 @@
     var _this = this;
     this.dancer.bind( 'update', function() {
       if ( !_this.isOn ) { return; }
-      var magnitude = maxAmplitude( _this.dancer.getSpectrum(), _this.frequency );
+      var magnitude = Beat.maxAmplitude( _this.dancer.getSpectrum(), _this.frequency );
       if ( magnitude >= _this.currentThreshold &&
           magnitude >= _this.threshold ) {
         _this.currentThreshold = magnitude;
@@ -30,11 +30,11 @@
     off : function () { this.isOn = false; }
   };
 
-  function maxAmplitude ( fft, frequency ) {
+  Beat.maxAmplitude ( fft, frequency ) {
     var max = 0;
     // Not robust at all array detection, but fast
     if ( !frequency.length ) {
-      return fft[ frequency ];
+      return typeof frequency === 'number' ? fft[ ~~frequency ] : null;
     }
     for ( var i = frequency[ 0 ], l = frequency[ 1 ]; i <= l; i++ ) {
       if ( fft[ i ] > max ) { max = fft[ i ]; }
