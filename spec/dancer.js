@@ -4,8 +4,8 @@ describe('Dancer', function () {
     song     = 'lib/440hz_100amp.ogg',
     dancer   = new Dancer(song),
     isWebkit = !!window.webkitAudioContext,
-    songReady = function () { return dancer.isLoaded() && dancer.getTime() > 1; }
-  
+    songReady = function () { return dancer.isLoaded() && dancer.getTime() > 1; };
+
   // Define custom matcher
   beforeEach(function () {
     this.addMatchers({
@@ -142,9 +142,9 @@ describe('Dancer', function () {
         });
       });
     });
-    
+
     describe("isPlaying()", function () {
-      // Relying on adapter implementation, possibly better way to spec 
+      // Relying on adapter implementation, possibly better way to spec
       it("Should be true if playing, false otherwise", function () {
         dancer.play();
         expect(dancer.isPlaying()).toBeTruthy();
@@ -238,7 +238,7 @@ describe('Dancer', function () {
           expect(f3Count).toBe(0);
         });
       });
-      
+
       it("Should repeatedly call 'between' callback between time t1,t2", function () {
         waitsFor(function () {
           return dancer.getTime() > t + 1.05;
@@ -268,7 +268,7 @@ describe('Dancer', function () {
       it("Should return dance instance", function () {
         expect(ret3).toBe(dancer);
       });
-      
+
       it("Should have dance instance as the 'this' context in callback", function () {
         expect(ctx3).toBe(dancer);
       });
@@ -293,7 +293,7 @@ describe('Dancer', function () {
       it("Should return dance instance", function () {
         expect(ret4).toBe(dancer);
       });
-      
+
       it("Should have dance instance as the 'this' context in callback", function () {
         expect(ctx4).toBe(dancer);
       });
