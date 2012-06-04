@@ -14,7 +14,7 @@
   window.rotateSpeed = 1;
   window.scene = new THREE.Scene();
   window.group = new THREE.Object3D();
-  window.program, window.camera;
+  window.camera;
 
   init();
   animate();
@@ -27,14 +27,6 @@
 
     scene.add( camera );
     scene.add( group );
-
-    var PI2 = Math.PI * 2;
-    program = function ( context ) {
-      context.beginPath();
-      context.arc( 0, 0, 1, 0, PI2, true );
-      context.closePath();
-      context.fill();
-    }
 
     renderer = new THREE.CanvasRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -68,7 +60,7 @@
   function render() {
     camera.position.x = Math.sin(t * 0.005 * rotateSpeed) * 1000;
     camera.position.z = Math.cos(t * 0.005 * rotateSpeed) * 1000;
-//    camera.position.y += ( - mouseY - camera.position.y ) * 0.01;
+    camera.position.y += ( - mouseY - camera.position.y ) * 0.01;
     camera.lookAt( scene.position );
     t++;
     renderer.render( scene, camera );
