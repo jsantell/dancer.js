@@ -1,6 +1,7 @@
 (function () {
 
   var
+    AUDIO_FILE        = '../songs/zircon_devils_spirit.ogg',
     PARTICLE_COUNT    = 250,
     MAX_PARTICLE_SIZE = 12,
     MIN_PARTICLE_SIZE = 2,
@@ -17,7 +18,11 @@
     colors        = [ 0xaaee22, 0x04dbe5, 0xff0077, 0xffb412, 0xf6c83d ],
     t, dancer, beat;
 
-  dancer = new Dancer('../songs/zircon_devils_spirit.ogg');
+  /*
+   * Dancer.js magic
+   */
+
+  dancer = new Dancer( AUDIO_FILE );
   beat = dancer.createBeat({
     onBeat: function () {
       var i;
@@ -60,6 +65,10 @@
     document.getElementById('loading').style.display = 'none';
   }
 
+  /*
+   * Three.js Setup
+   */
+
   function on () {
     for ( var i = PARTICLE_COUNT; i--; ) {
       particle = new THREE.Particle( newParticleMat() );
@@ -101,8 +110,8 @@
       }
     }
 
-    if ( particles[ 0 ].scale.x - DECAY_RATE > MIN_PARTICLE_SIZE ) {
-      for ( var i = PARTICLE_COUNT; i--; ) {
+    for ( var i = PARTICLE_COUNT; i--; ) {
+      if ( particles[i].scale.x - DECAY_RATE > MIN_PARTICLE_SIZE ) {
         particles[ i ].scale.subSelf( DECAY_VECTOR );
       }
     }
@@ -116,26 +125,19 @@
       }
       particles[ i ].material = mat;
     }
-
   }
 
   function newParticleMat( color ) {
     var
       sprites = [ 'pink', 'orange', 'yellow', 'blue', 'green' ],
       sprite = color || sprites[ ~~( Math.random() * 5 )];
-
+    
     return new THREE.ParticleBasicMaterial({
       blending: THREE.AdditiveBlending,
       size: MIN_PARTICLE_SIZE,
-      map: THREE.ImageUtils.loadTexture('images/particle_' + sprite + '.png')
+      map: THREE.ImageUtils.loadTexture('images/particle_' + sprite + '.png'),
+      vertexColor: 0xFFFFFF
     });
-    /*
-    return new THREE.ParticleCanvasMaterial({
-      blending: THREE.AdditiveBlending,
-      program: program,
-      color: 0xaaee22
-    });
-   */
   }
 
   on();
