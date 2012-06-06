@@ -79,18 +79,30 @@
 
     update : function ( e ) {
       if ( !this.isPlaying ) { return; }
+      
       var
-        bufferL = e.inputBuffer.getChannelData(0),
-        bufferR = e.inputBuffer.getChannelData(1);
+        buffers = [],
+        channels = e.inputBuffer.numberOfChannels,
+        resolution = SAMPLE_SIZE / channels;
+      
+      for ( i = channels; i--; ) {
+        buffers.push( e.inputBuffer.getChannelData( i ) );
+      }
 
-      for ( var i = 0, j = SAMPLE_SIZE / 2; i < j; i++ ) {
-        this.signal[ i ] = ( bufferL[ i ] + bufferR[ i ] ) / 2;
+      for ( i = 0; i < resolution; i++ ) {
+        this.signal[ i ] = channels > 1 ?
+          buffers.reduce( bufferReduce ) / channels :
+          buffers[ 0 ][ i ];
       }
 
       this.fft.forward( this.signal );
       this.dancer.trigger( 'update' );
     }
   };
+
+  function bufferReduce ( prev, curr ) {
+    return prev[ i ] + curr[ i ];
+  }
 
   Dancer.adapters.webkit = adapter;
 
