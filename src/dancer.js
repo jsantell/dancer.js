@@ -74,7 +74,7 @@
 
     // Returns the magnitude of a frequency or average over a range of frequencies
     getFrequency : function ( freq, endFreq ) {
-      var subFreq, sum = 0;
+      var sum = 0;
       if ( endFreq !== undefined ) {
         for ( var i = freq; i <= endFreq; i++ ) {
           sum += this.getSpectrum()[ i ];
