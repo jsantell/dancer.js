@@ -1,8 +1,7 @@
 describe('Dancer.Beat', function () {
   var
     song      = 'lib/440hz_100amp.ogg',
-    beatTrack = 'lib/beatTrack.ogg',
-    dancer    = new Dancer( beatTrack ),
+    dancer    = new Dancer( song ),
     random    = function (min, max) { return Math.random() * (max-min) + min };
 
   describe('Init', function () {
