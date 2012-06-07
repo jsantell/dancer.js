@@ -14,7 +14,7 @@ Features
 * Simple API to time callbacks and events to any section of a song
 * Extensible framework supporting plugins and custom behaviours
 
-Prototype Methods
+Dancer Instance Methods
 ---
 
 ### Controls
@@ -49,7 +49,7 @@ Basic pub/sub to tie into the dancer instance. `update` and `loaded` are predefi
 * `unbind( name )` unsubscribes all callbacks of `name`.
 * `trigger( name )` calls all callbacks of `name`.
 
-### Beats
+### Beat
 
 Beats are detected when the amplitude (normalized values between 0 and 1) of a specified frequency, or the max amplitude over a range, is greater than the minimum threshold, as well as greater than the previously registered beat's amplitude, which is decreased by the decay rate per frame.
 
@@ -60,7 +60,14 @@ Beats are detected when the amplitude (normalized values between 0 and 1) of a s
   * `onBeat` the callback to be called when a beat is detected.
   * `offBeat` the callback to be called when there is no beat on the current frame.
 
-#### Beat Methods
+Dancer Static Methods
+---
+
+* `addPlugin( name, fn )` registers a plugin of `name` with initiation function `fn` -- described in more detail below
+* `isSupported()` returns either `true` or `false` indicating whether the browser supports the Web Audio API or Audio Data API
+
+Beat Instance Methods
+---
 
 These methods can be called on a beat instance to turn on and off the registered callbacks
 
