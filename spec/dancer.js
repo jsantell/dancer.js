@@ -379,7 +379,7 @@ describe('Dancer', function () {
       var webAudio = window.webkitAudioContext || window.AudioContext,
         audioData  = window.Audio && (new window.Audio()).mozSetup && window.Audio,
         _audio = webAudio || audioData,
-        type = webAudio ? 'audioContext' : 'Audio';
+        type = webAudio ? 'AudioContext' : 'Audio';
 
       expect(!!(webAudio || audioData)).toEqual(Dancer.isSupported());
       window.webkitAudioContext = window.AudioContext = window.Audio = false;
