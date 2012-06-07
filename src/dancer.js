@@ -159,6 +159,12 @@
     }
   };
 
+  Dancer.isSupported = function () {
+    return !!( window.audioContext ||
+         window.webkitAudioContext ||
+         window.Audio && ( new window.Audio() ).mozSetup );
+  };
+
   function update () {
     for ( var i in this.sections ) {
       if ( this.sections[ i ].condition() )
