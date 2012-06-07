@@ -3,7 +3,7 @@
  * MIT License
  * http://github.com/jsantell/dancer.js
  *
- * v0.0.1
+ * v0.1.0
  */
 
 (function() {
@@ -157,6 +157,12 @@
     if ( Dancer.prototype[ name ] === undefined ) {
       Dancer.prototype[ name ] = fn;
     }
+  };
+
+  Dancer.isSupported = function () {
+    return !!( window.audioContext ||
+         window.webkitAudioContext ||
+         window.Audio && ( new window.Audio() ).mozSetup );
   };
 
   function update () {
