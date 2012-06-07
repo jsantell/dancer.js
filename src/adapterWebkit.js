@@ -5,7 +5,7 @@
 
   var adapter = function ( dancer ) {
     this.dancer = dancer;
-    this.context = window.audioContext ?
+    this.context = window.AudioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
     this.isLoaded = false;

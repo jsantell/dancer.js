@@ -160,7 +160,7 @@
   };
 
   Dancer.isSupported = function () {
-    return !!( window.audioContext ||
+    return !!( window.AudioContext ||
          window.webkitAudioContext ||
          window.Audio && ( new window.Audio() ).mozSetup );
   };

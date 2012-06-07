@@ -376,13 +376,13 @@ describe('Dancer', function () {
 
   describe('isSupported()', function () {
     it('Should test whether or not the browser supports Web Audio or Audio Data', function () {
-      var webAudio = window.webkitAudioContext || window.audioContext,
+      var webAudio = window.webkitAudioContext || window.AudioContext,
         audioData  = window.Audio && (new window.Audio()).mozSetup && window.Audio,
         _audio = webAudio || audioData,
         type = webAudio ? 'audioContext' : 'Audio';
 
       expect(!!(webAudio || audioData)).toEqual(Dancer.isSupported());
-      window.webkitAudioContext = window.audioContext = window.Audio = false;
+      window.webkitAudioContext = window.AudioContext = window.Audio = false;
       expect(Dancer.isSupported()).toBeFalsy();
       window[ type ] = _audio;
       expect(Dancer.isSupported()).toBeTruthy();
