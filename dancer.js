@@ -160,7 +160,7 @@
   };
 
   Dancer.isSupported = function () {
-    return !!( window.audioContext ||
+    return !!( window.AudioContext ||
          window.webkitAudioContext ||
          window.Audio && ( new window.Audio() ).mozSetup );
   };
@@ -243,12 +243,21 @@
 
   var adapter = function ( dancer ) {
     this.dancer = dancer;
-    this.context = window.audioContext ?
+    this.context = window.AudioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
-    this.isLoaded = false;
-    this.isPlaying= false;
+    this.isLoaded       = false;
+    this.isPlaying      = false;
+    this.isDisconnected = false;
   };
+
+  function connectContext () {
+    this.source = this.context.createBufferSource();
+    this.source.buffer = this.buffer;
+    this.source.connect( this.context.destination );
+    this.source.connect( this.proc );
+    this.source.connect( this.context.destination );
+  }
 
   adapter.prototype = {
 
@@ -257,26 +266,25 @@
         req = new XMLHttpRequest(),
         _this = this;
 
-      this.source = this.context.createBufferSource();
-
       req.open( 'GET', path, true );
       req.responseType = 'arraybuffer';
 
       req.onload = function () {
         if ( _this.context.decodeAudioData ) {
           _this.context.decodeAudioData( req.response, function( buffer ) {
-            _this.source.buffer = buffer;
+            _this.buffer = buffer;
+            connectContext.call( _this );
+            _this.isLoaded = true;
+            _this.dancer.trigger( 'loaded' );
           }, function( e ) {
             console.log( e );
           });
         } else {
-          _this.source.buffer = _this.context.createBuffer( req.response, false );
+          _this.buffer = _this.context.createBuffer( req.response, false );
+          connectContext.call( _this );
+          _this.isLoaded = true;
+          _this.dancer.trigger( 'loaded' );
         }
-        _this.source.connect( _this.context.destination );
-        _this.source.connect( _this.proc );
-        _this.proc.connect( _this.context.destination );
-        _this.isLoaded = true;
-        _this.dancer.trigger( 'loaded' );
       };
       req.send();
 
@@ -284,7 +292,8 @@
       this.proc.onaudioprocess = function ( e ) {
         _this.update.call( _this, e );
       };
-      this.source.connect( this.context.destination );
+      this.proc.connect( this.context.destination );
+
       this.fft = new FFT( SAMPLE_SIZE / 2, SAMPLE_RATE );
       this.signal = new Float32Array( SAMPLE_SIZE / 2 );
     },
@@ -292,18 +301,22 @@
     play : function () {
       var _this = this;
 
-      this.isLoaded ?
-        play() :
-        this.dancer.bind( 'loaded', play );
+      this.isLoaded ? play() : this.dancer.bind( 'loaded', play );
 
       function play () {
+        if ( _this.isDisconnected ) {
+          connectContext.call( _this );
+        }
         _this.source.noteOn( 0.0 );
         _this.isPlaying = true;
       }
     },
 
     stop : function () {
-      this.source.noteOff(0);
+      if ( this.isPlaying ) {
+        this.source.noteOff( 0.0 );
+        this.isDisconnected = true;
+      }
       this.isPlaying = false;
     },
 
@@ -317,12 +330,12 @@
 
     update : function ( e ) {
       if ( !this.isPlaying ) { return; }
-      
+
       var
         buffers = [],
         channels = e.inputBuffer.numberOfChannels,
         resolution = SAMPLE_SIZE / channels;
-      
+
       for ( i = channels; i--; ) {
         buffers.push( e.inputBuffer.getChannelData( i ) );
       }
