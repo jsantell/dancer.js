@@ -23,7 +23,7 @@
 
   adapter.prototype = {
 
-    load : function ( path, callback ) {
+    load : function ( path ) {
       var
         req = new XMLHttpRequest(),
         _this = this;
