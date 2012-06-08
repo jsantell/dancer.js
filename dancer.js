@@ -153,18 +153,6 @@
     }
   };
 
-  Dancer.addPlugin = function ( name, fn ) {
-    if ( Dancer.prototype[ name ] === undefined ) {
-      Dancer.prototype[ name ] = fn;
-    }
-  };
-
-  Dancer.isSupported = function () {
-    return !!( window.AudioContext ||
-         window.webkitAudioContext ||
-         window.Audio && ( new window.Audio() ).mozSetup );
-  };
-
   function update () {
     for ( var i in this.sections ) {
       if ( this.sections[ i ].condition() )
@@ -174,6 +162,35 @@
 
   window.Dancer = Dancer;
 })();
+
+(function ( Dancer ) {
+
+  var CODECS = {
+    'mp3' : 'audio/mpeg;',
+    'ogg' : 'audio/ogg; codecs="vorbis"',
+    'wav' : 'audio/wav; codecs="1"',
+    'aac' : 'audio/mp4; codecs="mp4a.40.2"'
+  },
+  audioEl = document.createElement( 'audio' );
+
+  Dancer.isSupported = function () {
+    return !!( window.AudioContext ||
+      window.webkitAudioContext ||
+      window.Audio && ( new window.Audio() ).mozSetup );
+  };
+
+  Dancer.canPlay = function ( type ) {
+    return !!( audioEl.canPlayType &&
+      audioEl.canPlayType( CODECS[ type.toLowerCase() ] ).replace( /no/, '' ) );
+  };
+  
+  Dancer.addPlugin = function ( name, fn ) {
+    if ( Dancer.prototype[ name ] === undefined ) {
+      Dancer.prototype[ name ] = fn;
+    }
+  };
+
+})( window.Dancer );
 
 (function() {
   var Beat = function ( dancer, options ) {
@@ -308,6 +325,7 @@
           connectContext.call( _this );
         }
         _this.source.noteOn( 0.0 );
+        _this.startTime = _this.context.currentTime;
         _this.isPlaying = true;
       }
     },
@@ -316,6 +334,7 @@
       if ( this.isPlaying ) {
         this.source.noteOff( 0.0 );
         this.isDisconnected = true;
+        this.endTime = this.getTime();
       }
       this.isPlaying = false;
     },
@@ -325,7 +344,9 @@
     },
 
     getTime : function () {
-      return this.context.currentTime;
+      return this.isPlaying ?
+        this.context.currentTime - ( this.startTime || 0 ) :
+        this.endTime || 0;
     },
 
     update : function ( e ) {
