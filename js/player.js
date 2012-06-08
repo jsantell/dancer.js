@@ -1,7 +1,7 @@
 (function () {
 
   var
-    AUDIO_FILE        = '../songs/zircon_devils_spirit.ogg',
+    AUDIO_FILE        = 'songs/zircon_devils_spirit.ogg',
     PARTICLE_COUNT    = 250,
     MAX_PARTICLE_SIZE = 12,
     MIN_PARTICLE_SIZE = 2,
