@@ -1,8 +1,6 @@
 (function () {
 
   var
-    //AUDIO_FILE        = '../songs/Fire Hive (Krewella fuck on me remix).ogg',
-    //AUDIO_FILE        = '../songs/One Minute.ogg',
     AUDIO_FILE        = '../songs/zircon_devils_spirit.ogg',
     PARTICLE_COUNT    = 250,
     MAX_PARTICLE_SIZE = 12,
