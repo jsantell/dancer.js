@@ -27,6 +27,7 @@
 
 		<!-- Dancer.js -->
 		<script src="../../src/dancer.js"></script>
+		<script src="../../src/support.js"></script>
 		<script src="../../src/beat.js"></script>
 		<script src="../../lib/fft.js"></script>
 		<script src="../../src/adapterWebkit.js"></script>
@@ -44,6 +45,11 @@
 					e.preventDefault();
 					fft.style.display = fft.style.display == 'block' ? 'none' : 'block';
 				}, true );
+
+				// Due to requiring loading message to float above the rest (absolute)
+				// But still wanting it centered;
+				var loading = document.getElementById('loading');
+				loading.style.marginLeft = (( window.outerWidth - 500 ) / 2) + 'px';
 			})();
 		</script>
 	</body>

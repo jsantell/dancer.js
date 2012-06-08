@@ -1,6 +1,8 @@
 (function () {
 
   var
+    //AUDIO_FILE        = '../songs/Fire Hive (Krewella fuck on me remix).ogg',
+    //AUDIO_FILE        = '../songs/One Minute.ogg',
     AUDIO_FILE        = '../songs/zircon_devils_spirit.ogg',
     PARTICLE_COUNT    = 250,
     MAX_PARTICLE_SIZE = 12,
@@ -56,14 +58,9 @@
   }).onceAt( 75, function () {
     changeParticleMat();
   }).fft( document.getElementById( 'fft' ) );
-
-  if ( !dancer.isLoaded() ) {
-    dancer.bind( 'loaded', function () {
-      document.getElementById('loading').style.display = 'none';
-    });
-  } else {
-    document.getElementById('loading').style.display = 'none';
-  }
+  
+  Dancer.isSupported() || loaded();
+  !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
 
   /*
    * Three.js Setup
@@ -99,8 +96,6 @@
       beam.rotation.z = Math.random() * Math.PI;
       beamGroup.add( beam );
     }
-
-    dancer.play();
   }
 
   function decay () {
@@ -138,6 +133,31 @@
       map: THREE.ImageUtils.loadTexture('images/particle_' + sprite + '.png'),
       vertexColor: 0xFFFFFF
     });
+  }
+
+  function loaded () {
+    var
+      loading = document.getElementById( 'loading' ),
+      anchor  = document.createElement('A'),
+      supported = Dancer.isSupported(),
+      p;
+
+    anchor.appendChild( document.createTextNode( supported ? 'Play!' : 'Close' ) );
+    anchor.setAttribute( 'href', '#' );
+    loading.innerHTML = '';
+    loading.appendChild( anchor );
+
+    if ( !supported ) {
+      p = document.createElement('P');
+      p.appendChild( document.createTextNode( 'Your browser does not currently support either Web Audio API or Audio Data API. The audio may play, but the visualizers will not move to the music; check out the latest Chrome or Firefox browsers!' ) );
+      loading.appendChild( p );
+    }
+
+    anchor.addEventListener( 'click', function () {
+      dancer.play();
+      document.getElementById('loading').style.display = 'none';
+    }, false );
+
   }
 
   on();
