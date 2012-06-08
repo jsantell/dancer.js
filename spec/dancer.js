@@ -61,12 +61,42 @@ describe('Dancer', function () {
   describe('Getters', function () {
 
     describe('getTime()', function () {
-      it("getTime() should return current time", function () {
-        dancer.play();
 
+      var currentTime = 0;
+
+      // Implementation test... rough
+      it("getTime() should return time similar to adapter implementation", function () {
+        dancer.play();
         waitsFor(songReady, 'Song was never loaded', 4000);
         runs(function () {
-          expect(dancer.getTime()).toBeWithin(dancer.audioAdapter[ isWebkit ? 'context' : 'audio' ].currentTime, 0.1);
+          expect(dancer.getTime()).toBeWithin(dancer.audioAdapter[ isWebkit ? 'context' : 'audio' ].currentTime, 0.05);
+          dancer.stop();
+        });
+      });
+
+      it("getTime() should increment by 1 second after 1 second", function () {
+        dancer.play();
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
+          currentTime = dancer.getTime();
+          waits( 1000 );
+          runs(function () {
+            expect(dancer.getTime()).toBeWithin(currentTime + 1.0, 0.05);
+            dancer.stop();
+          });
+        });
+      });
+
+      it("getTime() should stop incrementing when stop()'d", function () {
+        dancer.play();
+        waitsFor(songReady, 'Song was never loaded', 4000);
+        runs(function () {
+          currentTime = dancer.getTime();
+          dancer.stop();
+          waits( 1000 );
+          runs(function () {
+            expect(dancer.getTime()).toBeWithin(currentTime, 0.05);
+          });
         });
       });
     });

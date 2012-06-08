@@ -70,6 +70,7 @@
           connectContext.call( _this );
         }
         _this.source.noteOn( 0.0 );
+        _this.startTime = _this.context.currentTime;
         _this.isPlaying = true;
       }
     },
@@ -78,6 +79,7 @@
       if ( this.isPlaying ) {
         this.source.noteOff( 0.0 );
         this.isDisconnected = true;
+        this.endTime = this.getTime();
       }
       this.isPlaying = false;
     },
@@ -87,7 +89,9 @@
     },
 
     getTime : function () {
-      return this.context.currentTime;
+      return this.isPlaying ?
+        this.context.currentTime - ( this.startTime || 0 ) :
+        this.endTime || 0;
     },
 
     update : function ( e ) {
