@@ -58,4 +58,18 @@ describe('Support', function () {
       expect(Dancer.canPlay('aac')).toEqual(!!canAac);
     });
   });
+
+  describe('_makeSupportedPath', function () {
+    var
+      pathWithExt = '/path/to/audio.ogg',
+      pathWithoutExt = '/path/to/audio';
+    it('Should return a path unmodified if no codecs given', function () {
+      expect(Dancer._makeSupportedPath( pathWithExt )).toEqual(pathWithExt);
+    });
+    it('Should return a path with first usable codec when codecs given', function () {
+      var otherValidCodec = Dancer.canPlay('wav') ? 'wav' : ( Dancer.canPlay('mp3') ? 'mp3' : 'ogg' );
+      expect(Dancer._makeSupportedPath( pathWithoutExt, [ 'bogus', 'codec', 'ogg' ] )).toEqual(pathWithoutExt + '.ogg');
+      expect(Dancer._makeSupportedPath( pathWithoutExt, [ otherValidCodec, 'ogg' ] )).toEqual(pathWithoutExt + '.' + otherValidCodec);
+    });
+  });
 });

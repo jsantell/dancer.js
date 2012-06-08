@@ -8,7 +8,7 @@
 
 (function() {
 
-  var Dancer = function ( source ) {
+  var Dancer = function ( source, codecs ) {
     this.audioAdapter = window.webkitAudioContext ?
       new Dancer.adapters.webkit( this ) :
       new Dancer.adapters.moz( this );
@@ -16,8 +16,10 @@
     this.sections = [];
 
     this.bind( 'update', update );
-    this.audioAdapter.load( source );
+    this.source = Dancer._makeSupportedPath( source, codecs );
+    this.audioAdapter.load( this.source );
   };
+
   Dancer.adapters = {};
 
   Dancer.prototype = {

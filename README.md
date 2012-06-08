@@ -67,6 +67,12 @@ Dancer Static Methods
 * `isSupported()` returns either `true` or `false` indicating whether the browser supports the Web Audio API or Audio Data API
 * `canPlay( type )` returns either `true` or `false` indicating whether the browser supports playing back audio of type `type`, which can be a string of `'mp3'`, `'ogg'`, `'wav'`, or `'aac'`.
 
+Dancer Constructor
+---
+
+`new Dancer( source, [ codecs ] )` returns a new `Dancer` instance -- takes a string of `source` as a path to the audio file. Optionally, you may pass in array of codec extensions of the form `[ 'mp3', 'ogg' ]`, where the first supported codec is used and appended to source in the form `source + '.' + supportedCodec`.
+
+
 Beat Instance Methods
 ---
 
