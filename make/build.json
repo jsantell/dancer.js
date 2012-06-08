@@ -3,6 +3,7 @@
         "DIST_DIR" : "./",
         "dancer" : [
             "./src/dancer.js",
+            "./src/support.js",
             "./src/beat.js",
             "./src/adapterWebkit.js",
             "./src/adapterMoz.js",

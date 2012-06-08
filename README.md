@@ -65,6 +65,7 @@ Dancer Static Methods
 
 * `addPlugin( name, fn )` registers a plugin of `name` with initiation function `fn` -- described in more detail below
 * `isSupported()` returns either `true` or `false` indicating whether the browser supports the Web Audio API or Audio Data API
+* `canPlay( type )` returns either `true` or `false` indicating whether the browser supports playing back audio of type `type`, which can be a string of `'mp3'`, `'ogg'`, `'wav'`, or `'aac'`.
 
 Beat Instance Methods
 ---

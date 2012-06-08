@@ -153,18 +153,6 @@
     }
   };
 
-  Dancer.addPlugin = function ( name, fn ) {
-    if ( Dancer.prototype[ name ] === undefined ) {
-      Dancer.prototype[ name ] = fn;
-    }
-  };
-
-  Dancer.isSupported = function () {
-    return !!( window.AudioContext ||
-         window.webkitAudioContext ||
-         window.Audio && ( new window.Audio() ).mozSetup );
-  };
-
   function update () {
     for ( var i in this.sections ) {
       if ( this.sections[ i ].condition() )
