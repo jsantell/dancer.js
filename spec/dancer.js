@@ -64,16 +64,6 @@ describe('Dancer', function () {
 
       var currentTime = 0;
 
-      // Implementation test... rough
-      it("getTime() should return time similar to adapter implementation", function () {
-        dancer.play();
-        waitsFor(songReady, 'Song was never loaded', 4000);
-        runs(function () {
-          expect(dancer.getTime()).toBeWithin(dancer.audioAdapter[ isWebkit ? 'context' : 'audio' ].currentTime, 0.05);
-          dancer.stop();
-        });
-      });
-
       it("getTime() should increment by 1 second after 1 second", function () {
         dancer.play();
         waitsFor(songReady, 'Song was never loaded', 4000);
