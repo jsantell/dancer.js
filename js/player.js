@@ -56,7 +56,7 @@
   }).onceAt( 75, function () {
     changeParticleMat();
   }).fft( document.getElementById( 'fft' ) );
-  
+
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
 
@@ -94,6 +94,7 @@
       beam.rotation.z = Math.random() * Math.PI;
       beamGroup.add( beam );
     }
+
   }
 
   function decay () {
@@ -124,7 +125,7 @@
     var
       sprites = [ 'pink', 'orange', 'yellow', 'blue', 'green' ],
       sprite = color || sprites[ ~~( Math.random() * 5 )];
-    
+
     return new THREE.ParticleBasicMaterial({
       blending: THREE.AdditiveBlending,
       size: MIN_PARTICLE_SIZE,
