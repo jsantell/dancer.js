@@ -8,10 +8,26 @@
   },
   audioEl = document.createElement( 'audio' );
 
+  Dancer.options = {};
+
+  Dancer.setOptions = function ( o ) {
+    for ( var option in o ) {
+      if ( o.hasOwnProperty( option ) ) {
+        Dancer.options[ option ] = o[ option ];
+      }
+    }
+  };
+
   Dancer.isSupported = function () {
-    return !!( window.AudioContext ||
-      window.webkitAudioContext ||
-      window.Audio && ( new window.Audio() ).mozSetup );
+    if ( window.AudioContext || window.webkitAudioContext ) {
+      return 'webaudio';
+    } else if ( window.Audio && ( new window.Audio() ).mozSetup ) {
+      return 'audiodata';
+    } else if ( window.Audio ) {
+      return 'flash';
+    } else {
+      return '';
+    }
   };
 
   Dancer.canPlay = function ( type ) {
@@ -34,6 +50,19 @@
       }
     }
     return source;
+  };
+
+  Dancer._getAdapter = function ( instance ) {
+    switch ( Dancer.isSupported() ) {
+      case 'webaudio':
+        return new Dancer.adapters.webkit( instance );
+      case 'audiodata':
+        return new Dancer.adapters.moz( instance );
+      case 'flash':
+        return new Dancer.adapters.flash( instance );
+      default:
+        return null;
+    }
   };
 
 })( window.Dancer );

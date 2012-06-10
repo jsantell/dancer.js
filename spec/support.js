@@ -31,17 +31,34 @@ describe('Support', function () {
   });
 
   describe('isSupported()', function () {
+    var webAudio = window.webkitAudioContext || window.AudioContext,
+      audioData  = window.Audio && (new window.Audio()).mozSetup ? window.Audio : null,
+      flash      = window.Audio;
     it('Should test whether or not the browser supports Web Audio or Audio Data', function () {
-      var webAudio = window.webkitAudioContext || window.AudioContext,
-        audioData  = window.Audio && (new window.Audio()).mozSetup && window.Audio,
         _audio = webAudio || audioData,
         type = webAudio ? 'AudioContext' : 'Audio';
 
-      expect(!!(webAudio || audioData)).toEqual(Dancer.isSupported());
+      expect(!!(webAudio || audioData)).toEqual(!!Dancer.isSupported());
       window.webkitAudioContext = window.AudioContext = window.Audio = false;
       expect(Dancer.isSupported()).toBeFalsy();
       window[ type ] = _audio;
       expect(Dancer.isSupported()).toBeTruthy();
+    });
+    it('Should return webaudio, audiodata or flash to determine support', function () {
+      var _webAudio = webAudio;
+      window.AudioContext = {};
+      expect(Dancer.isSupported()).toEqual('webaudio');
+
+      window.AudioContext = window.webkitAudioContext = null;
+      var _audioData = audioData;
+      window.Audio = function(){ this.mozSetup=function(){} };
+      expect(Dancer.isSupported()).toEqual('audiodata');
+
+      window.Audio = function() { };
+      expect(Dancer.isSupported()).toEqual('flash');
+
+      window.AudioContext = window.webkitAudioContext = _webAudio;
+      window.Audio = _audioData;
     });
   });
 
@@ -70,6 +87,15 @@ describe('Support', function () {
       var otherValidCodec = Dancer.canPlay('wav') ? 'wav' : ( Dancer.canPlay('mp3') ? 'mp3' : 'ogg' );
       expect(Dancer._makeSupportedPath( pathWithoutExt, [ 'bogus', 'codec', 'ogg' ] )).toEqual(pathWithoutExt + '.ogg');
       expect(Dancer._makeSupportedPath( pathWithoutExt, [ otherValidCodec, 'ogg' ] )).toEqual(pathWithoutExt + '.' + otherValidCodec);
+    });
+  });
+  
+  describe('setOptions()', function () {
+    it('Should set options correctly', function () {
+      Dancer.setOptions({ test1: 'cheeseburger', test2: 'megaman' });
+      Dancer.setOptions({ test1: 'cheeseburger' });
+      expect(Dancer.options.test1).toBe('cheeseburger');
+      expect(Dancer.options.test2).toBe('megaman');
     });
   });
 });

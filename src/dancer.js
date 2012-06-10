@@ -9,9 +9,7 @@
 (function() {
 
   var Dancer = function ( source, codecs ) {
-    this.audioAdapter = window.webkitAudioContext ?
-      new Dancer.adapters.webkit( this ) :
-      new Dancer.adapters.moz( this );
+    this.audioAdapter = Dancer._getAdapter( this );
     this.events = {};
     this.sections = [];
 
