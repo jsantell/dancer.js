@@ -23,13 +23,17 @@
   
   <script src="../plugins/dancer.fft.js"></script>
 
+  <script type="text/javascript">
+    Dancer.setOptions({
+      flash : '../lib/'
+    });
+  </script>
   <!-- include spec files here... -->
   <script src="dancer.js"></script>
   <script src="support.js"></script>
   <script src="beat.js"></script>
   <script src="plugin_fft.js"></script>
-
-
+ 
   <script type="text/javascript">
     (function() {
       var jasmineEnv = jasmine.getEnv();

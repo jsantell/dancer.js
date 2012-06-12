@@ -23,7 +23,7 @@
       return 'webaudio';
     } else if ( window.Audio && ( new window.Audio() ).mozSetup ) {
       return 'audiodata';
-    } else if ( window.Audio ) {
+    } else if ( FlashDetect.versionAtLeast( 9 ) ) {
       return 'flash';
     } else {
       return '';
@@ -31,8 +31,12 @@
   };
 
   Dancer.canPlay = function ( type ) {
-    return !!( audioEl.canPlayType &&
-      audioEl.canPlayType( CODECS[ type.toLowerCase() ] ).replace( /no/, '' ) );
+    var canPlay = audioEl.canPlayType;
+    return !!(
+      Dancer.isSupported() === 'flash' ?
+        type.toLowerCase() === 'mp3' :
+        audioEl.canPlayType &&
+        audioEl.canPlayType( CODECS[ type.toLowerCase() ] ).replace( /no/, ''));
   };
 
   Dancer.addPlugin = function ( name, fn ) {

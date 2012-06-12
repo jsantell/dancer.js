@@ -1,10 +1,18 @@
 (function() {
+  var
+    SAMPLE_SIZE = 1024,
+    SAMPLE_RATE = 44100,
+    smLoaded    = false;
+
   var adapter = function ( dancer ) {
     this.dancer = dancer;
     this.isLoaded = this.isPlaying = false;
+    this.eq_L = [];
+    this.eq_R = [];
+    this.spectrum = [];
+
     !smLoaded && loadSM();
-  },
-  smLoaded = false;
+  };
 
   adapter.prototype = {
 
@@ -15,9 +23,14 @@
           id       : 'dancer' + Math.random() + '',
           url      : path,
           stream   : true,
-          autoPlay : true,
-          whileplaying : _this.update,
+          autoPlay : false,
+          autoLoad : true,
+          whileplaying : function () {
+            _this.update();
+          },
           onload   : function () {
+            _this.fft = new FFT( SAMPLE_SIZE / 2, SAMPLE_RATE );
+            _this.signal = new Float32Array( SAMPLE_SIZE / 2 );
             _this.isLoaded = true;
             _this.dancer.trigger( 'loaded' );
           }
@@ -29,12 +42,14 @@
     },
 
     play : function () {
-      this.audio.play();
-      this.isPlaying = true;
+      if ( !this.isPlaying && this.isLoaded ) {
+        this.audio.play();
+        this.isPlaying = true;
+      }
     },
 
     stop : function () {
-      this.audio.pause();
+      this.audio.stop();
       this.isPlaying = false;
     },
 
@@ -43,30 +58,43 @@
     },
 
     getTime : function () {
-      return this.audio.currentTime;
+      return this.audio.position / 1000;
     },
 
-    update : function ( e ) {
+    update : function () {
       if ( !this.isLoaded ) return;
-console.log( this, e);
-      /*
-      for ( var i = 0, j = this.fbLength / 2; i < j; i++ ) {
-        this.signal[ i ] = ( e.frameBuffer[ 2 * i ] + e.frameBuffer[ 2 * i + 1 ] ) / 2;
-      }
+      this.eq_L = this.audio.eqData.left;
+      this.eq_R = this.audio.eqData.right;
 
+      for ( var i = 0, j = this.eq_L.length; i < j; i++ ) {
+        this.signal[ i ] = ( parseFloat(this.eq_L[ i ]) + parseFloat(this.eq_R[ i ]) ) / 2;
+        if ( this.spectrum[ i ] > window.max ) {
+            window.max = this.eq_L[ i ];
+        }
+        if ( this.spectrum[ i ] < window.min ) {
+            window.min = this.eq_L[ i ];
+        }
+      }
       this.fft.forward( this.signal );
-  */    this.dancer.trigger( 'update' );
+      this.dancer.trigger( 'update' );
     }
   };
 
   function loadSM () {
     soundManager.flashVersion = 9;
     soundManager.flash9Options.useEQData = true;
-    soundManager.flash9Options.useWaveformData = true;
-    soundManager.url = './';
-    soundManager.onload = function () {
+    soundManager.useEQData = true;
+    soundManager.useWaveformData = true;
+    soundManager.useHighPerformance = true;
+    soundManager.url = Dancer.options.flash;
+    soundManager.multiShot = false;
+    soundManager.onready(function () {
       smLoaded = true;
-    };
+    });
+
+    soundManager.debugMode = false;
+    soundManager.debugFlash = false;
+
   }
 
   Dancer.adapters.flash = adapter;

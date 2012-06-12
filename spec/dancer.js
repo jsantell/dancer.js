@@ -1,10 +1,11 @@
 describe('Dancer', function () {
 
   var
-    song     = 'lib/440hz_100amp.ogg',
-    dancer   = new Dancer(song),
-    songReady = function () { return dancer.isLoaded() && dancer.getTime() > 1; };
-
+    song      = 'lib/440hz_100amp';
+    dancer    = new Dancer(song, [ 'ogg', 'mp3' ]),
+    songReady = function () { return dancer.isLoaded(); },
+    waitForLoadTime = 4000 * ( Dancer.isSupported() !== 'webkit' && Dancer.isSupported() !== 'audiodata' ? 2 : 1 );
+dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
   // Define custom matcher
   beforeEach(function () {
     this.addMatchers({
@@ -30,10 +31,13 @@ describe('Dancer', function () {
     it("Should call adapter's play/stop method via dancer.play(), dancer.stop()", function () {
       spyOn(dancer.audioAdapter, 'play');
       spyOn(dancer.audioAdapter, 'stop');
-      dancer.play();
-      expect(dancer.audioAdapter.play).toHaveBeenCalled();
-      dancer.stop();
-      expect(dancer.audioAdapter.stop).toHaveBeenCalled();
+      waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
+      runs(function () {
+        dancer.play();
+        expect(dancer.audioAdapter.play).toHaveBeenCalled();
+        dancer.stop();
+        expect(dancer.audioAdapter.stop).toHaveBeenCalled();
+      });
     });
 
     it("Should return dancer instance when calling dancer.play(), dancer.stop()", function() {
@@ -60,7 +64,7 @@ describe('Dancer', function () {
 
       it("getTime() should increment by 1 second after 1 second", function () {
         dancer.play();
-        waitsFor(songReady, 'Song was never loaded', 4000);
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           currentTime = dancer.getTime();
           waits( 1000 );
@@ -73,7 +77,7 @@ describe('Dancer', function () {
 
       it("getTime() should stop incrementing when stop()'d", function () {
         dancer.play();
-        waitsFor(songReady, 'Song was never loaded', 4000);
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           currentTime = dancer.getTime();
           dancer.stop();
@@ -89,17 +93,17 @@ describe('Dancer', function () {
       var s;
       dancer.play();
 
-      it("should return a Float32Array(512)", function () {
-        waitsFor(songReady, 'Song was never loaded', 4000);
+      it("should return a Float32Array(512) (256 for flash)", function () {
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           s = dancer.getSpectrum();
-          expect(s.length).toEqual(512);
+          expect(s.length).toEqual(Dancer.isSupported() === 'flash' ? 256 : 512);
           expect(s instanceof Float32Array).toBeTruthy();
         });
       });
 
       it("should return a correct amplitude for the 440hz pitch (11/1024)", function () {
-        waitsFor(songReady, 'Song was never loaded', 4000);
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           s= dancer.getSpectrum()[10];
           expect(s).toBeWithin(0.75, 0.2);
@@ -107,7 +111,7 @@ describe('Dancer', function () {
       });
 
       it("should return a correct amplitude for the 440hz pitch (51/1024)", function () {
-        waitsFor(songReady, 'Song was never loaded', 4000);
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           s = dancer.getSpectrum()[50];
           expect(s).toBeLessThan(0.1);
@@ -119,7 +123,7 @@ describe('Dancer', function () {
       var f;
 
       it("should return a correct amplitude for the 440hz pitch (11/1024)", function () {
-        waitsFor(songReady, 'Song was never loaded', 4000);
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           f = dancer.getFrequency(10);
           expect(f).toBeGreaterThan(0.5);
@@ -127,7 +131,7 @@ describe('Dancer', function () {
       });
 
       it("should return a correct amplitude for the 440hz pitch (51/1024)", function () {
-        waitsFor(songReady, 'Song was never loaded', 4000);
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           f = dancer.getFrequency(50);
           expect(f).toBeLessThan(0.1);
@@ -135,7 +139,7 @@ describe('Dancer', function () {
       });
 
       it("Should return the average amplitude over a range of the 440hz pitch", function () {
-        waitsFor(songReady, 'Song was never loaded', 4000);
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           f = dancer.getFrequency(10, 50);
           expect(f).toBeWithin(0.055, 0.015);
@@ -147,7 +151,7 @@ describe('Dancer', function () {
       // Also tested implicitly via other tests
       it("Should return adapter's loaded boolean from isLoaded()", function () {
         // Wait for song being loaded before messing with the adapter's load status
-        waitsFor(songReady, 'Song was never loaded', 4000);
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           dancer.audioAdapter.isLoaded = false;
           expect(dancer.isLoaded()).toBeFalsy();

@@ -32,15 +32,15 @@ describe('Support', function () {
 
   describe('isSupported()', function () {
     var webAudio = window.webkitAudioContext || window.AudioContext,
-      audioData  = window.Audio && (new window.Audio()).mozSetup ? window.Audio : null,
-      flash      = window.Audio;
-    it('Should test whether or not the browser supports Web Audio or Audio Data', function () {
-        _audio = webAudio || audioData,
+      audioData  = window.Audio && (new window.Audio()).mozSetup ? window.Audio : null;
+    it('Should test whether or not the browser supports Web Audio or Audio Data or flash', function () {
+      var _audio = webAudio || audioData,
         type = webAudio ? 'AudioContext' : 'Audio';
-
-      expect(!!(webAudio || audioData)).toEqual(!!Dancer.isSupported());
+      expect(!!webAudio).toBe(Dancer.isSupported()==='webaudio');
+      expect(!!audioData).toBe(Dancer.isSupported()==='audiodata');
       window.webkitAudioContext = window.AudioContext = window.Audio = false;
-      expect(Dancer.isSupported()).toBeFalsy();
+      expect(Dancer.isSupported() === 'flash' || !Dancer.isSupported()).toBeTruthy();
+      expect(FlashDetect.versionAtLeast(9)).toBe(Dancer.isSupported()==='flash');
       window[ type ] = _audio;
       expect(Dancer.isSupported()).toBeTruthy();
     });
@@ -54,8 +54,8 @@ describe('Support', function () {
       window.Audio = function(){ this.mozSetup=function(){} };
       expect(Dancer.isSupported()).toEqual('audiodata');
 
-      window.Audio = function() { };
-      expect(Dancer.isSupported()).toEqual('flash');
+      window.Audio = null;
+      expect(Dancer.isSupported()).toEqual(FlashDetect.versionAtLeast(9) ? 'flash' : null);
 
       window.AudioContext = window.webkitAudioContext = _webAudio;
       window.Audio = _audioData;
@@ -69,10 +69,17 @@ describe('Support', function () {
       canOgg = audio.canPlayType && audio.canPlayType('audio/ogg; codecs="vorbis"').replace(/no/,''),
       canWav = audio.canPlayType && audio.canPlayType('audio/wav; codecs="1"').replace(/no/,''),
       canAac = audio.canPlayType && audio.canPlayType('audio/mp4; codecs="mp4a.40.2"').replace(/no/,'');
-      expect(Dancer.canPlay('MP3')).toEqual(!!canMp3);
-      expect(Dancer.canPlay('oGg')).toEqual(!!canOgg);
-      expect(Dancer.canPlay('WaV')).toEqual(!!canWav);
-      expect(Dancer.canPlay('aac')).toEqual(!!canAac);
+      if ( Dancer.isSupported() === 'flash' ) {
+        expect(Dancer.canPlay('MP3')).toBeTruthy();
+        expect(Dancer.canPlay('oGg')).toBeFalsy();
+        expect(Dancer.canPlay('WaV')).toBeFalsy();
+        expect(Dancer.canPlay('aac')).toBeFalsy();
+      } else {
+        expect(Dancer.canPlay('MP3')).toEqual(!!canMp3);
+        expect(Dancer.canPlay('oGg')).toEqual(!!canOgg);
+        expect(Dancer.canPlay('WaV')).toEqual(!!canWav);
+        expect(Dancer.canPlay('aac')).toEqual(!!canAac);
+      }
     });
   });
 
@@ -85,8 +92,12 @@ describe('Support', function () {
     });
     it('Should return a path with first usable codec when codecs given', function () {
       var otherValidCodec = Dancer.canPlay('wav') ? 'wav' : ( Dancer.canPlay('mp3') ? 'mp3' : 'ogg' );
-      expect(Dancer._makeSupportedPath( pathWithoutExt, [ 'bogus', 'codec', 'ogg' ] )).toEqual(pathWithoutExt + '.ogg');
-      expect(Dancer._makeSupportedPath( pathWithoutExt, [ otherValidCodec, 'ogg' ] )).toEqual(pathWithoutExt + '.' + otherValidCodec);
+      if ( Dancer.isSupported() === 'flash' ) {
+        expect(Dancer._makeSupportedPath( pathWithoutExt, [ 'ogg', 'wav', 'mp3' ] )).toEqual(pathWithoutExt + '.mp3')
+      } else {
+        expect(Dancer._makeSupportedPath( pathWithoutExt, [ 'bogus', 'codec', 'ogg' ] )).toEqual(pathWithoutExt + '.ogg');
+        expect(Dancer._makeSupportedPath( pathWithoutExt, [ otherValidCodec, 'ogg' ] )).toEqual(pathWithoutExt + '.' + otherValidCodec);
+      }
     });
   });
   
