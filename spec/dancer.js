@@ -3,7 +3,6 @@ describe('Dancer', function () {
   var
     song     = 'lib/440hz_100amp.ogg',
     dancer   = new Dancer(song),
-    isWebkit = !!window.webkitAudioContext,
     songReady = function () { return dancer.isLoaded() && dancer.getTime() > 1; };
 
   // Define custom matcher
@@ -21,11 +20,6 @@ describe('Dancer', function () {
 
 
   describe('Init', function () {
-    it('Should use the correct audio adapter', function () {
-      var adapter = Dancer.adapters[ isWebkit ? 'webkit' : 'moz' ];
-      expect(dancer.audioAdapter instanceof adapter).toBeTruthy();
-    });
-
     it('Should bind an update event', function () {
       expect(dancer.events.update).toBeDefined();
     });
