@@ -116,6 +116,14 @@ Example
   dancer.play();
 ```
 
+Dependencies
+---
+
+All dependencies are packaged within Dancer.
+* [dsp.js](https://github.com/corbanbrook/dsp.js/) - A subset of dsp.js (fft) is used for Fast Fourier Transformations
+* [soundmanager2](https://github.com/scottschiller/SoundManager2) - soundmanager2 is used for flash fallback (not included in HTML5 only distribution)
+* [flash_detect](http://www.featureblend.com/javascript-flash-detection-library.html) - flash detect is used for immediate flash detection (not included in HTML5 only distribution)
+
 Extending/Plugins
 ---
 
