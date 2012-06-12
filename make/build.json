@@ -7,6 +7,17 @@
             "./src/beat.js",
             "./src/adapterWebkit.js",
             "./src/adapterMoz.js",
+            "./src/adapterFlash.js",
+            "./lib/fft.js",
+            "./lib/soundmanager2-nodebug.js",
+            "./lib/flash_detect.js"
+        ],
+        "dancer-html5" : [
+            "./src/dancer.js",
+            "./src/support.js",
+            "./src/beat.js",
+            "./src/adapterWebkit.js",
+            "./src/adapterMoz.js",
             "./lib/fft.js"
         ]
     }
