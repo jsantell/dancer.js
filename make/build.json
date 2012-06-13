@@ -8,8 +8,8 @@
             "./src/adapterWebkit.js",
             "./src/adapterMoz.js",
             "./src/adapterFlash.js",
-            "./lib/fft.js",
-            "./lib/flash_detect.js"
+            { "src": "./lib/fft.js", "jshint": false },
+            { "src": "./lib/flash_detect.js", "jshint": false }
         ]
     }
 }
