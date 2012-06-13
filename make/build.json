@@ -9,7 +9,6 @@
             "./src/adapterMoz.js",
             "./src/adapterFlash.js",
             "./lib/fft.js",
-            "./lib/soundmanager2-nodebug.js",
             "./lib/flash_detect.js"
         ]
     }
