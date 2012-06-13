@@ -1,7 +1,7 @@
 dancer.js
 ======
 
-dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API and Webkit's Web Audio API, designed to make sweet visualizations.
+dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API and Webkit's Web Audio API with flash fallback, designed to make sweet visualizations.
 
 http://jsantell.github.com/dancer.js
 
@@ -12,6 +12,7 @@ Features
 * Use real-time audio frequency data and map it to any arbitrary visualization
 * Leverage beat detection into your visualizations
 * Simple API to time callbacks and events to any section of a song
+* Supports Web Audio (webkit), Audio Data (mozilla) and flash fallback (v9+)
 * Extensible framework supporting plugins and custom behaviours
 
 Dancer Instance Methods
@@ -65,8 +66,12 @@ Dancer Static Methods
 
 * `addPlugin( name, fn )` registers a plugin of `name` with initiation function `fn` -- described in more detail below
 * `isSupported()` returns a string of `webaudio`, `audiodata` or `flash` indicating level of support. Returns an empty string if the browser doesn't support any of the methods.
-* `setOptions( options )` takes a set of key-value pairs in an object for options.
 * `canPlay( type )` returns either `true` or `false` indicating whether the browser supports playing back audio of type `type`, which can be a string of `'mp3'`, `'ogg'`, `'wav'`, or `'aac'`.
+* `setOptions( options )` takes a set of key-value pairs in an object for options. Options below.
+
+### Dancer Options
+
+* `flash` If flash is to be enabled, the value for flash must be a string to the path of both `soundmanager2-nodebug.js` and `soundmanager2.swf`. Not specifying this option disables flash.
 
 Dancer Constructor
 ---
@@ -82,10 +87,29 @@ These methods can be called on a beat instance to turn on and off the registered
 * `on()` turns on the beat instance's callbacks and detections
 * `off()` turns off the beat instance's callbacks and detections
 
+Flash Support
+---
+
+To enable flash, you must specify the `flash` option with the path to `soundmanager2-nodebug.js` and `soundmanager2.swf`. This asynchonously loads flash support if Web Audio and Audio Data are not supported.
+
+Spectrum data in flash is stored in an array of 256 length, rather than Web Audio/Audio Data's length of 512.
+
+Flash playback requires that an mp3 is used.
+
+Currently flash audio data does not map perfectly with its native counterparts, causing some specs to fail.
+
+Flash player 9 is required.
+
 Example
 ---
 
 ```javascript
+  // To enable flash support, specify the flash option with the path
+  // to soundmanager2-nodebug.js and soundmanager2.swf
+  Dancer.setOptions({
+    flash: '../../lib/'
+  });
+
   var
     dancer = new Dancer( "sickjams.ogg" ),
     beat = dancer.createBeat({
@@ -107,7 +131,7 @@ Example
   }).after( 60, function() {
     // After 60s, let's get this real and map a frequency to an object's y position
     // Note that the instance of dancer is bound to "this"
-    object.y = this.frequency( 400 );
+    object.y = this.getFrequency( 400 );
   }).onceAt( 120, function() {
     // After 120s, we'll turn the beat off as another object's y position is still being mapped from the previous "after" method
     beat.off();
