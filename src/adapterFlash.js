@@ -11,7 +11,7 @@
     this.eq_R = [];
     this.spectrum = [];
 
-    !smLoaded && loadSM();
+    !window.soundManager && loadSM();
   };
 
   adapter.prototype = {
@@ -38,7 +38,7 @@
       };
       smLoaded ? loadSMAudio() : setTimeout(function () {
         _this.load( path );
-      }, 50);
+      }, 100);
     },
 
     play : function () {
@@ -68,33 +68,35 @@
 
       for ( var i = 0, j = this.eq_L.length; i < j; i++ ) {
         this.signal[ i ] = ( parseFloat(this.eq_L[ i ]) + parseFloat(this.eq_R[ i ]) ) / 2;
-        if ( this.spectrum[ i ] > window.max ) {
-            window.max = this.eq_L[ i ];
-        }
-        if ( this.spectrum[ i ] < window.min ) {
-            window.min = this.eq_L[ i ];
-        }
       }
+
       this.fft.forward( this.signal );
       this.dancer.trigger( 'update' );
     }
   };
 
   function loadSM () {
-    soundManager.flashVersion = 9;
-    soundManager.flash9Options.useEQData = true;
-    soundManager.useEQData = true;
-    soundManager.useWaveformData = true;
-    soundManager.useHighPerformance = true;
-    soundManager.url = Dancer.options.flash;
-    soundManager.multiShot = false;
-    soundManager.onready(function () {
-      smLoaded = true;
-    });
-
-    soundManager.debugMode = false;
-    soundManager.debugFlash = false;
-
+    var
+      script   = document.createElement( 'script' ),
+      appender = document.getElementsByTagName( 'script' )[0];
+    script.type = 'text/javascript';
+    script.src = Dancer.options.flash + 'soundmanager2-nodebug.js';
+    appender.parentNode.insertBefore( script, appender );
+    script.onload = function () {
+      soundManager.flashVersion = 9;
+      soundManager.flash9Options.useEQData = true;
+      soundManager.useEQData = true;
+      soundManager.useWaveformData = true;
+      soundManager.useHighPerformance = true;
+      soundManager.url = Dancer.options.flash;
+      soundManager.multiShot = false;
+      soundManager.debugMode = false;
+      soundManager.debugFlash = false;
+      soundManager.onready(function () {
+        smLoaded = true;
+      });
+      soundManager.beginDelayedInit();
+    };
   }
 
   Dancer.adapters.flash = adapter;

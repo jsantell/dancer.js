@@ -1,7 +1,7 @@
 (function () {
 
   var
-    AUDIO_FILE        = '../songs/zircon_devils_spirit.ogg',
+    AUDIO_FILE        = '../songs/zircon_devils_spirit',
     PARTICLE_COUNT    = 250,
     MAX_PARTICLE_SIZE = 12,
     MIN_PARTICLE_SIZE = 2,
@@ -21,8 +21,11 @@
   /*
    * Dancer.js magic
    */
+  Dancer.setOptions({
+    flash: '../../lib/'
+  });
 
-  dancer = new Dancer( AUDIO_FILE );
+  dancer = new Dancer( AUDIO_FILE, [ 'ogg', 'mp3' ] );
   beat = dancer.createBeat({
     onBeat: function () {
       var i;
