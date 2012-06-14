@@ -486,22 +486,22 @@
 
 (function() {
   var
-    SAMPLE_SIZE = 1024,
+    CONVERSION_COEFFICIENT = 0.75,
+    SAMPLE_SIZE = 512,
     SAMPLE_RATE = 44100,
     smLoaded    = false;
 
   var adapter = function ( dancer ) {
     this.dancer = dancer;
     this.isLoaded = this.isPlaying = false;
-    this.eq_L = [];
-    this.eq_R = [];
+    this.wave_L = [];
+    this.wave_R = [];
     this.spectrum = [];
 
     !window.soundManager && loadSM();
   };
 
   adapter.prototype = {
-
     load : function ( path ) {
       var _this = this;
       loadSMAudio = function () {
@@ -515,8 +515,8 @@
             _this.update();
           },
           onload   : function () {
-            _this.fft = new FFT( SAMPLE_SIZE / 2, SAMPLE_RATE );
-            _this.signal = new Float32Array( SAMPLE_SIZE / 2 );
+            _this.fft = new FFT( SAMPLE_SIZE, SAMPLE_RATE );
+            _this.signal = new Float32Array( SAMPLE_SIZE );
             _this.isLoaded = true;
             _this.dancer.trigger( 'loaded' );
           }
@@ -524,7 +524,7 @@
       };
       smLoaded ? loadSMAudio() : setTimeout(function () {
         _this.load( path );
-      }, 100);
+      }, 100 );
     },
 
     play : function () {
@@ -549,11 +549,11 @@
 
     update : function () {
       if ( !this.isLoaded ) return;
-      this.eq_L = this.audio.eqData.left;
-      this.eq_R = this.audio.eqData.right;
+      this.wave_L = this.audio.waveformData.left;
+      this.wave_R = this.audio.waveformData.right;
 
-      for ( var i = 0, j = this.eq_L.length; i < j; i++ ) {
-        this.signal[ i ] = ( parseFloat(this.eq_L[ i ]) + parseFloat(this.eq_R[ i ]) ) / 2;
+      for ( var i = 0, j = this.wave_L.length; i < j; i++ ) {
+        this.signal[ i ] = (( parseFloat(this.wave_L[ i ]) + parseFloat(this.wave_R[ i ])) * CONVERSION_COEFFICIENT );
       }
 
       this.fft.forward( this.signal );
@@ -570,8 +570,7 @@
     appender.parentNode.insertBefore( script, appender );
     script.onload = function () {
       soundManager.flashVersion = 9;
-      soundManager.flash9Options.useEQData = true;
-      soundManager.useEQData = true;
+      soundManager.flash9Options.useWaveformData = true;
       soundManager.useWaveformData = true;
       soundManager.useHighPerformance = true;
       soundManager.url = Dancer.options.flash;
