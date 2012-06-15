@@ -31,6 +31,10 @@
 		</div>
 		<div id="loading">Loading . . .</div>
 		<!-- Demo dependencies -->
+		<script>
+			var loading = document.getElementById('loading');
+			loading.style.marginLeft = (( window.outerWidth - 500 ) / 2) + 'px';
+		</script>
 		<script src="lib/Three.js"></script>
 		<script src="lib/Stats.js"></script>
 		<script src="lib/Detector.js"></script>
@@ -51,10 +55,6 @@
 					fft.style.display = fft.style.display == 'block' ? 'none' : 'block';
 				}, true );
 
-				// Due to requiring loading message to float above the rest (absolute)
-				// But still wanting it centered;
-				var loading = document.getElementById('loading');
-				loading.style.marginLeft = (( window.outerWidth - 500 ) / 2) + 'px';
 			})();
 		</script>
 	</body>

@@ -17,7 +17,7 @@
       w       = canvasEl.width,
       width   = options.width || 1,
       spacing = options.spacing || 0,
-      count   = options.count || 256;
+      count   = options.count || 512;
 
     ctx.fillStyle = options.fillStyle || "white";
 

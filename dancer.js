@@ -3,21 +3,21 @@
  * MIT License
  * http://github.com/jsantell/dancer.js
  *
- * v0.1.0
+ * v0.2.0
  */
 
 (function() {
 
-  var Dancer = function ( source ) {
-    this.audioAdapter = window.webkitAudioContext ?
-      new Dancer.adapters.webkit( this ) :
-      new Dancer.adapters.moz( this );
+  var Dancer = function ( source, codecs ) {
+    this.audioAdapter = Dancer._getAdapter( this );
     this.events = {};
     this.sections = [];
 
     this.bind( 'update', update );
-    this.audioAdapter.load( source );
+    this.source = Dancer._makeSupportedPath( source, codecs );
+    this.audioAdapter.load( this.source );
   };
+
   Dancer.adapters = {};
 
   Dancer.prototype = {
@@ -173,20 +173,66 @@
   },
   audioEl = document.createElement( 'audio' );
 
+  Dancer.options = {};
+
+  Dancer.setOptions = function ( o ) {
+    for ( var option in o ) {
+      if ( o.hasOwnProperty( option ) ) {
+        Dancer.options[ option ] = o[ option ];
+      }
+    }
+  };
+
   Dancer.isSupported = function () {
-    return !!( window.AudioContext ||
-      window.webkitAudioContext ||
-      window.Audio && ( new window.Audio() ).mozSetup );
+    if ( !window.Float32Array || !window.Uint32Array ) {
+      return null;
+    } else if ( window.AudioContext || window.webkitAudioContext ) {
+      return 'webaudio';
+    } else if ( window.Audio && ( new window.Audio() ).mozSetup ) {
+      return 'audiodata';
+    } else if ( FlashDetect.versionAtLeast( 9 ) ) {
+      return 'flash';
+    } else {
+      return '';
+    }
   };
 
   Dancer.canPlay = function ( type ) {
-    return !!( audioEl.canPlayType &&
-      audioEl.canPlayType( CODECS[ type.toLowerCase() ] ).replace( /no/, '' ) );
+    var canPlay = audioEl.canPlayType;
+    return !!(
+      Dancer.isSupported() === 'flash' ?
+        type.toLowerCase() === 'mp3' :
+        audioEl.canPlayType &&
+        audioEl.canPlayType( CODECS[ type.toLowerCase() ] ).replace( /no/, ''));
   };
-  
+
   Dancer.addPlugin = function ( name, fn ) {
     if ( Dancer.prototype[ name ] === undefined ) {
       Dancer.prototype[ name ] = fn;
+    }
+  };
+
+  Dancer._makeSupportedPath = function ( source, codecs ) {
+    if ( !codecs ) { return source; }
+
+    for ( var i = 0; i < codecs.length; i++ ) {
+      if ( Dancer.canPlay( codecs[ i ] ) ) {
+        return source + '.' + codecs[ i ];
+      }
+    }
+    return source;
+  };
+
+  Dancer._getAdapter = function ( instance ) {
+    switch ( Dancer.isSupported() ) {
+      case 'webaudio':
+        return new Dancer.adapters.webkit( instance );
+      case 'audiodata':
+        return new Dancer.adapters.moz( instance );
+      case 'flash':
+        return new Dancer.adapters.flash( instance );
+      default:
+        return null;
     }
   };
 
@@ -278,7 +324,7 @@
 
   adapter.prototype = {
 
-    load : function ( path, callback ) {
+    load : function ( path ) {
       var
         req = new XMLHttpRequest(),
         _this = this;
@@ -437,6 +483,126 @@
   };
 
   Dancer.adapters.moz = adapter;
+
+})();
+
+(function() {
+  var
+    DEBUG_MODE   = false,
+    SAMPLE_SIZE  = 1024,
+    SAMPLE_RATE  = 44100,
+    smLoaded     = false,
+    smLoading    = false,
+    CONVERSION_COEFFICIENT = 0.93;
+
+  var adapter = function ( dancer ) {
+    this.dancer = dancer;
+    this.isLoaded = this.isPlaying = false;
+    this.wave_L = [];
+    this.wave_R = [];
+    this.spectrum = [];
+
+    window.SM2_DEFER = true;
+  };
+
+  adapter.prototype = {
+    load : function ( path ) {
+      var _this = this;
+      this.path = path || this.path;
+
+      !window.soundManager && !smLoading && loadSM.call( this );
+
+      if ( window.soundManager ) {
+        this.audio = soundManager.createSound({
+          id       : 'dancer' + Math.random() + '',
+          url      : this.path,
+          stream   : true,
+          autoPlay : false,
+          autoLoad : true,
+          whileplaying : function () {
+            _this.update();
+          },
+          onload   : function () {
+            _this.fft = new FFT( SAMPLE_SIZE, SAMPLE_RATE );
+            _this.signal = new Float32Array( SAMPLE_SIZE );
+            _this.isLoaded = true;
+            _this.dancer.trigger( 'loaded' );
+          }
+        });
+      }
+    },
+
+    play : function () {
+      if ( !this.isPlaying && this.isLoaded ) {
+        this.audio.play();
+        this.isPlaying = true;
+      }
+    },
+
+    stop : function () {
+      this.audio.stop();
+      this.isPlaying = false;
+    },
+
+    getSpectrum : function () {
+      return this.fft.spectrum;
+    },
+
+    getTime : function () {
+      return this.audio.position / 1000;
+    },
+
+    update : function () {
+      if ( !this.isLoaded ) return;
+      this.wave_L = this.audio.waveformData.left;
+      this.wave_R = this.audio.waveformData.right;
+
+      for ( var i = 0, j = this.wave_L.length; i < j; i++ ) {
+        this.signal[ 2 * i ] = (( parseFloat(this.wave_L[ i ]) + parseFloat(this.wave_R[ i ])) * CONVERSION_COEFFICIENT );
+        this.signal[ i * 2 + 1 ] = this.signal[ i * 2 ];
+      }
+
+      this.fft.forward( this.signal );
+      this.dancer.trigger( 'update' );
+    }
+  };
+
+  function loadSM () {
+    var adapter = this;
+    smLoading = true;
+    loadScript( Dancer.options.flashJS, function () {
+      soundManager = new SoundManager();
+      soundManager.flashVersion = 9;
+      soundManager.flash9Options.useWaveformData = true;
+      soundManager.useWaveformData = true;
+      soundManager.useHighPerformance = true;
+      soundManager.useFastPolling = true;
+      soundManager.multiShot = false;
+      soundManager.debugMode = false;
+      soundManager.debugFlash = false;
+      soundManager.url = Dancer.options.flashSWF;
+      soundManager.onready(function () {
+        smLoaded = true;
+        adapter.load();
+      });
+      soundManager.ontimeout(function(){
+        console.error( 'Error loading SoundManager2.swf' );
+      });
+      soundManager.beginDelayedInit();
+    });
+  }
+
+  function loadScript ( url, callback ) {
+    var
+      script   = document.createElement( 'script' ),
+      appender = document.getElementsByTagName( 'script' )[0];
+    script.type = 'text/javascript';
+    script.src = url;
+    script.onload = callback;
+    appender.parentNode.insertBefore( script, appender );
+  }
+
+  Dancer.adapters.flash = adapter;
 
 })();
 
@@ -608,3 +774,204 @@ FFT.prototype.forward = function(buffer) {
 
   return this.calculateSpectrum();
 };
+
+/*
+Copyright (c) Copyright (c) 2007, Carl S. Yestrau All rights reserved.
+Code licensed under the BSD License: http://www.featureblend.com/license.txt
+Version: 1.0.4
+*/
+var FlashDetect = new function(){
+    var self = this;
+    self.installed = false;
+    self.raw = "";
+    self.major = -1;
+    self.minor = -1;
+    self.revision = -1;
+    self.revisionStr = "";
+    var activeXDetectRules = [
+        {
+            "name":"ShockwaveFlash.ShockwaveFlash.7",
+            "version":function(obj){
+                return getActiveXVersion(obj);
+            }
+        },
+        {
+            "name":"ShockwaveFlash.ShockwaveFlash.6",
+            "version":function(obj){
+                var version = "6,0,21";
+                try{
+                    obj.AllowScriptAccess = "always";
+                    version = getActiveXVersion(obj);
+                }catch(err){}
+                return version;
+            }
+        },
+        {
+            "name":"ShockwaveFlash.ShockwaveFlash",
+            "version":function(obj){
+                return getActiveXVersion(obj);
+            }
+        }
+    ];
+    /**
+     * Extract the ActiveX version of the plugin.
+     * 
+     * @param {Object} The flash ActiveX object.
+     * @type String
+     */
+    var getActiveXVersion = function(activeXObj){
+        var version = -1;
+        try{
+            version = activeXObj.GetVariable("$version");
+        }catch(err){}
+        return version;
+    };
+    /**
+     * Try and retrieve an ActiveX object having a specified name.
+     * 
+     * @param {String} name The ActiveX object name lookup.
+     * @return One of ActiveX object or a simple object having an attribute of activeXError with a value of true.
+     * @type Object
+     */
+    var getActiveXObject = function(name){
+        var obj = -1;
+        try{
+            obj = new ActiveXObject(name);
+        }catch(err){
+            obj = {activeXError:true};
+        }
+        return obj;
+    };
+    /**
+     * Parse an ActiveX $version string into an object.
+     * 
+     * @param {String} str The ActiveX Object GetVariable($version) return value. 
+     * @return An object having raw, major, minor, revision and revisionStr attributes.
+     * @type Object
+     */
+    var parseActiveXVersion = function(str){
+        var versionArray = str.split(",");//replace with regex
+        return {
+            "raw":str,
+            "major":parseInt(versionArray[0].split(" ")[1], 10),
+            "minor":parseInt(versionArray[1], 10),
+            "revision":parseInt(versionArray[2], 10),
+            "revisionStr":versionArray[2]
+        };
+    };
+    /**
+     * Parse a standard enabledPlugin.description into an object.
+     * 
+     * @param {String} str The enabledPlugin.description value.
+     * @return An object having raw, major, minor, revision and revisionStr attributes.
+     * @type Object
+     */
+    var parseStandardVersion = function(str){
+        var descParts = str.split(/ +/);
+        var majorMinor = descParts[2].split(/\./);
+        var revisionStr = descParts[3];
+        return {
+            "raw":str,
+            "major":parseInt(majorMinor[0], 10),
+            "minor":parseInt(majorMinor[1], 10), 
+            "revisionStr":revisionStr,
+            "revision":parseRevisionStrToInt(revisionStr)
+        };
+    };
+    /**
+     * Parse the plugin revision string into an integer.
+     * 
+     * @param {String} The revision in string format.
+     * @type Number
+     */
+    var parseRevisionStrToInt = function(str){
+        return parseInt(str.replace(/[a-zA-Z]/g, ""), 10) || self.revision;
+    };
+    /**
+     * Is the major version greater than or equal to a specified version.
+     * 
+     * @param {Number} version The minimum required major version.
+     * @type Boolean
+     */
+    self.majorAtLeast = function(version){
+        return self.major >= version;
+    };
+    /**
+     * Is the minor version greater than or equal to a specified version.
+     * 
+     * @param {Number} version The minimum required minor version.
+     * @type Boolean
+     */
+    self.minorAtLeast = function(version){
+        return self.minor >= version;
+    };
+    /**
+     * Is the revision version greater than or equal to a specified version.
+     * 
+     * @param {Number} version The minimum required revision version.
+     * @type Boolean
+     */
+    self.revisionAtLeast = function(version){
+        return self.revision >= version;
+    };
+    /**
+     * Is the version greater than or equal to a specified major, minor and revision.
+     * 
+     * @param {Number} major The minimum required major version.
+     * @param {Number} (Optional) minor The minimum required minor version.
+     * @param {Number} (Optional) revision The minimum required revision version.
+     * @type Boolean
+     */
+    self.versionAtLeast = function(major){
+        var properties = [self.major, self.minor, self.revision];
+        var len = Math.min(properties.length, arguments.length);
+        for(i=0; i<len; i++){
+            if(properties[i]>=arguments[i]){
+                if(i+1<len && properties[i]==arguments[i]){
+                    continue;
+                }else{
+                    return true;
+                }
+            }else{
+                return false;
+            }
+        }
+    };
+    /**
+     * Constructor, sets raw, major, minor, revisionStr, revision and installed public properties.
+     */
+    self.FlashDetect = function(){
+        if(navigator.plugins && navigator.plugins.length>0){
+            var type = 'application/x-shockwave-flash';
+            var mimeTypes = navigator.mimeTypes;
+            if(mimeTypes && mimeTypes[type] && mimeTypes[type].enabledPlugin && mimeTypes[type].enabledPlugin.description){
+                var version = mimeTypes[type].enabledPlugin.description;
+                var versionObj = parseStandardVersion(version);
+                self.raw = versionObj.raw;
+                self.major = versionObj.major;
+                self.minor = versionObj.minor; 
+                self.revisionStr = versionObj.revisionStr;
+                self.revision = versionObj.revision;
+                self.installed = true;
+            }
+        }else if(navigator.appVersion.indexOf("Mac")==-1 && window.execScript){
+            var version = -1;
+            for(var i=0; i<activeXDetectRules.length && version==-1; i++){
+                var obj = getActiveXObject(activeXDetectRules[i].name);
+                if(!obj.activeXError){
+                    self.installed = true;
+                    version = activeXDetectRules[i].version(obj);
+                    if(version!=-1){
+                        var versionObj = parseActiveXVersion(version);
+                        self.raw = versionObj.raw;
+                        self.major = versionObj.major;
+                        self.minor = versionObj.minor; 
+                        self.revision = versionObj.revision;
+                        self.revisionStr = versionObj.revisionStr;
+                    }
+                }
+            }
+        }
+    }();
+};
+FlashDetect.JS_RELEASE = "1.0.4";

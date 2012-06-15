@@ -1,7 +1,7 @@
 (function () {
 
   var
-    AUDIO_FILE        = 'songs/zircon_devils_spirit.ogg',
+    AUDIO_FILE        = 'songs/zircon_devils_spirit',
     PARTICLE_COUNT    = 250,
     MAX_PARTICLE_SIZE = 12,
     MIN_PARTICLE_SIZE = 2,
@@ -22,7 +22,12 @@
    * Dancer.js magic
    */
 
-  dancer = new Dancer( AUDIO_FILE );
+  Dancer.setOptions({
+    flashSWF : 'lib/soundmanager2.swf',
+    flashJS  : 'lib/soundmanager2.js'
+  });
+
+  dancer = new Dancer( AUDIO_FILE, [ 'ogg', 'mp3' ] );
   beat = dancer.createBeat({
     onBeat: function () {
       var i;
@@ -94,7 +99,6 @@
       beam.rotation.z = Math.random() * Math.PI;
       beamGroup.add( beam );
     }
-
   }
 
   function decay () {
