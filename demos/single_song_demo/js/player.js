@@ -21,8 +21,10 @@
   /*
    * Dancer.js magic
    */
+
   Dancer.setOptions({
-    flash: '../../lib/'
+    flashSWF : '../../lib/soundmanager2.swf',
+    flashJS  : '../../lib/soundmanager2.js'
   });
 
   dancer = new Dancer( AUDIO_FILE, [ 'ogg', 'mp3' ] );
@@ -59,7 +61,7 @@
   }).onceAt( 75, function () {
     changeParticleMat();
   }).fft( document.getElementById( 'fft' ) );
-  
+
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
 
@@ -127,7 +129,7 @@
     var
       sprites = [ 'pink', 'orange', 'yellow', 'blue', 'green' ],
       sprite = color || sprites[ ~~( Math.random() * 5 )];
-    
+
     return new THREE.ParticleBasicMaterial({
       blending: THREE.AdditiveBlending,
       size: MIN_PARTICLE_SIZE,
