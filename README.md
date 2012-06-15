@@ -65,13 +65,14 @@ Dancer Static Methods
 ---
 
 * `addPlugin( name, fn )` registers a plugin of `name` with initiation function `fn` -- described in more detail below
-* `isSupported()` returns a string of `webaudio`, `audiodata` or `flash` indicating level of support. Returns an empty string if the browser doesn't support any of the methods.
+* `isSupported()` returns a string of `webaudio`, `audiodata` or `flash` indicating level of support. Returns an empty string if the browser doesn't support any of the methods. Can also return `null` when browser does not support typed arrays.
 * `canPlay( type )` returns either `true` or `false` indicating whether the browser supports playing back audio of type `type`, which can be a string of `'mp3'`, `'ogg'`, `'wav'`, or `'aac'`.
 * `setOptions( options )` takes a set of key-value pairs in an object for options. Options below.
 
 ### Dancer Options
 
-* `flash` If flash is to be enabled, the value for flash must be a string to the path of both `soundmanager2-nodebug.js` and `soundmanager2.swf`. Not specifying this option disables flash.
+* `flashSWF` The path to soundmanager2.swf. Required for flash fallback.
+* `flashJS` The path to soundmanager2.js. Required for flash fallback.
 
 Dancer Constructor
 ---
@@ -87,27 +88,14 @@ These methods can be called on a beat instance to turn on and off the registered
 * `on()` turns on the beat instance's callbacks and detections
 * `off()` turns off the beat instance's callbacks and detections
 
-Flash Support
----
-
-To enable flash, you must specify the `flash` option with the path to `soundmanager2-nodebug.js` and `soundmanager2.swf`. This asynchonously loads flash support if Web Audio and Audio Data are not supported.
-
-Spectrum data in flash is stored in an array of 256 length, rather than Web Audio/Audio Data's length of 512.
-
-Flash playback requires that an mp3 is used.
-
-Currently flash audio data does not map perfectly with its native counterparts, causing some specs to fail.
-
-Flash player 9 is required.
-
 Example
 ---
 
 ```javascript
-  // To enable flash support, specify the flash option with the path
-  // to soundmanager2-nodebug.js and soundmanager2.swf
+  // To enable flash fallback, specify the paths for the flashSWF and flashJS
   Dancer.setOptions({
-    flash: '../../lib/'
+    flashJS  : '../../lib/soundmanager2.js',
+    flashSWF : '../../lib/soundmanager2.swf'
   });
 
   var
@@ -140,13 +128,21 @@ Example
   dancer.play();
 ```
 
+Requirements
+----
+
+*HTML5 Playback with Web Audio or Audio Data* Chrome and Firefox are both supported out of the box -- other browsers will need to leverage the flash fallback until either of these APIs are implemented.
+
+*To enable flash* You must set Dancer's defaults for `flashSWF` with the path to the `soundmanager2.swf` and `flashJS` to the path to `soundmanager2.js`, both found in `lib/`. Flash player 9 is required, and you must provide an mp3 option.
+
+*Uint32Array and Float32Array are required* Include a shim if you'd like to support browsers that do not have these typed arrays.
+
 Dependencies
 ---
 
-All dependencies are packaged within Dancer.
-* [dsp.js](https://github.com/corbanbrook/dsp.js/) - A subset of dsp.js (fft) is used for Fast Fourier Transformations
-* [soundmanager2](https://github.com/scottschiller/SoundManager2) - soundmanager2 is used for flash fallback (not included in HTML5 only distribution)
-* [flash_detect](http://www.featureblend.com/javascript-flash-detection-library.html) - flash detect is used for immediate flash detection (not included in HTML5 only distribution)
+* [dsp.js](https://github.com/corbanbrook/dsp.js/) - A subset of dsp.js (fft) is used for Fast Fourier Transformations ( Included in packaged Dancer )
+* [flash_detect](http://www.featureblend.com/javascript-flash-detection-library.html) - flash detect is used for immediate flash detection ( Included in packaged Dancer )
+* [soundmanager2](https://github.com/scottschiller/SoundManager2) - soundmanager2 is used for flash fallback ( found in `lib/`, asynchronously loaded )
 
 Extending/Plugins
 ---
