@@ -83,7 +83,6 @@
     var adapter = this;
     smLoading = true;
     loadScript( Dancer.options.flashJS, function () {
-      console.log('new sm');
       soundManager = new SoundManager();
       soundManager.flashVersion = 9;
       soundManager.flash9Options.useWaveformData = true;
