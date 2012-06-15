@@ -1,8 +1,8 @@
 describe('Support', function () {
 
   var
-    song     = 'lib/440hz_100amp.ogg',
-    dancer   = new Dancer(song),
+    song     = 'lib/440hz_100amp',
+    dancer   = new Dancer(song, [ 'ogg', 'mp3' ]),
     isWebkit = !!window.webkitAudioContext,
     songReady = function () { return dancer.isLoaded() && dancer.getTime() > 1; };
 

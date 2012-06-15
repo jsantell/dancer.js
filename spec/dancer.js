@@ -93,11 +93,11 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
       var s;
       dancer.play();
 
-      it("should return a Float32Array(512) (256 for flash)", function () {
+      it("should return a Float32Array(512)", function () {
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           s = dancer.getSpectrum();
-          expect(s.length).toEqual(Dancer.isSupported() === 'flash' ? 256 : 512);
+          expect(s.length).toEqual(512);
           expect(s instanceof Float32Array).toBeTruthy();
         });
       });
@@ -106,7 +106,7 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           s= dancer.getSpectrum()[10];
-          expect(s).toBeWithin(0.75, 0.2);
+          expect(s).toBeWithin(0.8, 0.2);
         });
       });
 
@@ -142,7 +142,7 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           f = dancer.getFrequency(10, 50);
-          expect(f).toBeWithin(0.055, 0.015);
+          expect(f).toBeWithin(0.06, 0.02);
         });
       });
     });
