@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href='http://fonts.googleapis.com/css?family=Duru+Sans' rel='stylesheet' type='text/css'>
+		<link href='css/dancer.css' rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+		<div id="info">
+			<h1>dancer.js</h1>
+			<h2>JavaScript Audio Library</h2>
+			<a id="togglefft" href="#">toggle FFT spectrum</a>
+			<canvas id="fft" height="50" width="256"></canvas>
+			<ul>
+				<li><a href="https://github.com/jsantell/dancer.js" title="dancer.js on github">view API/source</a></li>
+				<li>by <a href="http://jsantell.com" title="Jordan Santell">jordan santell</a></li>
+			</ul>
+		</div>
+		<div id="songinfo">
+			<span>Now playing...</span>
+			<h3><a href="http://zirconstudios.bandcamp.com/album/unearthed" title="Zircon Studios Bandcamp">Zircon - Devil's Spirit</a></h3>
+		</div>
+		<div id="loading">Loading . . .</div>
+		<!-- Demo dependencies -->
+		<script src="../lib/Three.js"></script>
+		<script src="../lib/Stats.js"></script>
+		<script src="../lib/Detector.js"></script>
+
+		<!-- Dancer.js -->
+		<script src="../../src/dancer.js"></script>
+		<script src="../../src/support.js"></script>
+		<script src="../../src/beat.js"></script>
+		<script src="../../src/adapterWebkit.js"></script>
+		<script src="../../src/adapterMoz.js"></script>
+		<script src="../../src/adapterFlash.js"></script>
+		<script src="../../lib/fft.js"></script>
+		<script src="../../lib/flash_detect.js"></script>
+		<script src="../../plugins/dancer.fft.js"></script>
+
+		<!-- Demo stuff -->
+		<script src="js/scene.js"></script>
+		<script src="js/player.js"></script>
+		<script>
+			(function () {
+				var fft = document.getElementById( 'fft' ),
+					toggle = document.getElementById( 'togglefft' );
+				toggle.addEventListener( 'click', function ( e ) {
+					e.preventDefault();
+					fft.style.display = fft.style.display == 'block' ? 'none' : 'block';
+				}, true );
+
+				// Due to requiring loading message to float above the rest (absolute)
+				// But still wanting it centered;
+				var loading = document.getElementById('loading');
+				loading.style.marginLeft = (( window.outerWidth - 500 ) / 2) + 'px';
+			})();
+		</script>
+	</body>
+</html>
