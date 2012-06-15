@@ -5,7 +5,7 @@ dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API a
 
 http://jsantell.github.com/dancer.js
 
-_v0.1.0 (6/3/2012)_
+_v0.2.0 (6/15/2012)_
 
 Features
 ---
@@ -131,11 +131,11 @@ Example
 Requirements
 ----
 
-*HTML5 Playback with Web Audio or Audio Data* Chrome and Firefox are both supported out of the box -- other browsers will need to leverage the flash fallback until either of these APIs are implemented.
+**HTML5 Playback with Web Audio or Audio Data** Chrome and Firefox are both supported out of the box -- other browsers will need to leverage the flash fallback until either of these APIs are implemented.
 
-*To enable flash* You must set Dancer's defaults for `flashSWF` with the path to the `soundmanager2.swf` and `flashJS` to the path to `soundmanager2.js`, both found in `lib/`. Flash player 9 is required, and you must provide an mp3 option.
+**To enable flash** You must set Dancer's defaults for `flashSWF` with the path to the `soundmanager2.swf` and `flashJS` to the path to `soundmanager2.js`, both found in `lib/`. Flash player 9 is required, and you must provide an mp3 option.
 
-*Uint32Array and Float32Array are required* Include a shim if you'd like to support browsers that do not have these typed arrays.
+**Uint32Array and Float32Array are required** Include a shim if you'd like to support browsers that do not have these typed arrays.
 
 Dependencies
 ---
@@ -151,4 +151,18 @@ You can extend the Dancer prototype by calling the static method `addPlugin( nam
 
 Development
 ---
-This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test.
+This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test. All tests should pass in Chrome, Firefox, Opera and Safari, _although they can get weird_. Should consistently pass.
+
+Change Logs
+----
+**v0.2.0 (6/14/2012)**
+
+* Added flash support with soundmanager2 -- flash_detect now included in build
+* Added static methods `isSupported`, `canPlay` and `setOptions`
+* Added multiple audio codecs support (#7)
+* Added a new simple FFT examples, both examples having feature detection and controls (#10)
+* Fixed several Webkit bugs (#4, #8)
+
+**v0.1.0 (6/3/2012)**
+
+* Initial Web Audio/ Audio Data release

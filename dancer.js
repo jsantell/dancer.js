@@ -3,7 +3,7 @@
  * MIT License
  * http://github.com/jsantell/dancer.js
  *
- * v0.1.0
+ * v0.2.0
  */
 
 (function() {
