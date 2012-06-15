@@ -34,6 +34,12 @@ body {
     font-size: 25px;
 }
 
+#info h3 {
+    margin: 19px 0 0 15px;
+    float: left;
+    font-size: 20px;
+}
+
 #info ul {
     float:right;
     display-icon-type:none;

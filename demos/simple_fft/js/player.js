@@ -12,7 +12,8 @@
    * Dancer.js magic
    */
   Dancer.setOptions({
-    flash: '../../lib/'
+    flashSWF : '../../lib/soundmanager2.swf',
+    flashJS  : '../../lib/soundmanager2.js'
   });
 
   dancer = new Dancer( AUDIO_FILE, [ 'ogg', 'mp3' ] );
@@ -54,8 +55,7 @@
     anchor.addEventListener( 'click', function () {
       dancer.play();
       document.getElementById('loading').style.display = 'none';
-    }, false );
-
+    });
   }
 
   // For debugging
