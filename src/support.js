@@ -19,7 +19,9 @@
   };
 
   Dancer.isSupported = function () {
-    if ( window.AudioContext || window.webkitAudioContext ) {
+    if ( !window.Float32Array || !window.Uint32Array ) {
+      return null;
+    } else if ( window.AudioContext || window.webkitAudioContext ) {
       return 'webaudio';
     } else if ( window.Audio && ( new window.Audio() ).mozSetup ) {
       return 'audiodata';

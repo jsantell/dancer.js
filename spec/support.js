@@ -33,6 +33,17 @@ describe('Support', function () {
   describe('isSupported()', function () {
     var webAudio = window.webkitAudioContext || window.AudioContext,
       audioData  = window.Audio && (new window.Audio()).mozSetup ? window.Audio : null;
+    it('Should return null if typed arrays are not present', function () {
+      var
+        f32 = window.Float32Array,
+        u32 = window.Uint32Array;
+      expect( !f32 || !u32 ).toBe( !Dancer.isSupported() );
+      window.Float32Array = null;
+      window.Uint32Array = null;
+      expect( Dancer.isSupported() ).toBeFalsy();
+      window.Float32Array = f32;
+      window.Uint32Array = u32;
+    });
     it('Should test whether or not the browser supports Web Audio or Audio Data or flash', function () {
       var _audio = webAudio || audioData,
         type = webAudio ? 'AudioContext' : 'Audio';
