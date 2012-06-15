@@ -22,10 +22,10 @@
       ctx.fillStyle = '#ff0077';
     },
     offBeat: function () {
-      ctx.fillStyle = '#333';
+      ctx.fillStyle = '#666';
     }
   }).on();
-  dancer.fft( fft, { fillStyle: '#333' });
+  dancer.fft( fft, { fillStyle: '#666' });
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
