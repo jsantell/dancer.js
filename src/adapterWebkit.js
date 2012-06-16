@@ -84,6 +84,10 @@
       this.isPlaying = false;
     },
 
+    getWaveform : function () {
+      return this.signal;
+    },
+
     getSpectrum : function () {
       return this.fft.spectrum;
     },
@@ -100,7 +104,8 @@
       var
         buffers = [],
         channels = e.inputBuffer.numberOfChannels,
-        resolution = SAMPLE_SIZE / channels;
+        resolution = SAMPLE_SIZE / channels,
+        i;
 
       for ( i = channels; i--; ) {
         buffers.push( e.inputBuffer.getChannelData( i ) );
@@ -108,7 +113,9 @@
 
       for ( i = 0; i < resolution; i++ ) {
         this.signal[ i ] = channels > 1 ?
-          buffers.reduce( bufferReduce ) / channels :
+          buffers.reduce(function ( prev, curr ) {
+            return prev[ i ] + curr[ i ];
+          }) / channels :
           buffers[ 0 ][ i ];
       }
 
@@ -116,10 +123,6 @@
       this.dancer.trigger( 'update' );
     }
   };
-
-  function bufferReduce ( prev, curr ) {
-    return prev[ i ] + curr[ i ];
-  }
 
   Dancer.adapters.webkit = adapter;
 

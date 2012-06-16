@@ -1,6 +1,5 @@
 (function() {
   var
-    DEBUG_MODE   = false,
     SAMPLE_SIZE  = 1024,
     SAMPLE_RATE  = 44100,
     smLoaded     = false,
@@ -13,7 +12,6 @@
     this.wave_L = [];
     this.wave_R = [];
     this.spectrum = [];
-
     window.SM2_DEFER = true;
   };
 
@@ -37,6 +35,7 @@
           onload   : function () {
             _this.fft = new FFT( SAMPLE_SIZE, SAMPLE_RATE );
             _this.signal = new Float32Array( SAMPLE_SIZE );
+            _this.waveform = new Float32Array( SAMPLE_SIZE );
             _this.isLoaded = true;
             _this.dancer.trigger( 'loaded' );
           }
@@ -56,6 +55,10 @@
       this.isPlaying = false;
     },
 
+    getWaveform : function () {
+      return this.waveform;
+    },
+
     getSpectrum : function () {
       return this.fft.spectrum;
     },
@@ -68,10 +71,13 @@
       if ( !this.isLoaded ) return;
       this.wave_L = this.audio.waveformData.left;
       this.wave_R = this.audio.waveformData.right;
-
+      var avg;
       for ( var i = 0, j = this.wave_L.length; i < j; i++ ) {
-        this.signal[ 2 * i ] = (( parseFloat(this.wave_L[ i ]) + parseFloat(this.wave_R[ i ])) * CONVERSION_COEFFICIENT );
-        this.signal[ i * 2 + 1 ] = this.signal[ i * 2 ];
+        avg = parseFloat(this.wave_L[ i ]) + parseFloat(this.wave_R[ i ]);
+        this.waveform[ 2 * i ]     = avg / 2;
+        this.waveform[ i * 2 + 1 ] = avg / 2;
+        this.signal[ 2 * i ]       = avg * CONVERSION_COEFFICIENT;
+        this.signal[ i * 2 + 1 ]   = avg * CONVERSION_COEFFICIENT;
       }
 
       this.fft.forward( this.signal );

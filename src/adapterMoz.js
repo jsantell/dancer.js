@@ -34,6 +34,10 @@
       this.isPlaying = false;
     },
 
+    getWaveform : function () {
+      return this.signal;
+    },
+
     getSpectrum : function () {
       return this.fft.spectrum;
     },
