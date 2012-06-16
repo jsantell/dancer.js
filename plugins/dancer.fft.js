@@ -5,7 +5,7 @@
  *
  * var dancer = new Dancer('song.ogg'),
  *     canvas = document.getElementById('fftcanvas');
- * dancer.fft( canvas, 2, 1 );
+ * dancer.fft( canvas, { width: 2, spacing: 1 });
  */
 
 (function() {
