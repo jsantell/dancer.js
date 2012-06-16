@@ -5,7 +5,7 @@ dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API a
 
 http://jsantell.github.com/dancer.js
 
-_v0.2.0 (6/15/2012)_
+_v0.2.1 (6/15/2012)_
 
 Features
 ---
@@ -28,7 +28,8 @@ All controls return `this`.
 ### Getters
 
 * `getTime()` returns the current time.
-* `getSpectrum()` returns the frequency data array. 
+* `getWaveform()` returns the waveform data array (Float32Array(1024))
+* `getSpectrum()` returns the frequency data array (Float32Array(512)). 
 * `getFrequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.
 * `isLoaded()` returns a boolean value for the dancer instance's song load state.
 * `isPlaying()` returns a boolean value indicating whether the dancer instance's song is currently playing or not.
@@ -91,6 +92,8 @@ These methods can be called on a beat instance to turn on and off the registered
 Example
 ---
 
+For simple examples, check out the `examples/` folder -- both the FFT and waveform examples are straight forward, leveraging the corresponding plugins for visualizations.
+
 ```javascript
   // To enable flash fallback, specify the paths for the flashSWF and flashJS
   Dancer.setOptions({
@@ -133,7 +136,7 @@ Requirements
 
 **HTML5 Playback with Web Audio or Audio Data** Chrome and Firefox are both supported out of the box -- other browsers will need to leverage the flash fallback until either of these APIs are implemented.
 
-**To enable flash** You must set Dancer's defaults for `flashSWF` with the path to the `soundmanager2.swf` and `flashJS` to the path to `soundmanager2.js`, both found in `lib/`. Flash player 9 is required, and you must provide an mp3 option.
+**To enable flash** You must set Dancer's defaults for `flashSWF` with the path to the `soundmanager2.swf` and `flashJS` to the path to `soundmanager2.js`, both found in `lib/`. Flash player 9 is required, and you must provide an mp3 option. Waveform data in Flash is a 1024 Float32Array, but only the first 512 elements have values due to flash's computeSpectrum method.
 
 **Uint32Array and Float32Array are required** Include a shim if you'd like to support browsers that do not have these typed arrays.
 
@@ -155,6 +158,10 @@ This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine]
 
 Change Logs
 ----
+**v0.2.1 (6/16/2012)**
+
+* Added getWaveform() method and a corresponding visualization for waveforms
+
 **v0.2.0 (6/14/2012)**
 
 * Added flash support with soundmanager2 -- flash_detect now included in build

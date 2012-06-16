@@ -60,9 +60,10 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
 
     describe('getTime()', function () {
 
-      var currentTime = 0;
+      var currentTime;
 
       it("getTime() should increment by 1 second after 1 second", function () {
+        currentTime = 0;
         dancer.play();
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
@@ -115,6 +116,45 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
         runs(function () {
           s = dancer.getSpectrum()[50];
           expect(s).toBeLessThan(0.1);
+        });
+      });
+    });
+
+    describe("getWaveform()", function () {
+      it("should return a Float32Array(1024)", function () {
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
+        runs(function () {
+          expect(dancer.getWaveform().length).toBe(1024);
+          expect(dancer.getWaveform() instanceof Float32Array ).toBeTruthy();
+        });
+      });
+
+      // This sine has 5 elements of -1 followed by 45 elements until
+      // 5 elements of ~0.9999 and 45 elements back down..
+      it("Should return a sine wave", function () {
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
+        runs(function () {
+          var
+            valley = null, last = -1, savedWave = [], wf = dancer.getWaveform();
+          for ( var i = 0; i < 200; i++ ) {
+            savedWave.push(wf[i]);
+            if ( last > -0.99 && wf[i] <= -0.99 && valley === null) {
+              valley = i;
+            }
+            last = wf[i];
+          }
+          // Check valley range
+          expect(savedWave[valley]).toBeWithin(-1, 0.05);
+          expect(savedWave[valley+3]).toBeWithin(-1, 0.05);
+
+          expect(savedWave[valley+24]).toBeLessThan(savedWave[valley+28]);
+          expect(savedWave[valley+28]).toBeWithin(0, 0.07);
+          expect(savedWave[valley+32]).toBeGreaterThan(savedWave[valley+28]);
+
+          // Check peak
+          expect(savedWave[valley+51]).toBeWithin(1, 0.05);
+          expect(savedWave[valley+54]).toBeWithin(1, 0.05);
+          expect(savedWave[valley+58]).toBeLessThan(savedWave[valley+54]);
         });
       });
     });

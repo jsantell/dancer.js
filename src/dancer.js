@@ -3,7 +3,7 @@
  * MIT License
  * http://github.com/jsantell/dancer.js
  *
- * v0.2.0
+ * v0.2.1
  */
 
 (function() {
@@ -21,6 +21,7 @@
   Dancer.adapters = {};
 
   Dancer.prototype = {
+
     /* Controls */
 
     play : function () {
@@ -83,6 +84,10 @@
       } else {
         return this.getSpectrum()[ freq ];
       }
+    },
+
+    getWaveform : function () {
+      return this.audioAdapter.getWaveform();
     },
 
     getSpectrum : function () {
