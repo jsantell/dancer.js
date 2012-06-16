@@ -37,8 +37,8 @@
 
     /* Actions */
 
-    createBeat : function ( freq, threshold, decay, onBeat, offBeat ) {
-      return new Dancer.Beat( this, freq, threshold, decay, onBeat, offBeat );
+    createBeat : function ( options ) {
+      return new Dancer.Beat( this, options );
     },
 
     bind : function ( name, callback ) {
