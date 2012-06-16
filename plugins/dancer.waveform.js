@@ -3,7 +3,7 @@
  *
  * var dancer = new Dancer('song.ogg'),
  *     canvas = document.getElementById('waveform');
- * dancer.waveform( canvas, { fillStyle: '#ff0077' });
+ * dancer.waveform( canvas, { strokeStyle: '#ff0077' });
  */
 
 (function() {
