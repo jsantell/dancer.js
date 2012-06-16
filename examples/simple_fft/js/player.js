@@ -1,7 +1,5 @@
 (function () {
 
-  window.COLOR = '';
-
   var
     AUDIO_FILE = '../songs/zircon_devils_spirit',
     fft = document.getElementById( 'fft' ),
