@@ -23,7 +23,7 @@
       return null;
     } else if ( window.AudioContext || window.webkitAudioContext ) {
       return 'webaudio';
-    } else if ( window.Audio && ( new window.Audio() ).mozSetup ) {
+    } else if ( audioEl && audioEl.mozSetup ) {
       return 'audiodata';
     } else if ( FlashDetect.versionAtLeast( 9 ) ) {
       return 'flash';
