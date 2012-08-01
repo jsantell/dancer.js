@@ -8,19 +8,25 @@
 
 (function() {
 
-  var Dancer = function ( source, codecs ) {
+  var Dancer = function () {
     this.audioAdapter = Dancer._getAdapter( this );
     this.events = {};
     this.sections = [];
 
     this.bind( 'update', update );
-    this.source = Dancer._makeSupportedPath( source, codecs );
-    this.audioAdapter.load( this.source );
   };
 
   Dancer.adapters = {};
 
   Dancer.prototype = {
+
+    load : function ( source, codecs ) {
+      this.source = codecs ?
+        Dancer._makeSupportedPath( source, codecs ) :
+        source;
+      this.audioAdapter.load( this.source );
+      return this;
+    },
 
     /* Controls */
 

@@ -7,18 +7,23 @@
 
   adapter.prototype = {
 
-    load : function ( path ) {
+    load : function ( _source ) {
       var _this = this;
-      this.audio.src = path;
-      this.audio.addEventListener( 'loadedmetadata', function( e ) {
-        _this.fbLength = _this.audio.mozFrameBufferLength;
-        _this.channels = _this.audio.mozChannels;
-        _this.rate     = _this.audio.mozSampleRate;
-        _this.fft      = new FFT( _this.fbLength / _this.channels, _this.rate );
-        _this.signal   = new Float32Array( _this.fbLength / _this.channels );
-        _this.isLoaded = true;
-        _this.dancer.trigger( 'loaded' );
-      }, false);
+      // Check if source is a path or an audio element
+      if ( _source instanceof HTMLElement ) {
+        this.audio = _source;
+      } else {
+        this.audio.src = _source;
+      }
+
+      if ( this.audio.readyState < 3 ) {
+        this.audio.addEventListener( 'loadedmetadata', function () {
+          getMetadata.call( _this );
+        }, false);
+      } else {
+        getMetadata.call( _this );
+      }
+
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
       }, false);
@@ -57,6 +62,16 @@
       this.dancer.trigger( 'update' );
     }
   };
+
+  function getMetadata () {
+    this.fbLength = this.audio.mozFrameBufferLength;
+    this.channels = this.audio.mozChannels;
+    this.rate     = this.audio.mozSampleRate;
+    this.fft      = new FFT( this.fbLength / this.channels, this.rate );
+    this.signal   = new Float32Array( this.fbLength / this.channels );
+    this.isLoaded = true;
+    this.dancer.trigger( 'loaded' );
+  }
 
   Dancer.adapters.moz = adapter;
 
