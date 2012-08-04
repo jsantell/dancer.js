@@ -9,7 +9,8 @@ _v0.2.1 (6/15/2012)_
 
 Features
 ---
-* Use real-time audio frequency data and map it to any arbitrary visualization
+* Use real-time audio waveform and frequency data and map it to any arbitrary visualization
+* Use Dancer to get audio data from any preexisting audio source
 * Leverage beat detection into your visualizations
 * Simple API to time callbacks and events to any section of a song
 * Supports Web Audio (webkit), Audio Data (mozilla) and flash fallback (v9+)
@@ -18,12 +19,16 @@ Features
 Dancer Instance Methods
 ---
 
+### Setup
+
+* `load( source, [ codecs ])` specifies the audio source for the dancer instance. `source` can either be an audio element, or a string as a path to the audio file. Optionally, you may pass in array of codec extensions of the form `[ 'mp3', 'ogg' ]`, where the first supported codec is used and appended to source in the form `source + '.' + supportedCodec`. If `source` is an audio element, it'll use the appropriate source via either `<source>` tags, or the `audio.src` property (just like you'd use HTML5 audio normally).
+
 ### Controls
 
-All controls return `this`.
+All controls return `this`. If provided an audio element as the source, one can also control the audio through that, or can access the audio element in the `audio` property on the dancer instance.
 
 * `play()` plays the audio and begins the dance.
-* `stop()` stops the madness.
+* `pause()` pauses the madness.
 
 ### Getters
 
@@ -75,10 +80,6 @@ Dancer Static Methods
 * `flashSWF` The path to soundmanager2.swf. Required for flash fallback.
 * `flashJS` The path to soundmanager2.js. Required for flash fallback.
 
-Dancer Constructor
----
-
-`new Dancer( source, [ codecs ] )` returns a new `Dancer` instance -- takes a string of `source` as a path to the audio file. Optionally, you may pass in array of codec extensions of the form `[ 'mp3', 'ogg' ]`, where the first supported codec is used and appended to source in the form `source + '.' + supportedCodec`.
 
 
 Beat Instance Methods
@@ -158,6 +159,12 @@ This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine]
 
 Change Logs
 ----
+**v0.3.0 ()**
+
+* Added ability to provide an audio element as a source -- can control audio via the element, or accessed through instance's `audio` property, or through Dancer's helper controls (`play`, `pause`)
+* Changed instance method `stop` to `pause`, to be more in line with audio elements
+* Added example of using the audio element in `examples/audio\_element`.
+
 **v0.2.1 (6/16/2012)**
 
 * Added getWaveform() method and a corresponding visualization for waveforms
