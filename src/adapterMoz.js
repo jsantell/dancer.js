@@ -53,7 +53,7 @@
     },
 
     update : function ( e ) {
-      if ( !this.isPlaying ) return;
+      if ( !this.isPlaying || !this.isLoaded ) return;
 
       for ( var i = 0, j = this.fbLength / 2; i < j; i++ ) {
         this.signal[ i ] = ( e.frameBuffer[ 2 * i ] + e.frameBuffer[ 2 * i + 1 ] ) / 2;

@@ -65,7 +65,7 @@
     },
 
     update : function ( e ) {
-      if ( !this.isPlaying ) { return; }
+      if ( !this.isPlaying || !this.isLoaded ) return;
 
       var
         buffers = [],
