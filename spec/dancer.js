@@ -7,7 +7,7 @@ describe('Dancer', function () {
   isWebkit = !!window.webkitAudioContext;
   waitForLoadTime = 4000 * ( Dancer.isSupported() !== 'webkit' && Dancer.isSupported() !== 'audiodata' ? 2 : 1 );
 
-  dancer.load(song, [ 'ogg', 'mp3' ]);
+  var loadReturn = dancer.load(song, [ 'ogg', 'mp3' ]);
 
   // Define custom matcher
   beforeEach(function () {
@@ -23,9 +23,19 @@ describe('Dancer', function () {
   });
 
 
-  describe('Init', function () {
+  describe('Core', function () {
     it('Should bind an update event', function () {
       expect(dancer.events.update).toBeDefined();
+    });
+    
+    // Load tested implicitly throughout tests
+    it("load() should return a dancer instance", function () {
+      expect(loadReturn).toBe(dancer);
+    });
+
+    it('should have an audio property with the audio element', function () {
+      expect(dancer.audio instanceof HTMLElement).toBeTruthy();
+      expect(dancer.audio.src.match(new RegExp(song))).toBeTruthy();
     });
   });
 
