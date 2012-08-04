@@ -14,7 +14,7 @@
     flashJS  : '../../lib/soundmanager2.js'
   });
 
-  dancer = new Dancer( AUDIO_FILE, [ 'ogg', 'mp3' ] );
+  dancer = new Dancer();
   beat = dancer.createBeat({
     onBeat: function () {
       ctx.strokeStyle = '#ff0077';
@@ -23,7 +23,10 @@
       ctx.strokeStyle = '#666';
     }
   }).on();
-  dancer.waveform( waveform, { strokeStyle: '#666', strokeWidth: 2 });
+
+  dancer
+    .load( AUDIO_FILE, [ 'ogg', 'mp3' ] )
+    .waveform( waveform, { strokeStyle: '#666', strokeWidth: 2 });
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
