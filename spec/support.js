@@ -1,11 +1,5 @@
 describe('Support', function () {
 
-  var
-    song     = 'lib/440hz_100amp',
-    dancer   = new Dancer(song, [ 'ogg', 'mp3' ]),
-    isWebkit = !!window.webkitAudioContext,
-    songReady = function () { return dancer.isLoaded() && dancer.getTime() > 1; };
-
   describe('addPlugin()', function () {
     it('Should add a method to the prototype if not in the chain', function () {
       var fn = jasmine.createSpy();
@@ -33,6 +27,7 @@ describe('Support', function () {
   describe('isSupported()', function () {
     var webAudio = window.webkitAudioContext || window.AudioContext,
       audioData  = window.Audio && (new window.Audio()).mozSetup ? window.Audio : null;
+
     it('Should return null if typed arrays are not present', function () {
       var
         f32 = window.Float32Array,
@@ -44,6 +39,7 @@ describe('Support', function () {
       window.Float32Array = f32;
       window.Uint32Array = u32;
     });
+    
     it('Should test whether or not the browser supports Web Audio or Audio Data or flash', function () {
       var _audio = webAudio || audioData,
         type = webAudio ? 'AudioContext' : 'Audio';
@@ -55,6 +51,7 @@ describe('Support', function () {
       window[ type ] = _audio;
       expect(Dancer.isSupported()).toBeTruthy();
     });
+    
     it('Should return webaudio, audiodata or flash to determine support', function () {
       var _webAudio = webAudio;
       window.AudioContext = {};

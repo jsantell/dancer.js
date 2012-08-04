@@ -5,19 +5,11 @@
 
   var adapter = function ( dancer ) {
     this.dancer = dancer;
+    this.audio = new Audio();
     this.context = window.AudioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
-    this.audio = new Audio();
-    this.isLoaded = this.isPlaying = this.isDisconnected = false;
   };
-
-  function connectContext () {
-    this.source = this.context.createMediaElementSource( this.audio );
-    this.source.connect( this.proc );
-    this.source.connect( this.context.destination );
-    this.proc.connect( this.context.destination );
-  }
 
   adapter.prototype = {
 
@@ -26,9 +18,11 @@
       if ( _source instanceof HTMLElement ) {
         this.audio = _source;
       } else {
-        this.audio = new Audio();
         this.audio.src = _source;
       }
+
+      this.isLoaded = false;
+
       this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE / 2, 1, 1 );
       this.proc.onaudioprocess = function ( e ) {
         _this.update.call( _this, e );
@@ -36,39 +30,25 @@
 
       this.fft = new FFT( SAMPLE_SIZE / 2, SAMPLE_RATE );
       this.signal = new Float32Array( SAMPLE_SIZE / 2 );
+
       if ( this.audio.readyState < 3 ) {
         this.audio.addEventListener( 'canplay', function () {
           connectContext.call( _this );
-          _this.isLoaded = true;
-          _this.dancer.trigger( 'loaded' );
         });
       } else {
         connectContext.call( _this );
-        this.isLoaded = true;
-        this.dancer.trigger( 'loaded' );
       }
+
+      return this.audio;
     },
 
     play : function () {
-      var _this = this;
-
-      this.isLoaded ? play() : this.dancer.bind( 'loaded', play );
-
-      function play () {
-        if ( _this.isDisconnected ) {
-          connectContext.call( _this );
-        }
-        _this.audio.play();
-        _this.startTime = _this.context.currentTime;
-        _this.isPlaying = true;
-      }
+      this.audio.play();
+      this.isPlaying = true;
     },
 
-    stop : function () {
-      if ( this.isPlaying ) {
-        this.isDisconnected = true;
-        this.endTime = this.getTime();
-      }
+    pause : function () {
+      this.audio.pause();
       this.isPlaying = false;
     },
 
@@ -81,9 +61,7 @@
     },
 
     getTime : function () {
-      return this.isPlaying ?
-        this.context.currentTime - ( this.startTime || 0 ) :
-        this.endTime || 0;
+      return this.audio.currentTime;
     },
 
     update : function ( e ) {
@@ -98,7 +76,7 @@
       for ( i = channels; i--; ) {
         buffers.push( e.inputBuffer.getChannelData( i ) );
       }
-      console.log(buffers[0][0]);
+//      console.log(buffers[0][0]);
       for ( i = 0; i < resolution; i++ ) {
         this.signal[ i ] = channels > 1 ?
           buffers.reduce(function ( prev, curr ) {
@@ -111,6 +89,16 @@
       this.dancer.trigger( 'update' );
     }
   };
+
+  function connectContext () {
+    this.source = this.context.createMediaElementSource( this.audio );
+    this.source.connect( this.proc );
+    this.source.connect( this.context.destination );
+    this.proc.connect( this.context.destination );
+
+    this.isLoaded = true;
+    this.dancer.trigger( 'loaded' );
+  }
 
   Dancer.adapters.webkit = adapter;
 

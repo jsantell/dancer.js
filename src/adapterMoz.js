@@ -1,15 +1,14 @@
 (function() {
+
   var adapter = function ( dancer ) {
     this.dancer = dancer;
     this.audio = new Audio();
-    this.isLoaded = this.isPlaying = false;
   };
 
   adapter.prototype = {
 
     load : function ( _source ) {
       var _this = this;
-      // Check if source is a path or an audio element
       if ( _source instanceof HTMLElement ) {
         this.audio = _source;
       } else {
@@ -27,6 +26,8 @@
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
       }, false);
+
+      return this.audio;
     },
 
     play : function () {
@@ -34,7 +35,7 @@
       this.isPlaying = true;
     },
 
-    stop : function () {
+    pause : function () {
       this.audio.pause();
       this.isPlaying = false;
     },
@@ -52,7 +53,7 @@
     },
 
     update : function ( e ) {
-      if ( !this.isLoaded ) return;
+      if ( !this.isPlaying ) return;
 
       for ( var i = 0, j = this.fbLength / 2; i < j; i++ ) {
         this.signal[ i ] = ( e.frameBuffer[ 2 * i ] + e.frameBuffer[ 2 * i + 1 ] ) / 2;
