@@ -8,7 +8,6 @@
 
   var adapter = function ( dancer ) {
     this.dancer = dancer;
-    this.isLoaded = this.isPlaying = false;
     this.wave_L = [];
     this.wave_R = [];
     this.spectrum = [];
@@ -40,18 +39,21 @@
             _this.dancer.trigger( 'loaded' );
           }
         });
+        this.dancer.audio = this.audio;
       }
+
+      // Returns audio if SM already loaded -- otherwise,
+      // sets dancer instance's audio property after load
+      return this.audio;
     },
 
     play : function () {
-      if ( !this.isPlaying && this.isLoaded ) {
-        this.audio.play();
-        this.isPlaying = true;
-      }
+      this.audio.play();
+      this.isPlaying = true;
     },
 
-    stop : function () {
-      this.audio.stop();
+    pause : function () {
+      this.audio.pause();
       this.isPlaying = false;
     },
 
@@ -68,7 +70,7 @@
     },
 
     update : function () {
-      if ( !this.isLoaded ) return;
+      if ( !this.isPlaying && !this.isLoaded ) return;
       this.wave_L = this.audio.waveformData.left;
       this.wave_R = this.audio.waveformData.right;
       var avg;
