@@ -5,9 +5,10 @@ describe('Dancer', function () {
   dancer    = new Dancer();
   songReady = function () { return dancer.isLoaded(); };
   isWebkit = !!window.webkitAudioContext;
-  waitForLoadTime = 4000 * ( Dancer.isSupported() !== 'webkit' && Dancer.isSupported() !== 'audiodata' ? 2 : 1 );
+  waitForLoadTime = 4000;
 
-  var loadReturn = dancer.load(song, [ 'ogg', 'mp3' ]);
+  var loadReturn = dancer.load( (new Audio()).src = song +'.ogg');
+ // var loadReturn = dancer.load(song, [ 'ogg', 'mp3' ]);
 
   // Define custom matcher
   beforeEach(function () {
@@ -34,8 +35,16 @@ describe('Dancer', function () {
     });
 
     it('should have an audio property with the audio element', function () {
-      expect(dancer.audio instanceof HTMLElement).toBeTruthy();
-      expect(dancer.audio.src.match(new RegExp(song))).toBeTruthy();
+      if ( Dancer.isSupported() !== 'flash' ) {
+        expect(dancer.audio instanceof HTMLElement).toBeTruthy();
+        expect(dancer.audio.src.match(new RegExp(song))).toBeTruthy();
+      } else {
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
+        runs(function () {
+          expect(dancer.audio).toBeTruthy();
+          expect(dancer.audio.url.match(new RegExp(song))).toBeTruthy();
+        });
+      }
     });
   });
 
@@ -77,9 +86,9 @@ describe('Dancer', function () {
 
       it("getTime() should increment by 1 second after 1 second", function () {
         currentTime = 0;
-        dancer.play();
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
+          dancer.play();
           currentTime = dancer.getTime();
           waits( 1000 );
           runs(function () {
@@ -90,7 +99,6 @@ describe('Dancer', function () {
       });
 
       it("getTime() should pause incrementing when pause()'d", function () {
-        dancer.play();
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           currentTime = dancer.getTime();
@@ -105,11 +113,11 @@ describe('Dancer', function () {
 
     describe("getSpectrum()", function () {
       var s;
-      dancer.play();
 
       it("should return a Float32Array(512)", function () {
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
+          dancer.play();
           s = dancer.getSpectrum();
           expect(s.length).toEqual(512);
           expect(s instanceof Float32Array).toBeTruthy();
