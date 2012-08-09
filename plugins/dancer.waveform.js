@@ -13,7 +13,7 @@
       ctx     = canvasEl.getContext( '2d' ),
       h       = canvasEl.height,
       w       = canvasEl.width,
-      width   = options.width || ( Dancer.isSupported() === 'flash' ? 2 : 1 ),
+      width   = options.width || 2,
       spacing = options.spacing || 0,
       count   = options.count || 1024;
 

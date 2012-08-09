@@ -8,19 +8,36 @@
 
 (function() {
 
-  var Dancer = function ( source, codecs ) {
+  var Dancer = function () {
     this.audioAdapter = Dancer._getAdapter( this );
     this.events = {};
     this.sections = [];
-
     this.bind( 'update', update );
-    this.source = Dancer._makeSupportedPath( source, codecs );
-    this.audioAdapter.load( this.source );
   };
 
   Dancer.adapters = {};
 
   Dancer.prototype = {
+
+    load : function ( source ) {
+      var path;
+
+      // Loading an Audio element
+      if ( source instanceof HTMLElement ) {
+        this.source = source;
+        if ( Dancer.isSupported() === 'flash' ) {
+          this.source = { src: Dancer._getMP3SrcFromAudio( source ) };
+        }
+
+      // Loading an object with src, [codecs]
+      } else {
+        this.source = window.Audio ? new Audio() : {};
+        this.source.src = Dancer._makeSupportedPath( source.src, source.codecs );
+      }
+
+      this.audio = this.audioAdapter.load( this.source );
+      return this;
+    },
 
     /* Controls */
 
@@ -29,8 +46,8 @@
       return this;
     },
 
-    stop : function () {
-      this.audioAdapter.stop();
+    pause : function () {
+      this.audioAdapter.pause();
       return this;
     },
 
@@ -97,7 +114,7 @@
     isLoaded : function () {
       return this.audioAdapter.isLoaded;
     },
-    
+
     isPlaying : function () {
       return this.audioAdapter.isPlaying;
     },

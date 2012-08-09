@@ -1,11 +1,21 @@
 describe('Dancer', function () {
 
-  var
-    song      = 'lib/440hz_100amp';
-    dancer    = new Dancer(song, [ 'ogg', 'mp3' ]),
-    songReady = function () { return dancer.isLoaded(); },
-    waitForLoadTime = 4000 * ( Dancer.isSupported() !== 'webkit' && Dancer.isSupported() !== 'audiodata' ? 2 : 1 );
-dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
+  /* expose globally for other tests */
+  song      = 'lib/440hz_100amp';
+  dancer    = new Dancer();
+  songReady = function () { return dancer.isLoaded(); };
+  isWebkit = !!window.webkitAudioContext;
+  waitForLoadTime = 4000;
+
+  var audio = new Audio();
+  audio.src = song + '.ogg';
+  
+  // To test loading with config object
+  // var loadReturn = dancer.load({ src: song, codecs: ['ogg', 'mp3']});
+  
+  var loadReturn = dancer.load( audio );
+  
+
   // Define custom matcher
   beforeEach(function () {
     this.addMatchers({
@@ -20,32 +30,50 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
   });
 
 
-  describe('Init', function () {
+  describe('Core', function () {
     it('Should bind an update event', function () {
       expect(dancer.events.update).toBeDefined();
+    });
+    
+    // Load tested implicitly throughout tests
+    it("load() should return a dancer instance", function () {
+      expect(loadReturn).toBe(dancer);
+    });
+
+    it('should have an audio property with the audio element', function () {
+      if ( Dancer.isSupported() !== 'flash' ) {
+        expect(dancer.audio instanceof HTMLElement).toBeTruthy();
+        expect(dancer.audio.src.match(new RegExp(song))).toBeTruthy();
+      } else {
+        waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
+        runs(function () {
+          expect(dancer.audio).toBeTruthy();
+          expect(dancer.audio.url.match(new RegExp(song))).toBeTruthy();
+        });
+      }
     });
   });
 
   describe('Controls', function () {
     // TODO Should probably check audio output via adapter, similar to getTime();
-    it("Should call adapter's play/stop method via dancer.play(), dancer.stop()", function () {
+    it("Should call adapter's play/pause method via dancer.play(), dancer.pause()", function () {
       spyOn(dancer.audioAdapter, 'play');
-      spyOn(dancer.audioAdapter, 'stop');
+      spyOn(dancer.audioAdapter, 'pause');
       waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
       runs(function () {
         dancer.play();
         expect(dancer.audioAdapter.play).toHaveBeenCalled();
-        dancer.stop();
-        expect(dancer.audioAdapter.stop).toHaveBeenCalled();
+        dancer.pause();
+        expect(dancer.audioAdapter.pause).toHaveBeenCalled();
       });
     });
 
-    it("Should return dancer instance when calling dancer.play(), dancer.stop()", function() {
+    it("Should return dancer instance when calling dancer.play(), dancer.pause()", function() {
       var
         playReturn = dancer.play(),
-        stopReturn = dancer.stop();
+        pauseReturn = dancer.pause();
       expect(playReturn).toBe(dancer);
-      expect(stopReturn).toBe(dancer);
+      expect(pauseReturn).toBe(dancer);
     });
   });
 
@@ -64,24 +92,23 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
 
       it("getTime() should increment by 1 second after 1 second", function () {
         currentTime = 0;
-        dancer.play();
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
+          dancer.play();
           currentTime = dancer.getTime();
           waits( 1000 );
           runs(function () {
             expect(dancer.getTime()).toBeWithin(currentTime + 1.0, 0.05);
-            dancer.stop();
+            dancer.pause();
           });
         });
       });
 
-      it("getTime() should stop incrementing when stop()'d", function () {
-        dancer.play();
+      it("getTime() should pause incrementing when pause()'d", function () {
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
           currentTime = dancer.getTime();
-          dancer.stop();
+          dancer.pause();
           waits( 1000 );
           runs(function () {
             expect(dancer.getTime()).toBeWithin(currentTime, 0.05);
@@ -92,11 +119,11 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
 
     describe("getSpectrum()", function () {
       var s;
-      dancer.play();
 
       it("should return a Float32Array(512)", function () {
         waitsFor(songReady, 'Song was never loaded', waitForLoadTime);
         runs(function () {
+          dancer.play();
           s = dancer.getSpectrum();
           expect(s.length).toEqual(512);
           expect(s instanceof Float32Array).toBeTruthy();
@@ -206,7 +233,7 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
       it("Should be true if playing, false otherwise", function () {
         dancer.play();
         expect(dancer.isPlaying()).toBeTruthy();
-        dancer.stop();
+        dancer.pause();
         expect(dancer.isPlaying()).toBeFalsy();
         dancer.play();
         expect(dancer.isPlaying()).toBeTruthy();
@@ -265,15 +292,15 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
       });
 
       it("Should not call 'before' callback after time t", function () {
-        var stopCounting;
+        var pauseCounting;
         waitsFor(function () {
-          stopCounting = f2Count;
+          pauseCounting = f2Count;
           return dancer.getTime() > t + 1.2;
         });
         runs(function () {
           waits(200);
           runs(function () {
-            expect(f2Count).toBe(stopCounting);
+            expect(f2Count).toBe(pauseCounting);
           });
         });
       });
@@ -310,15 +337,15 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
       });
 
       it("Should not call 'between' callback after time t2", function () {
-        var stopCounting;
+        var pauseCounting;
         waitsFor(function () {
-          stopCounting = f3Count;
+          pauseCounting = f3Count;
           return dancer.getTime() > t + 3.1;
         });
         runs(function () {
           waits(200);
           runs(function () {
-            expect(f3Count).toBe(stopCounting);
+            expect(f3Count).toBe(pauseCounting);
           });
         });
       });
@@ -408,8 +435,8 @@ dancer.bind('loaded', function(){console.log(dancer.audioAdapter.audio)});
     });
   });
 
-  it("Should stop the goddamn beeping", function() {
-    dancer.stop();
+  it("Should pause the goddamn beeping", function() {
+    dancer.pause();
     runs(function () {
       expect(0).toBe(0);
     });

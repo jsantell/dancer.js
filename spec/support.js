@@ -1,11 +1,5 @@
 describe('Support', function () {
 
-  var
-    song     = 'lib/440hz_100amp',
-    dancer   = new Dancer(song, [ 'ogg', 'mp3' ]),
-    isWebkit = !!window.webkitAudioContext,
-    songReady = function () { return dancer.isLoaded() && dancer.getTime() > 1; };
-
   describe('addPlugin()', function () {
     it('Should add a method to the prototype if not in the chain', function () {
       var fn = jasmine.createSpy();
@@ -33,6 +27,7 @@ describe('Support', function () {
   describe('isSupported()', function () {
     var webAudio = window.webkitAudioContext || window.AudioContext,
       audioData  = window.Audio && (new window.Audio()).mozSetup ? window.Audio : null;
+
     it('Should return null if typed arrays are not present', function () {
       var
         f32 = window.Float32Array,
@@ -44,32 +39,12 @@ describe('Support', function () {
       window.Float32Array = f32;
       window.Uint32Array = u32;
     });
+    
     it('Should test whether or not the browser supports Web Audio or Audio Data or flash', function () {
-      var _audio = webAudio || audioData,
-        type = webAudio ? 'AudioContext' : 'Audio';
+      expect(Dancer.isSupported()).toBeTruthy();
       expect(!!webAudio).toBe(Dancer.isSupported()==='webaudio');
       expect(!!audioData).toBe(Dancer.isSupported()==='audiodata');
-      window.webkitAudioContext = window.AudioContext = window.Audio = false;
-      expect(Dancer.isSupported() === 'flash' || !Dancer.isSupported()).toBeTruthy();
-      expect(FlashDetect.versionAtLeast(9)).toBe(Dancer.isSupported()==='flash');
-      window[ type ] = _audio;
-      expect(Dancer.isSupported()).toBeTruthy();
-    });
-    it('Should return webaudio, audiodata or flash to determine support', function () {
-      var _webAudio = webAudio;
-      window.AudioContext = {};
-      expect(Dancer.isSupported()).toEqual('webaudio');
-
-      window.AudioContext = window.webkitAudioContext = null;
-      var _audioData = audioData;
-      window.Audio = function(){ this.mozSetup=function(){} };
-      expect(Dancer.isSupported()).toEqual('audiodata');
-
-      window.Audio = null;
-      expect(Dancer.isSupported()).toEqual(FlashDetect.versionAtLeast(9) ? 'flash' : null);
-
-      window.AudioContext = window.webkitAudioContext = _webAudio;
-      window.Audio = _audioData;
+      expect(!!webAudio && !!audioData && FlashDetect.versionAtLeast(9)).toBe(Dancer.isSupported()==='flash');
     });
   });
 

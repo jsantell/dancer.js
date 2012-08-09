@@ -1,8 +1,6 @@
 describe('Dancer.Beat', function () {
-  var
-    song      = 'lib/440hz_100amp',
-    dancer    = new Dancer( song, [ 'ogg', 'mp3' ]),
-    random    = function (min, max) { return Math.random() * (max-min) + min };
+  
+  var random    = function (min, max) { return Math.random() * (max-min) + min };
 
   describe('Init', function () {
     var beat;
@@ -96,16 +94,15 @@ describe('Dancer.Beat', function () {
   });
 
   describe('onUpdate()', function () {
-    // Empty out dancer's current update events
-    dancer.events.update = [];
+    var beat, _onUpdate, registeredCallback;
 
-    var
-      beat      = dancer.createBeat(),
-      _onUpdate = beat.onUpdate;
+    beat       = dancer.createBeat();
+    registered = dancer.events.update[ dancer.events.update.length - 1 ];
+    _onUpdate  = beat.onUpdate;
 
     it('Should register a bridge update event in the dancer instance', function () {
       beat.onUpdate = jasmine.createSpy();
-      dancer.events.update[0]();
+      registered();
       expect(beat.onUpdate).toHaveBeenCalled();
     });
 

@@ -5,11 +5,12 @@ dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API a
 
 http://jsantell.github.com/dancer.js
 
-_v0.2.1 (6/15/2012)_
+_v0.3.0 (8/9/2012)_
 
 Features
 ---
-* Use real-time audio frequency data and map it to any arbitrary visualization
+* Use real-time audio waveform and frequency data and map it to any arbitrary visualization
+* Use Dancer to get audio data from any preexisting audio source
 * Leverage beat detection into your visualizations
 * Simple API to time callbacks and events to any section of a song
 * Supports Web Audio (webkit), Audio Data (mozilla) and flash fallback (v9+)
@@ -18,12 +19,33 @@ Features
 Dancer Instance Methods
 ---
 
+### Setup
+
+* `load( source )` specifies the audio source for the dancer instance. `source` can either be an audio element, or an object with a `src` property and an optional `codecs` array. While the audio element source is recommended to use with other players, if you specify a config object, the `src` property can either be a string of the audio path, or a string of the audio path, without the file extension, if you specify a codec array to work across multiple audio implementations. Examples of input:
+```
+  var dancer = new Dancer();
+
+  // Using an audio object
+  var a = new Audio();
+  a.src = 'somesong.mp3';
+  dancer.load( a );
+
+  // Using an audio element on the page
+  dancer.load( document.getElementsByTagName('audio')[0] );
+
+  // Using a config object and you only have one encoding
+  dancer.load({ src: 'somesong.mp3' });
+
+  // Using a config object, and you have an ogg and mp3 version
+  dancer.load({ src: 'somesong', codecs: [ 'ogg', 'mp3' ]});
+```
+
 ### Controls
 
-All controls return `this`.
+All controls return `this`. If provided an audio element as the source, one can also control the audio through that, or can access the audio element in the `audio` property on the dancer instance.
 
 * `play()` plays the audio and begins the dance.
-* `stop()` stops the madness.
+* `pause()` pauses the madness.
 
 ### Getters
 
@@ -75,10 +97,6 @@ Dancer Static Methods
 * `flashSWF` The path to soundmanager2.swf. Required for flash fallback.
 * `flashJS` The path to soundmanager2.js. Required for flash fallback.
 
-Dancer Constructor
----
-
-`new Dancer( source, [ codecs ] )` returns a new `Dancer` instance -- takes a string of `source` as a path to the audio file. Optionally, you may pass in array of codec extensions of the form `[ 'mp3', 'ogg' ]`, where the first supported codec is used and appended to source in the form `source + '.' + supportedCodec`.
 
 
 Beat Instance Methods
@@ -102,7 +120,8 @@ For simple examples, check out the `examples/` folder -- both the FFT and wavefo
   });
 
   var
-    dancer = new Dancer( "sickjams.ogg" ),
+    audio  = document.getElementsByTagName('audio')[0],
+    dancer = new Dancer(),
     beat = dancer.createBeat({
       onBeat: function ( mag ) {
         console.log('Beat!');
@@ -126,7 +145,7 @@ For simple examples, check out the `examples/` folder -- both the FFT and wavefo
   }).onceAt( 120, function() {
     // After 120s, we'll turn the beat off as another object's y position is still being mapped from the previous "after" method
     beat.off();
-  });
+  }).load( audio ); // And finally, lets pass in our Audio element to load
 
   dancer.play();
 ```
@@ -135,6 +154,8 @@ Requirements
 ----
 
 **HTML5 Playback with Web Audio or Audio Data** Chrome and Firefox are both supported out of the box -- other browsers will need to leverage the flash fallback until either of these APIs are implemented.
+
+**Safari 6 Web Audio API** While Safari 6 does have the Web Audio API, it doesn't currently support processing audio from a media element source. Falls back to flash.
 
 **To enable flash** You must set Dancer's defaults for `flashSWF` with the path to the `soundmanager2.swf` and `flashJS` to the path to `soundmanager2.js`, both found in `lib/`. Flash player 9 is required, and you must provide an mp3 option. Waveform data in Flash is a 1024 Float32Array, but only the first 512 elements have values due to flash's computeSpectrum method.
 
@@ -158,6 +179,13 @@ This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine]
 
 Change Logs
 ----
+**v0.3.0 (8/9/2012)**
+
+* Added ability to provide an audio element as a source -- can control audio via the element, or accessed through instance's `audio` property, or through Dancer's helper controls (`play`, `pause`)
+* Pulled out loading from the constructor to the instance method `load`. Can use the above mentioned audio element, or a config object with path information.
+* Changed instance method `stop` to `pause`, to be more in line with audio elements
+* Added example of using the audio element in `examples/audio\_element`.
+
 **v0.2.1 (6/16/2012)**
 
 * Added getWaveform() method and a corresponding visualization for waveforms

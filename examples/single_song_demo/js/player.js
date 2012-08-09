@@ -27,7 +27,7 @@
     flashJS  : '../../lib/soundmanager2.js'
   });
 
-  dancer = new Dancer( AUDIO_FILE, [ 'ogg', 'mp3' ] );
+  dancer = new Dancer();
   beat = dancer.createBeat({
     onBeat: function () {
       var i;
@@ -60,7 +60,8 @@
     changeParticleMat( 'pink' );
   }).onceAt( 75, function () {
     changeParticleMat();
-  }).fft( document.getElementById( 'fft' ) );
+  }).fft( document.getElementById( 'fft' ) )
+    .load({ src: AUDIO_FILE, codecs: [ 'ogg', 'mp3' ]})
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();

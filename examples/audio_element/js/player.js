@@ -1,9 +1,9 @@
 (function () {
 
   var
-    AUDIO_FILE = '../songs/zircon_devils_spirit',
-    fft = document.getElementById( 'fft' ),
-    ctx = fft.getContext( '2d' ),
+    audio = document.getElementById( 'audio' ),
+    waveform = document.getElementById( 'waveform' ),
+    ctx = waveform.getContext( '2d' ),
     dancer, beat;
 
   /*
@@ -17,16 +17,16 @@
   dancer = new Dancer();
   beat = dancer.createBeat({
     onBeat: function () {
-      ctx.fillStyle = '#ff0077';
+      ctx.strokeStyle = '#ff0077';
     },
     offBeat: function () {
-      ctx.fillStyle = '#666';
+      ctx.strokeStyle = '#666';
     }
   }).on();
 
   dancer
-    .fft( fft, { fillStyle: '#666' })
-    .load({ src: AUDIO_FILE, codecs: [ 'ogg', 'mp3' ]});
+    .load( audio )
+    .waveform( waveform, { strokeStyle: '#666', strokeWidth: 2 });
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
