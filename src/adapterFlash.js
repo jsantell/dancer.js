@@ -15,9 +15,11 @@
   };
 
   adapter.prototype = {
-    load : function ( path ) {
+    // `source` can be either an Audio element, if supported, or an object
+    // either way, the path is stored in the `src` property
+    load : function ( source ) {
       var _this = this;
-      this.path = path || this.path;
+      this.path = source ? source.src : this.path;
 
       !window.soundManager && !smLoading && loadSM.call( this );
 
