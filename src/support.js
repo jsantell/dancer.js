@@ -21,9 +21,9 @@
   Dancer.isSupported = function () {
     if ( !window.Float32Array || !window.Uint32Array ) {
       return null;
-    } else if ( window.AudioContext || window.webkitAudioContext ) {
+    } else if ( !isUnsupportedSafari() && ( window.AudioContext || window.webkitAudioContext )) {
       return 'webaudio';
-    } else if ( window.Audio && ( new window.Audio() ).mozSetup ) {
+    } else if ( audioEl && audioEl.mozSetup ) {
       return 'audiodata';
     } else if ( FlashDetect.versionAtLeast( 9 ) ) {
       return 'flash';
@@ -70,5 +70,25 @@
         return null;
     }
   };
+
+  Dancer._getMP3SrcFromAudio = function ( audioEl ) {
+    var sources = audioEl.children;
+    if ( audioEl.src ) { return audioEl.src; }
+    for ( var i = sources.length; i--; ) {
+      if (( sources[ i ].type || '' ).match( /audio\/mpeg/ )) return sources[ i ].src;
+    }
+    return null;
+  };
+
+  // Browser detection is lame, but Safari 6 has Web Audio API,
+  // but does not support processing audio from a Media Element Source
+  // https://gist.github.com/3265344
+  function isUnsupportedSafari () {
+    var
+      isApple = !!( navigator.vendor || '' ).match( /Apple/ ),
+      version = navigator.userAgent.match( /Version\/([^ ]*)/ );
+    version = version ? parseFloat( version[ 1 ] ) : 0;
+    return isApple && version <= 6;
+  }
 
 })( window.Dancer );

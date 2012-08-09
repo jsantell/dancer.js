@@ -5,82 +5,46 @@
 
   var adapter = function ( dancer ) {
     this.dancer = dancer;
+    this.audio = new Audio();
     this.context = window.AudioContext ?
       new window.AudioContext() :
       new window.webkitAudioContext();
-    this.isLoaded       = false;
-    this.isPlaying      = false;
-    this.isDisconnected = false;
   };
-
-  function connectContext () {
-    this.source = this.context.createBufferSource();
-    this.source.buffer = this.buffer;
-    this.source.connect( this.context.destination );
-    this.source.connect( this.proc );
-    this.source.connect( this.context.destination );
-  }
 
   adapter.prototype = {
 
-    load : function ( path ) {
-      var
-        req = new XMLHttpRequest(),
-        _this = this;
+    load : function ( _source ) {
+      var _this = this;
+      this.audio = _source;
 
-      req.open( 'GET', path, true );
-      req.responseType = 'arraybuffer';
-
-      req.onload = function () {
-        if ( _this.context.decodeAudioData ) {
-          _this.context.decodeAudioData( req.response, function( buffer ) {
-            _this.buffer = buffer;
-            connectContext.call( _this );
-            _this.isLoaded = true;
-            _this.dancer.trigger( 'loaded' );
-          }, function( e ) {
-            console.log( e );
-          });
-        } else {
-          _this.buffer = _this.context.createBuffer( req.response, false );
-          connectContext.call( _this );
-          _this.isLoaded = true;
-          _this.dancer.trigger( 'loaded' );
-        }
-      };
-      req.send();
+      this.isLoaded = false;
 
       this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE / 2, 1, 1 );
       this.proc.onaudioprocess = function ( e ) {
         _this.update.call( _this, e );
       };
-      this.proc.connect( this.context.destination );
 
       this.fft = new FFT( SAMPLE_SIZE / 2, SAMPLE_RATE );
       this.signal = new Float32Array( SAMPLE_SIZE / 2 );
+
+      if ( this.audio.readyState < 3 ) {
+        this.audio.addEventListener( 'canplay', function () {
+          connectContext.call( _this );
+        });
+      } else {
+        connectContext.call( _this );
+      }
+
+      return this.audio;
     },
 
     play : function () {
-      var _this = this;
-
-      this.isLoaded ? play() : this.dancer.bind( 'loaded', play );
-
-      function play () {
-        if ( _this.isDisconnected ) {
-          connectContext.call( _this );
-        }
-        _this.source.noteOn( 0.0 );
-        _this.startTime = _this.context.currentTime;
-        _this.isPlaying = true;
-      }
+      this.audio.play();
+      this.isPlaying = true;
     },
 
-    stop : function () {
-      if ( this.isPlaying ) {
-        this.source.noteOff( 0.0 );
-        this.isDisconnected = true;
-        this.endTime = this.getTime();
-      }
+    pause : function () {
+      this.audio.pause();
       this.isPlaying = false;
     },
 
@@ -93,13 +57,11 @@
     },
 
     getTime : function () {
-      return this.isPlaying ?
-        this.context.currentTime - ( this.startTime || 0 ) :
-        this.endTime || 0;
+      return this.audio.currentTime;
     },
 
     update : function ( e ) {
-      if ( !this.isPlaying ) { return; }
+      if ( !this.isPlaying || !this.isLoaded ) return;
 
       var
         buffers = [],
@@ -123,6 +85,16 @@
       this.dancer.trigger( 'update' );
     }
   };
+
+  function connectContext () {
+    this.source = this.context.createMediaElementSource( this.audio );
+    this.source.connect( this.proc );
+    this.source.connect( this.context.destination );
+    this.proc.connect( this.context.destination );
+
+    this.isLoaded = true;
+    this.dancer.trigger( 'loaded' );
+  }
 
   Dancer.adapters.webkit = adapter;
 
