@@ -25,7 +25,7 @@
   }).on();
 
   dancer
-    .load( AUDIO_FILE, [ 'ogg', 'mp3' ] )
+    .load({ src: AUDIO_FILE, codecs: [ 'ogg', 'mp3' ]})
     .waveform( waveform, { strokeStyle: '#666', strokeWidth: 2 });
 
   Dancer.isSupported() || loaded();

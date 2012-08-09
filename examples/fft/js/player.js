@@ -26,7 +26,7 @@
 
   dancer
     .fft( fft, { fillStyle: '#666' })
-    .load( AUDIO_FILE, [ 'ogg', 'mp3' ] );
+    .load({ src: AUDIO_FILE, codecs: [ 'ogg', 'mp3' ]});
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();

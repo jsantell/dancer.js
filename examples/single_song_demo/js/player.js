@@ -61,7 +61,7 @@
   }).onceAt( 75, function () {
     changeParticleMat();
   }).fft( document.getElementById( 'fft' ) )
-    .load( AUDIO_FILE, [ 'ogg', 'mp3' ])
+    .load({ src: AUDIO_FILE, codecs: [ 'ogg', 'mp3' ]})
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
