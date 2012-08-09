@@ -15,11 +15,7 @@
 
     load : function ( _source ) {
       var _this = this;
-      if ( _source instanceof HTMLElement ) {
-        this.audio = _source;
-      } else {
-        this.audio.src = _source;
-      }
+      this.audio = _source;
 
       this.isLoaded = false;
 
@@ -76,7 +72,7 @@
       for ( i = channels; i--; ) {
         buffers.push( e.inputBuffer.getChannelData( i ) );
       }
-//      console.log(buffers[0][0]);
+
       for ( i = 0; i < resolution; i++ ) {
         this.signal[ i ] = channels > 1 ?
           buffers.reduce(function ( prev, curr ) {

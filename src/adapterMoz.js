@@ -9,11 +9,7 @@
 
     load : function ( _source ) {
       var _this = this;
-      if ( _source instanceof HTMLElement ) {
-        this.audio = _source;
-      } else {
-        this.audio.src = _source;
-      }
+      this.audio = _source;
 
       if ( this.audio.readyState < 3 ) {
         this.audio.addEventListener( 'loadedmetadata', function () {
