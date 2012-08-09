@@ -7,8 +7,14 @@ describe('Dancer', function () {
   isWebkit = !!window.webkitAudioContext;
   waitForLoadTime = 4000;
 
-  var loadReturn = dancer.load( (new Audio()).src = song +'.ogg');
- // var loadReturn = dancer.load(song, [ 'ogg', 'mp3' ]);
+  var audio = new Audio();
+  audio.src = song + '.ogg';
+  
+  // To test loading with config object
+  // var loadReturn = dancer.load({ src: song, codecs: ['ogg', 'mp3']});
+  
+  var loadReturn = dancer.load( audio );
+  
 
   // Define custom matcher
   beforeEach(function () {
