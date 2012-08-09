@@ -19,10 +19,22 @@
 
   Dancer.prototype = {
 
-    load : function ( source, codecs ) {
-      this.source = source instanceof HTMLElement ?
-        source :
-        Dancer._makeSupportedPath( source, codecs );
+    load : function ( source ) {
+      var path;
+
+      // Loading an Audio element
+      if ( source instanceof HTMLElement ) {
+        this.source = source;
+        if ( Dancer.isSupported() === 'flash' ) {
+          this.source = { src: Dancer._getMP3SrcFromAudio( source ) };
+        }
+
+      // Loading an object with src, [codecs]
+      } else {
+        this.source = window.Audio ? new Audio() : {};
+        this.source.src = Dancer._makeSupportedPath( source.src, source.codecs );
+      }
+
       this.audio = this.audioAdapter.load( this.source );
       return this;
     },
@@ -102,7 +114,7 @@
     isLoaded : function () {
       return this.audioAdapter.isLoaded;
     },
-    
+
     isPlaying : function () {
       return this.audioAdapter.isPlaying;
     },

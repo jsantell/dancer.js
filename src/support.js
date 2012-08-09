@@ -71,6 +71,15 @@
     }
   };
 
+  Dancer._getMP3SrcFromAudio = function ( audioEl ) {
+    var sources = audioEl.children;
+    if ( audioEl.src ) { return audioEl.src; }
+    for ( var i = sources.length; i--; ) {
+      if (( sources[ i ].type || '' ).match( /audio\/mpeg/ )) return sources[ i ].src;
+    }
+    return null;
+  };
+
   // Browser detection is lame, but Safari 6 has Web Audio API,
   // but does not support processing audio from a Media Element Source
   // https://gist.github.com/3265344
