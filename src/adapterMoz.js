@@ -23,6 +23,10 @@
         _this.update( e );
       }, false);
 
+      this.audio.addEventListener( 'progress', function( e ) {
+        _this._updateProgress.call( _this, e );
+      }, false);
+
       return this.audio;
     },
 
@@ -34,6 +38,16 @@
     pause : function () {
       this.audio.pause();
       this.isPlaying = false;
+    },
+
+    _updateProgress : function ( e ) {
+      if ( e.currentTarget.duration ) {
+        this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
+      }
+    },
+
+    getProgress : function () {
+      return this.progress;
     },
 
     getWaveform : function () {

@@ -3,7 +3,7 @@
  * MIT License
  * http://github.com/jsantell/dancer.js
  *
- * v0.2.1
+ * v0.3.0
  */
 
 (function() {
@@ -85,6 +85,10 @@
 
 
     /* Getters */
+
+    getProgress : function () {
+      return this.audioAdapter.getProgress();
+    },
 
     getTime : function () {
       return this.audioAdapter.getTime();

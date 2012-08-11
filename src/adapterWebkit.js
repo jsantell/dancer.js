@@ -35,6 +35,10 @@
         connectContext.call( _this );
       }
 
+      this.audio.addEventListener( 'progress', function ( e ) {
+        _this._updateProgress.call( _this, e );
+      });
+
       return this.audio;
     },
 
@@ -46,6 +50,16 @@
     pause : function () {
       this.audio.pause();
       this.isPlaying = false;
+    },
+
+    _updateProgress : function ( e ) {
+      if ( e.currentTarget.duration ) {
+        this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
+      }
+    },
+
+    getProgress : function() {
+      return this.progress;
     },
 
     getWaveform : function () {
@@ -67,7 +81,10 @@
         buffers = [],
         channels = e.inputBuffer.numberOfChannels,
         resolution = SAMPLE_SIZE / channels,
-        i;
+        i,
+        sum = function ( prev, curr ) {
+          return prev[ i ] + curr[ i ];
+        };
 
       for ( i = channels; i--; ) {
         buffers.push( e.inputBuffer.getChannelData( i ) );
@@ -75,9 +92,7 @@
 
       for ( i = 0; i < resolution; i++ ) {
         this.signal[ i ] = channels > 1 ?
-          buffers.reduce(function ( prev, curr ) {
-            return prev[ i ] + curr[ i ];
-          }) / channels :
+          buffers.reduce( sum( prev, curr ) ) / channels :
           buffers[ 0 ][ i ];
       }
 

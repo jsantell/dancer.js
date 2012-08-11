@@ -50,6 +50,7 @@ All controls return `this`. If provided an audio element as the source, one can 
 ### Getters
 
 * `getTime()` returns the current time.
+* `getProgress()` returns the downloading progress as a float from 0 to 1.
 * `getWaveform()` returns the waveform data array (Float32Array(1024))
 * `getSpectrum()` returns the frequency data array (Float32Array(512)). 
 * `getFrequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.

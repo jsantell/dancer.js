@@ -33,6 +33,9 @@
           whileplaying : function () {
             _this.update();
           },
+          whileloading : function () {
+            _this._updateProgress.call( this, _this );
+          },
           onload   : function () {
             _this.fft = new FFT( SAMPLE_SIZE, SAMPLE_RATE );
             _this.signal = new Float32Array( SAMPLE_SIZE );
@@ -57,6 +60,14 @@
     pause : function () {
       this.audio.pause();
       this.isPlaying = false;
+    },
+
+    _updateProgress : function ( _this ) {
+      _this.progress = this.bytesLoaded / this.bytesTotal;
+    },
+
+    getProgress : function () {
+      return this.progress;
     },
 
     getWaveform : function () {
