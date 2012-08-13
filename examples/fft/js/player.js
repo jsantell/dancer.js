@@ -4,7 +4,7 @@
     AUDIO_FILE = '../songs/zircon_devils_spirit',
     fft = document.getElementById( 'fft' ),
     ctx = fft.getContext( '2d' ),
-    dancer, beat;
+    dancer, kick;
 
   /*
    * Dancer.js magic
@@ -15,11 +15,11 @@
   });
 
   dancer = new Dancer();
-  beat = dancer.createBeat({
-    onBeat: function () {
+  kick = dancer.createKick({
+    onKick: function () {
       ctx.fillStyle = '#ff0077';
     },
-    offBeat: function () {
+    offKick: function () {
       ctx.fillStyle = '#666';
     }
   }).on();

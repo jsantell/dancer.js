@@ -88,10 +88,10 @@ describe('Dancer', function () {
     });
   });
 
-  describe('createBeat()', function () {
-    var beat = dancer.createBeat();
-    it("Should return a Dancer.Beat instance", function () {
-      expect(beat instanceof Dancer.Beat).toBeTruthy();
+  describe('createKick()', function () {
+    var kick = dancer.createKick();
+    it("Should return a Dancer.Kick instance", function () {
+      expect(kick instanceof Dancer.Kick).toBeTruthy();
     });
   });
 

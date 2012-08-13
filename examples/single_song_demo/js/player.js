@@ -16,7 +16,7 @@
     beamGroup     = new THREE.Object3D(),
     particles     = group.children,
     colors        = [ 0xaaee22, 0x04dbe5, 0xff0077, 0xffb412, 0xf6c83d ],
-    t, dancer, beat;
+    t, dancer, kick;
 
   /*
    * Dancer.js magic
@@ -28,8 +28,8 @@
   });
 
   dancer = new Dancer();
-  beat = dancer.createBeat({
-    onBeat: function () {
+  kick = dancer.createKick({
+    onKick: function () {
       var i;
       if ( particles[ 0 ].scale.x > MAX_PARTICLE_SIZE ) {
         decay();
@@ -44,11 +44,11 @@
         }
       }
     },
-    offBeat: decay
+    offKick: decay
   });
 
   dancer.onceAt( 0, function () {
-    beat.on();
+    kick.on();
   }).onceAt( 8.2, function () {
     scene.add( beamGroup );
   }).after( 8.2, function () {

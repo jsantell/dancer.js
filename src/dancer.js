@@ -59,8 +59,8 @@
 
     /* Actions */
 
-    createBeat : function ( options ) {
-      return new Dancer.Beat( this, options );
+    createKick : function ( options ) {
+      return new Dancer.Kick( this, options );
     },
 
     bind : function ( name, callback ) {

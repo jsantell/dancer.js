@@ -4,7 +4,7 @@
     AUDIO_FILE = '../songs/tonetest',
     waveform = document.getElementById( 'waveform' ),
     ctx = waveform.getContext( '2d' ),
-    dancer, beat;
+    dancer, kick;
 
   /*
    * Dancer.js magic
@@ -15,11 +15,11 @@
   });
 
   dancer = new Dancer();
-  beat = dancer.createBeat({
-    onBeat: function () {
+  kick = dancer.createKick({
+    onKick: function () {
       ctx.strokeStyle = '#ff0077';
     },
-    offBeat: function () {
+    offKick: function () {
       ctx.strokeStyle = '#666';
     }
   }).on();
