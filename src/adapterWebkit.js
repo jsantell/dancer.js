@@ -18,6 +18,7 @@
       this.audio = _source;
 
       this.isLoaded = false;
+      this.progress = 0;
 
       this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE / 2, 1, 1 );
       this.proc.onaudioprocess = function ( e ) {
@@ -108,6 +109,7 @@
     this.proc.connect( this.context.destination );
 
     this.isLoaded = true;
+    this.progress = 1;
     this.dancer.trigger( 'loaded' );
   }
 

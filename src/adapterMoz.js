@@ -11,6 +11,9 @@
       var _this = this;
       this.audio = _source;
 
+      this.isLoaded = false;
+      this.progress = 0;
+
       if ( this.audio.readyState < 3 ) {
         this.audio.addEventListener( 'loadedmetadata', function () {
           getMetadata.call( _this );
@@ -81,6 +84,7 @@
     this.fft      = new FFT( this.fbLength / this.channels, this.rate );
     this.signal   = new Float32Array( this.fbLength / this.channels );
     this.isLoaded = true;
+    this.progress = 1;
     this.dancer.trigger( 'loaded' );
   }
 

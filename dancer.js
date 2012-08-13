@@ -365,6 +365,7 @@
       this.audio = _source;
 
       this.isLoaded = false;
+      this.progress = 0;
 
       this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE / 2, 1, 1 );
       this.proc.onaudioprocess = function ( e ) {
@@ -455,6 +456,7 @@
     this.proc.connect( this.context.destination );
 
     this.isLoaded = true;
+    this.progress = 1;
     this.dancer.trigger( 'loaded' );
   }
 
@@ -474,6 +476,9 @@
     load : function ( _source ) {
       var _this = this;
       this.audio = _source;
+
+      this.isLoaded = false;
+      this.progress = 0;
 
       if ( this.audio.readyState < 3 ) {
         this.audio.addEventListener( 'loadedmetadata', function () {
@@ -545,6 +550,7 @@
     this.fft      = new FFT( this.fbLength / this.channels, this.rate );
     this.signal   = new Float32Array( this.fbLength / this.channels );
     this.isLoaded = true;
+    this.progress = 1;
     this.dancer.trigger( 'loaded' );
   }
 
@@ -575,6 +581,9 @@
       var _this = this;
       this.path = source ? source.src : this.path;
 
+      this.isLoaded = false;
+      this.progress = 0;
+
       !window.soundManager && !smLoading && loadSM.call( this );
 
       if ( window.soundManager ) {
@@ -595,6 +604,7 @@
             _this.signal = new Float32Array( SAMPLE_SIZE );
             _this.waveform = new Float32Array( SAMPLE_SIZE );
             _this.isLoaded = true;
+            _this.progress = 1;
             _this.dancer.trigger( 'loaded' );
           }
         });
