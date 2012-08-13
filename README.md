@@ -5,13 +5,13 @@ dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API a
 
 http://jsantell.github.com/dancer.js
 
-_v0.3.0 (8/9/2012)_
+_v0.3.1 (8/13/2012)_
 
 Features
 ---
 * Use real-time audio waveform and frequency data and map it to any arbitrary visualization
 * Use Dancer to get audio data from any preexisting audio source
-* Leverage beat detection into your visualizations
+* Leverage kick detection into your visualizations
 * Simple API to time callbacks and events to any section of a song
 * Supports Web Audio (webkit), Audio Data (mozilla) and flash fallback (v9+)
 * Extensible framework supporting plugins and custom behaviours
@@ -76,16 +76,16 @@ Basic pub/sub to tie into the dancer instance. `update` and `loaded` are predefi
 * `unbind( name )` unsubscribes all callbacks of `name`.
 * `trigger( name )` calls all callbacks of `name`.
 
-### Beat
+### Kick
 
-Beats are detected when the amplitude (normalized values between 0 and 1) of a specified frequency, or the max amplitude over a range, is greater than the minimum threshold, as well as greater than the previously registered beat's amplitude, which is decreased by the decay rate per frame.
+Kicks are detected when the amplitude (normalized values between 0 and 1) of a specified frequency, or the max amplitude over a range, is greater than the minimum threshold, as well as greater than the previously registered kick's amplitude, which is decreased by the decay rate per frame.
 
-* `createBeat( options )` creates a new beat instance tied to the dancer instance, with an options object passed as an argument. Options listed below.
+* `createKick( options )` creates a new kick instance tied to the dancer instance, with an options object passed as an argument. Options listed below.
   * `frequency` the frequency (element of the spectrum) to check for a spike. Can be a single frequency (number) or a range (2 element array) that uses the frequency with highest amplitude. Default: `[ 0, 10 ]`
-  * `threshold` the minimum amplitude of the frequency range in order for a beat to occur. Default: `0.3`
-  * `decay` the rate that the previously registered beat's amplitude is reduced by on every frame. Default: `0.02`
-  * `onBeat` the callback to be called when a beat is detected.
-  * `offBeat` the callback to be called when there is no beat on the current frame.
+  * `threshold` the minimum amplitude of the frequency range in order for a kick to occur. Default: `0.3`
+  * `decay` the rate that the previously registered kick's amplitude is reduced by on every frame. Default: `0.02`
+  * `onKick` the callback to be called when a kick is detected.
+  * `offKick` the callback to be called when there is no kick on the current frame.
 
 Dancer Static Methods
 ---
@@ -102,13 +102,14 @@ Dancer Static Methods
 
 
 
-Beat Instance Methods
+Kick Instance Methods
 ---
 
-These methods can be called on a beat instance to turn on and off the registered callbacks
+These methods can be called on a kick instance to turn on and off the registered callbacks
 
-* `on()` turns on the beat instance's callbacks and detections
-* `off()` turns off the beat instance's callbacks and detections
+* `on()` turns on the kick instance's callbacks and detections
+* `off()` turns off the kick instance's callbacks and detections
+* `set( options )` can pass in an object literal with the 5 kick options, similar to creating a new kick option
 
 Example
 ---
@@ -125,17 +126,17 @@ For simple examples, check out the `examples/` folder -- both the FFT and wavefo
   var
     audio  = document.getElementsByTagName('audio')[0],
     dancer = new Dancer(),
-    beat = dancer.createBeat({
-      onBeat: function ( mag ) {
-        console.log('Beat!');
+    kick = dancer.createKick({
+      onKick: function ( mag ) {
+        console.log('Kick!');
       },
-      offBeat: function ( mag ) {
-        console.log('no beat :(');
+      offKick: function ( mag ) {
+        console.log('no kick :(');
       }
     });
 
-  // Let's turn this beat on right away
-  beat.on();
+  // Let's turn this kick on right away
+  kick.on();
 
   dancer.onceAt( 10, function() {
     // Let's set up some things once at 10 seconds
@@ -146,8 +147,8 @@ For simple examples, check out the `examples/` folder -- both the FFT and wavefo
     // Note that the instance of dancer is bound to "this"
     object.y = this.getFrequency( 400 );
   }).onceAt( 120, function() {
-    // After 120s, we'll turn the beat off as another object's y position is still being mapped from the previous "after" method
-    beat.off();
+    // After 120s, we'll turn the kick off as another object's y position is still being mapped from the previous "after" method
+    kick.off();
   }).load( audio ); // And finally, lets pass in our Audio element to load
 
   dancer.play();
@@ -178,10 +179,16 @@ You can extend the Dancer prototype by calling the static method `addPlugin( nam
 
 Development
 ---
-This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test. All tests should pass in Chrome, Firefox, Opera and Safari, _although they can get weird_. Should consistently pass.
+This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test. All tests should pass in Chrome and Firefox (95% of the time) -- Flash implementations are much more annoying, need to have cleaned up tests.
 
 Change Logs
 ----
+**v0.3.1 (8/13/2012)**
+* Renamed `beat` to `kick` for future, true kick-detection
+* Added `getProgress()` to track progress of downloaded audio file (#20)
+* Added `setVolume()` and `getVolume()` as instance methods (#21)
+* Added `set()` method to `kick` instance (#16), fixed ability to assign 0 to a `kick` attribute
+
 **v0.3.0 (8/9/2012)**
 
 * Added ability to provide an audio element as a source -- can control audio via the element, or accessed through instance's `audio` property, or through Dancer's helper controls (`play`, `pause`)
