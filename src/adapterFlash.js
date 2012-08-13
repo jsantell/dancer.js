@@ -21,6 +21,9 @@
       var _this = this;
       this.path = source ? source.src : this.path;
 
+      this.isLoaded = false;
+      this.progress = 0;
+
       !window.soundManager && !smLoading && loadSM.call( this );
 
       if ( window.soundManager ) {
@@ -33,11 +36,15 @@
           whileplaying : function () {
             _this.update();
           },
+          whileloading : function () {
+            _this._updateProgress.call( this, _this );
+          },
           onload   : function () {
             _this.fft = new FFT( SAMPLE_SIZE, SAMPLE_RATE );
             _this.signal = new Float32Array( SAMPLE_SIZE );
             _this.waveform = new Float32Array( SAMPLE_SIZE );
             _this.isLoaded = true;
+            _this.progress = 1;
             _this.dancer.trigger( 'loaded' );
           }
         });
@@ -57,6 +64,14 @@
     pause : function () {
       this.audio.pause();
       this.isPlaying = false;
+    },
+
+    _updateProgress : function ( _this ) {
+      _this.progress = this.bytesLoaded / this.bytesTotal;
+    },
+
+    getProgress : function () {
+      return this.progress;
     },
 
     getWaveform : function () {

@@ -11,6 +11,9 @@
       var _this = this;
       this.audio = _source;
 
+      this.isLoaded = false;
+      this.progress = 0;
+
       if ( this.audio.readyState < 3 ) {
         this.audio.addEventListener( 'loadedmetadata', function () {
           getMetadata.call( _this );
@@ -21,6 +24,10 @@
 
       this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
         _this.update( e );
+      }, false);
+
+      this.audio.addEventListener( 'progress', function( e ) {
+        _this._updateProgress.call( _this, e );
       }, false);
 
       return this.audio;
@@ -34,6 +41,16 @@
     pause : function () {
       this.audio.pause();
       this.isPlaying = false;
+    },
+
+    _updateProgress : function ( e ) {
+      if ( e.currentTarget.duration ) {
+        this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
+      }
+    },
+
+    getProgress : function () {
+      return this.progress;
     },
 
     getWaveform : function () {
@@ -67,6 +84,7 @@
     this.fft      = new FFT( this.fbLength / this.channels, this.rate );
     this.signal   = new Float32Array( this.fbLength / this.channels );
     this.isLoaded = true;
+    this.progress = 1;
     this.dancer.trigger( 'loaded' );
   }
 

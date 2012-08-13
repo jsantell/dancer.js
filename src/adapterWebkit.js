@@ -18,6 +18,7 @@
       this.audio = _source;
 
       this.isLoaded = false;
+      this.progress = 0;
 
       this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE / 2, 1, 1 );
       this.proc.onaudioprocess = function ( e ) {
@@ -35,6 +36,10 @@
         connectContext.call( _this );
       }
 
+      this.audio.addEventListener( 'progress', function ( e ) {
+        _this._updateProgress.call( _this, e );
+      });
+
       return this.audio;
     },
 
@@ -46,6 +51,16 @@
     pause : function () {
       this.audio.pause();
       this.isPlaying = false;
+    },
+
+    _updateProgress : function ( e ) {
+      if ( e.currentTarget.duration ) {
+        this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
+      }
+    },
+
+    getProgress : function() {
+      return this.progress;
     },
 
     getWaveform : function () {
@@ -67,7 +82,10 @@
         buffers = [],
         channels = e.inputBuffer.numberOfChannels,
         resolution = SAMPLE_SIZE / channels,
-        i;
+        i,
+        sum = function ( prev, curr ) {
+          return prev[ i ] + curr[ i ];
+        };
 
       for ( i = channels; i--; ) {
         buffers.push( e.inputBuffer.getChannelData( i ) );
@@ -75,9 +93,7 @@
 
       for ( i = 0; i < resolution; i++ ) {
         this.signal[ i ] = channels > 1 ?
-          buffers.reduce(function ( prev, curr ) {
-            return prev[ i ] + curr[ i ];
-          }) / channels :
+          buffers.reduce( sum( prev, curr ) ) / channels :
           buffers[ 0 ][ i ];
       }
 
@@ -93,6 +109,7 @@
     this.proc.connect( this.context.destination );
 
     this.isLoaded = true;
+    this.progress = 1;
     this.dancer.trigger( 'loaded' );
   }
 
