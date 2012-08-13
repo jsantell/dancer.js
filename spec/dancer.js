@@ -75,6 +75,17 @@ describe('Dancer', function () {
       expect(playReturn).toBe(dancer);
       expect(pauseReturn).toBe(dancer);
     });
+
+    it("The volume should default to 1", function () {
+      expect(dancer.getVolume()).toEqual(1);
+    });
+    it("Should change the volume with setVolume() and return `this`", function () {
+      expect(dancer.setVolume(0.5)).toBe(dancer);
+      expect(dancer.getVolume()).toBeWithin(0.5, 0.0001);
+      dancer.setVolume(0.1);
+      expect(dancer.getVolume()).toBeWithin(0.1, 0.0001);
+      dancer.setVolume(1);
+    });
   });
 
   describe('createBeat()', function () {

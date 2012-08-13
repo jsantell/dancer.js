@@ -43,10 +43,18 @@
       this.isPlaying = false;
     },
 
+    setVolume : function ( volume ) {
+      this.audio.volume = volume;
+    },
+
     _updateProgress : function ( e ) {
       if ( e.currentTarget.duration ) {
         this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
       }
+    },
+
+    getVolume : function () {
+      return this.audio.volume;
     },
 
     getProgress : function () {

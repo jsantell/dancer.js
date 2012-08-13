@@ -51,6 +51,11 @@
       return this;
     },
 
+    setVolume : function ( volume ) {
+      this.audioAdapter.setVolume( volume );
+      return this;
+    },
+
 
     /* Actions */
 
@@ -85,6 +90,10 @@
 
 
     /* Getters */
+
+    getVolume : function () {
+      return this.audioAdapter.getVolume();
+    },
 
     getProgress : function () {
       return this.audioAdapter.getProgress();

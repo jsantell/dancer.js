@@ -46,9 +46,11 @@ All controls return `this`. If provided an audio element as the source, one can 
 
 * `play()` plays the audio and begins the dance.
 * `pause()` pauses the madness.
+* `setVolume()` sets the player's current volume.
 
 ### Getters
 
+* `getVolume()` returns a normalized value (0 to 1) of the current volume.
 * `getTime()` returns the current time.
 * `getProgress()` returns the downloading progress as a float from 0 to 1.
 * `getWaveform()` returns the waveform data array (Float32Array(1024))

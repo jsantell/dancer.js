@@ -24,6 +24,7 @@
       this.proc.onaudioprocess = function ( e ) {
         _this.update.call( _this, e );
       };
+      this.gain = this.context.createGainNode();
 
       this.fft = new FFT( SAMPLE_SIZE / 2, SAMPLE_RATE );
       this.signal = new Float32Array( SAMPLE_SIZE / 2 );
@@ -53,10 +54,18 @@
       this.isPlaying = false;
     },
 
+    setVolume : function ( volume ) {
+      this.gain.gain.value = volume;
+    },
+
     _updateProgress : function ( e ) {
       if ( e.currentTarget.duration ) {
         this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
       }
+    },
+
+    getVolume : function () {
+      return this.gain.gain.value;
     },
 
     getProgress : function() {
@@ -105,7 +114,8 @@
   function connectContext () {
     this.source = this.context.createMediaElementSource( this.audio );
     this.source.connect( this.proc );
-    this.source.connect( this.context.destination );
+    this.source.connect( this.gain );
+    this.gain.connect( this.context.destination );
     this.proc.connect( this.context.destination );
 
     this.isLoaded = true;

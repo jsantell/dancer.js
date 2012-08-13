@@ -66,8 +66,16 @@
       this.isPlaying = false;
     },
 
+    setVolume : function ( volume ) {
+      this.audio.setVolume( volume * 100 );
+    },
+
     _updateProgress : function ( _this ) {
       _this.progress = this.bytesLoaded / this.bytesTotal;
+    },
+
+    getVolume : function () {
+      return this.audio.volume / 100;
     },
 
     getProgress : function () {
