@@ -38,7 +38,9 @@
       }
 
       this.audio.addEventListener( 'progress', function ( e ) {
-        _this._updateProgress.call( _this, e );
+        if ( e.currentTarget.duration ) {
+          _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
+        }
       });
 
       return this.audio;
@@ -56,12 +58,6 @@
 
     setVolume : function ( volume ) {
       this.gain.gain.value = volume;
-    },
-
-    _updateProgress : function ( e ) {
-      if ( e.currentTarget.duration ) {
-        this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
-      }
     },
 
     getVolume : function () {

@@ -37,7 +37,7 @@
             _this.update();
           },
           whileloading : function () {
-            _this._updateProgress.call( this, _this );
+            _this.progress = this.bytesLoaded / this.bytesTotal;
           },
           onload   : function () {
             _this.fft = new FFT( SAMPLE_SIZE, SAMPLE_RATE );
@@ -68,10 +68,6 @@
 
     setVolume : function ( volume ) {
       this.audio.setVolume( volume * 100 );
-    },
-
-    _updateProgress : function ( _this ) {
-      _this.progress = this.bytesLoaded / this.bytesTotal;
     },
 
     getVolume : function () {

@@ -22,12 +22,14 @@
         getMetadata.call( _this );
       }
 
-      this.audio.addEventListener( 'MozAudioAvailable', function( e ) {
+      this.audio.addEventListener( 'MozAudioAvailable', function ( e ) {
         _this.update( e );
       }, false);
 
-      this.audio.addEventListener( 'progress', function( e ) {
-        _this._updateProgress.call( _this, e );
+      this.audio.addEventListener( 'progress', function ( e ) {
+        if ( e.currentTarget.duration ) {
+          _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
+        }
       }, false);
 
       return this.audio;
@@ -45,12 +47,6 @@
 
     setVolume : function ( volume ) {
       this.audio.volume = volume;
-    },
-
-    _updateProgress : function ( e ) {
-      if ( e.currentTarget.duration ) {
-        this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
-      }
     },
 
     getVolume : function () {
