@@ -38,7 +38,7 @@
       }
 
       this.audio.addEventListener( 'progress', function ( e ) {
-        if ( e.currentTarget.duration ) {
+        if ( e.currentTarget.duration && e.currentTarget.seekable ) {
           _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
         }
       });
