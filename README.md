@@ -94,6 +94,7 @@ Dancer Static Methods
 * `isSupported()` returns a string of `webaudio`, `audiodata` or `flash` indicating level of support. Returns an empty string if the browser doesn't support any of the methods. Can also return `null` when browser does not support typed arrays.
 * `canPlay( type )` returns either `true` or `false` indicating whether the browser supports playing back audio of type `type`, which can be a string of `'mp3'`, `'ogg'`, `'wav'`, or `'aac'`.
 * `setOptions( options )` takes a set of key-value pairs in an object for options. Options below.
+* `version` not a method, but a property of the Dancer object to return a string of the current Dancer version
 
 ### Dancer Options
 
