@@ -102,6 +102,21 @@ describe('Dancer', function () {
 
   describe('Getters', function () {
 
+    describe('getProgress()', function () {
+
+      it( "getProgress() should return a value from 0 to 1", function() {
+        runs( function () {
+          var checkProgress = setInterval(function () {
+            if ( expect( dancer.getProgress() ).toBeWithin ) {
+              expect( dancer.getProgress() ).toBeWithin( 0.5, 0.5 );
+            }
+          }, 1);
+          setTimeout( function () { clearInterval(checkProgress); }, waitForLoadTime );
+        });
+      });
+
+    });
+
     describe('getTime()', function () {
 
       var currentTime;
