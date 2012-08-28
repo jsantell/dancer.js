@@ -454,10 +454,9 @@
         buffers = [],
         channels = e.inputBuffer.numberOfChannels,
         resolution = SAMPLE_SIZE / channels,
-        i,
         sum = function ( prev, curr ) {
           return prev[ i ] + curr[ i ];
-        };
+        }, i;
 
       for ( i = channels; i--; ) {
         buffers.push( e.inputBuffer.getChannelData( i ) );
@@ -465,7 +464,7 @@
 
       for ( i = 0; i < resolution; i++ ) {
         this.signal[ i ] = channels > 1 ?
-          buffers.reduce( sum( prev, curr ) ) / channels :
+          buffers.reduce( sum ) / channels :
           buffers[ 0 ][ i ];
       }
 
