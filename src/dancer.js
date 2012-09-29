@@ -1,11 +1,3 @@
-/*
- * Dancer.js (c) 2012 Jordan Santell
- * MIT License
- * http://github.com/jsantell/dancer.js
- *
- * v0.3.1
- */
-
 (function() {
 
   var Dancer = function () {

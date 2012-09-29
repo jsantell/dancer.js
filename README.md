@@ -5,7 +5,7 @@ dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API a
 
 http://jsantell.github.com/dancer.js
 
-_v0.3.1 (8/13/2012)_
+_v0.3.2 (9/29/2012)_
 
 Features
 ---
@@ -180,10 +180,13 @@ You can extend the Dancer prototype by calling the static method `addPlugin( nam
 
 Development
 ---
-This project uses [smoosh](https://github.com/fat/smoosh) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test. All tests should pass in Chrome and Firefox (95% of the time) -- Flash implementations are much more annoying, need to have cleaned up tests.
+This project uses [grunt](https://github.com/cowboy/grunt) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. Run `grunt` from the project root to lint and build files. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test. All tests should pass in Chrome and Firefox (95% of the time) -- Flash implementations are much more annoying, need to have cleaned up tests.
 
 Change Logs
 ----
+**v0.3.2 (9/29/2012)**
+* Change build process to using grunt.js
+
 **v0.3.1 (8/13/2012)**
 * Renamed `beat` to `kick` for future, true kick-detection
 * Added `getProgress()` to track progress of downloaded audio file (#20)

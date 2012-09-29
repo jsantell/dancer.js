@@ -1,10 +1,6 @@
-/*
- * Dancer.js (c) 2012 Jordan Santell
- * MIT License
- * http://github.com/jsantell/dancer.js
- *
- * v0.3.1
- */
+/* dancer.js - v0.3.2 - 2012-09-29
+* https://github.com/jsantell/dancer.js
+* Copyright (c) 2012 Jordan Santell; Licensed MIT */
 
 (function() {
 
