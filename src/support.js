@@ -1,4 +1,7 @@
 (function ( Dancer ) {
+  // Avoid browser-specific prefixes.
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
 
   var CODECS = {
     'mp3' : 'audio/mpeg;',
@@ -9,7 +12,6 @@
   audioEl = document.createElement( 'audio' );
 
   Dancer.options = {};
-
   Dancer.setOptions = function ( o ) {
     for ( var option in o ) {
       if ( o.hasOwnProperty( option ) ) {
@@ -59,6 +61,7 @@
   };
 
   Dancer._getAdapter = function ( instance ) {
+    Dancer.instance = instance;
     switch ( Dancer.isSupported() ) {
       case 'webaudio':
         return new Dancer.adapters.webkit( instance );
@@ -79,6 +82,13 @@
     }
     return null;
   };
+
+  Dancer.prototype._userMediaCallback = function(stream) {
+    var context = Dancer.instance.audioAdapter.context;
+    input = context.createMediaStreamSource(stream);
+    input.connect(context.destination);
+    Dancer.instance.loadAudioAdapter(input);
+  }
 
   // Browser detection is lame, but Safari 6 has Web Audio API,
   // but does not support processing audio from a Media Element Source

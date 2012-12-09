@@ -20,24 +20,36 @@
       var path;
 
       // Loading an Audio element
-      if ( source instanceof HTMLElement ) {
-        this.source = source;
+      if (source.audio) {
+        this.source = source.audio;
         if ( Dancer.isSupported() === 'flash' ) {
-          this.source = { src: Dancer._getMP3SrcFromAudio( source ) };
+          this.source = { src: Dancer._getMP3SrcFromAudio( source.audio ) };
         }
 
+        this.loadAudioAdapter(this.source);
+
       // Loading an object with src, [codecs]
-      } else {
-        this.source = window.Audio ? new Audio() : {};
-        this.source.src = Dancer._makeSupportedPath( source.src, source.codecs );
+      } else if (source.src) {
+          this.source = window.Audio ? new Audio() : {};
+          this.source.src = Dancer._makeSupportedPath( source.src, source.codecs );
+          this.loadAudioAdapter(this.source);
+
+      // Request user audio
+      } else if (source.microphone) {
+        navigator.getUserMedia({audio: true}, this._userMediaCallback, function(e) {
+          console.log("Unsupported.")
+        });
+        this.source = source;
       }
 
-      this.audio = this.audioAdapter.load( this.source );
       return this;
     },
 
-    /* Controls */
+    loadAudioAdapter: function(source) {
+      this.audio = this.audioAdapter.load( source );
+    },
 
+    /* Controls */
     play : function () {
       this.audioAdapter.play();
       return this;
@@ -195,7 +207,11 @@
   window.Dancer = Dancer;
 })();
 
+
 (function ( Dancer ) {
+  // Avoid browser-specific prefixes.
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
 
   var CODECS = {
     'mp3' : 'audio/mpeg;',
@@ -206,7 +222,6 @@
   audioEl = document.createElement( 'audio' );
 
   Dancer.options = {};
-
   Dancer.setOptions = function ( o ) {
     for ( var option in o ) {
       if ( o.hasOwnProperty( option ) ) {
@@ -256,6 +271,7 @@
   };
 
   Dancer._getAdapter = function ( instance ) {
+    Dancer.instance = instance;
     switch ( Dancer.isSupported() ) {
       case 'webaudio':
         return new Dancer.adapters.webkit( instance );
@@ -277,6 +293,13 @@
     return null;
   };
 
+  Dancer.prototype._userMediaCallback = function(stream) {
+    var context = Dancer.instance.audioAdapter.context;
+    input = context.createMediaStreamSource(stream);
+    input.connect(context.destination);
+    Dancer.instance.loadAudioAdapter(input);
+  }
+
   // Browser detection is lame, but Safari 6 has Web Audio API,
   // but does not support processing audio from a Media Element Source
   // https://gist.github.com/3265344
@@ -289,6 +312,7 @@
   }
 
 })( window.Dancer );
+
 
 (function ( undefined ) {
   var Kick = function ( dancer, o ) {
@@ -309,7 +333,7 @@
   };
 
   Kick.prototype = {
-    on  : function () { 
+    on  : function () {
       this.isOn = true;
       return this;
     },
@@ -732,9 +756,9 @@
 
 })();
 
-/* 
+/*
  *  DSP.js - a comprehensive digital signal processing  library for javascript
- * 
+ *
  *  Created by Corban Brook <corbanbrook@gmail.com> on 2010-01-01.
  *  Copyright 2010 Corban Brook. All rights reserved.
  *
@@ -770,7 +794,7 @@ function FourierTransform(bufferSize, sampleRate) {
         imag      = this.imag,
         bSi       = 2 / this.bufferSize,
         sqrt      = Math.sqrt,
-        rval, 
+        rval,
         ival,
         mag;
 
@@ -800,7 +824,7 @@ function FourierTransform(bufferSize, sampleRate) {
  */
 function FFT(bufferSize, sampleRate) {
   FourierTransform.call(this, bufferSize, sampleRate);
-   
+
   this.reverseTable = new Uint32Array(bufferSize);
 
   var limit = 1;
@@ -870,7 +894,7 @@ FFT.prototype.forward = function(buffer) {
     //phaseShiftStepImag = Math.sin(-Math.PI/halfSize);
     phaseShiftStepReal = cosTable[halfSize];
     phaseShiftStepImag = sinTable[halfSize];
-    
+
     currentPhaseShiftReal = 1;
     currentPhaseShiftImag = 0;
 
@@ -941,7 +965,7 @@ var FlashDetect = new function(){
     ];
     /**
      * Extract the ActiveX version of the plugin.
-     * 
+     *
      * @param {Object} The flash ActiveX object.
      * @type String
      */
@@ -954,7 +978,7 @@ var FlashDetect = new function(){
     };
     /**
      * Try and retrieve an ActiveX object having a specified name.
-     * 
+     *
      * @param {String} name The ActiveX object name lookup.
      * @return One of ActiveX object or a simple object having an attribute of activeXError with a value of true.
      * @type Object
@@ -970,8 +994,8 @@ var FlashDetect = new function(){
     };
     /**
      * Parse an ActiveX $version string into an object.
-     * 
-     * @param {String} str The ActiveX Object GetVariable($version) return value. 
+     *
+     * @param {String} str The ActiveX Object GetVariable($version) return value.
      * @return An object having raw, major, minor, revision and revisionStr attributes.
      * @type Object
      */
@@ -987,7 +1011,7 @@ var FlashDetect = new function(){
     };
     /**
      * Parse a standard enabledPlugin.description into an object.
-     * 
+     *
      * @param {String} str The enabledPlugin.description value.
      * @return An object having raw, major, minor, revision and revisionStr attributes.
      * @type Object
@@ -999,14 +1023,14 @@ var FlashDetect = new function(){
         return {
             "raw":str,
             "major":parseInt(majorMinor[0], 10),
-            "minor":parseInt(majorMinor[1], 10), 
+            "minor":parseInt(majorMinor[1], 10),
             "revisionStr":revisionStr,
             "revision":parseRevisionStrToInt(revisionStr)
         };
     };
     /**
      * Parse the plugin revision string into an integer.
-     * 
+     *
      * @param {String} The revision in string format.
      * @type Number
      */
@@ -1015,7 +1039,7 @@ var FlashDetect = new function(){
     };
     /**
      * Is the major version greater than or equal to a specified version.
-     * 
+     *
      * @param {Number} version The minimum required major version.
      * @type Boolean
      */
@@ -1024,7 +1048,7 @@ var FlashDetect = new function(){
     };
     /**
      * Is the minor version greater than or equal to a specified version.
-     * 
+     *
      * @param {Number} version The minimum required minor version.
      * @type Boolean
      */
@@ -1033,7 +1057,7 @@ var FlashDetect = new function(){
     };
     /**
      * Is the revision version greater than or equal to a specified version.
-     * 
+     *
      * @param {Number} version The minimum required revision version.
      * @type Boolean
      */
@@ -1042,7 +1066,7 @@ var FlashDetect = new function(){
     };
     /**
      * Is the version greater than or equal to a specified major, minor and revision.
-     * 
+     *
      * @param {Number} major The minimum required major version.
      * @param {Number} (Optional) minor The minimum required minor version.
      * @param {Number} (Optional) revision The minimum required revision version.
@@ -1075,7 +1099,7 @@ var FlashDetect = new function(){
                 var versionObj = parseStandardVersion(version);
                 self.raw = versionObj.raw;
                 self.major = versionObj.major;
-                self.minor = versionObj.minor; 
+                self.minor = versionObj.minor;
                 self.revisionStr = versionObj.revisionStr;
                 self.revision = versionObj.revision;
                 self.installed = true;
@@ -1091,7 +1115,7 @@ var FlashDetect = new function(){
                         var versionObj = parseActiveXVersion(version);
                         self.raw = versionObj.raw;
                         self.major = versionObj.major;
-                        self.minor = versionObj.minor; 
+                        self.minor = versionObj.minor;
                         self.revision = versionObj.revision;
                         self.revisionStr = versionObj.revisionStr;
                     }
