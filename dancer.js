@@ -1,4 +1,4 @@
-/* dancer.js - v0.3.2 - 2012-09-29
+/* dancer.js - v0.3.2 - 2012-12-07
 * https://github.com/jsantell/dancer.js
 * Copyright (c) 2012 Jordan Santell; Licensed MIT */
 
@@ -401,7 +401,7 @@
       }
 
       this.audio.addEventListener( 'progress', function ( e ) {
-        if ( e.currentTarget.duration ) {
+        if ( e.currentTarget.duration && ( e.currentTarget.seekable.length > 0 )) {
           _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
         }
       });
