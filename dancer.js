@@ -1,7 +1,8 @@
-/* dancer.js - v0.3.2 - 2012-09-29
+/* dancer.js - v0.3.2 - 2012-12-30
 * https://github.com/jsantell/dancer.js
 * Copyright (c) 2012 Jordan Santell; Licensed MIT */
 
+define(function() {
 (function() {
 
   var Dancer = function () {
@@ -1101,3 +1102,4 @@ var FlashDetect = new function(){
     }();
 };
 FlashDetect.JS_RELEASE = "1.0.4";
+});
