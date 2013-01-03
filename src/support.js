@@ -88,7 +88,7 @@
     input = context.createMediaStreamSource(stream);
     input.connect(context.destination);
     Dancer.instance.loadAudioAdapter(input);
-  }
+  };
 
   // Browser detection is lame, but Safari 6 has Web Audio API,
   // but does not support processing audio from a Media Element Source

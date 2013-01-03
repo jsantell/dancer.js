@@ -33,7 +33,7 @@
       // Request user audio
       } else if (source.microphone) {
         navigator.getUserMedia({audio: true}, this._userMediaCallback, function(e) {
-          console.log("Unsupported.")
+          console.log("Unsupported.");
         });
         this.source = source;
       }
