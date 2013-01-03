@@ -28,16 +28,19 @@ Dancer Instance Methods
   // Using an audio object
   var a = new Audio();
   a.src = 'somesong.mp3';
-  dancer.load( a );
+  dancer.load({ audio: a });
 
   // Using an audio element on the page
-  dancer.load( document.getElementsByTagName('audio')[0] );
+  dancer.load({ audio: document.getElementsByTagName('audio')[0] });
 
   // Using a config object and you only have one encoding
   dancer.load({ src: 'somesong.mp3' });
 
   // Using a config object, and you have an ogg and mp3 version
   dancer.load({ src: 'somesong', codecs: [ 'ogg', 'mp3' ]});
+
+  // Using microphone input (webkit only)
+  dancer.load({ microphone: true });
 ```
 
 ### Controls
@@ -54,7 +57,7 @@ All controls return `this`. If provided an audio element as the source, one can 
 * `getTime()` returns the current time.
 * `getProgress()` returns the downloading progress as a float from 0 to 1.
 * `getWaveform()` returns the waveform data array (Float32Array(1024))
-* `getSpectrum()` returns the frequency data array (Float32Array(512)). 
+* `getSpectrum()` returns the frequency data array (Float32Array(512)).
 * `getFrequency( freq [, endFreq ] )` returns the magnitude of a frequency or average over a range of frequencies.
 * `isLoaded()` returns a boolean value for the dancer instance's song load state.
 * `isPlaying()` returns a boolean value indicating whether the dancer instance's song is currently playing or not.
@@ -176,7 +179,7 @@ Dependencies
 Extending/Plugins
 ---
 
-You can extend the Dancer prototype by calling the static method `addPlugin( name, fn )`, which extends the Dancer prototype. A Dancer instance then can call the function provided in its context and subscribe to a preexisting event like `update`, or make your own. Look in the `plugins/` directory for examples. 
+You can extend the Dancer prototype by calling the static method `addPlugin( name, fn )`, which extends the Dancer prototype. A Dancer instance then can call the function provided in its context and subscribe to a preexisting event like `update`, or make your own. Look in the `plugins/` directory for examples.
 
 Development
 ---

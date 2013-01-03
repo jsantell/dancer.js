@@ -16,24 +16,36 @@
       var path;
 
       // Loading an Audio element
-      if ( source instanceof HTMLElement ) {
-        this.source = source;
+      if (source.audio) {
+        this.source = source.audio;
         if ( Dancer.isSupported() === 'flash' ) {
-          this.source = { src: Dancer._getMP3SrcFromAudio( source ) };
+          this.source = { src: Dancer._getMP3SrcFromAudio( source.audio ) };
         }
 
+        this.loadAudioAdapter(this.source);
+
       // Loading an object with src, [codecs]
-      } else {
-        this.source = window.Audio ? new Audio() : {};
-        this.source.src = Dancer._makeSupportedPath( source.src, source.codecs );
+      } else if (source.src) {
+          this.source = window.Audio ? new Audio() : {};
+          this.source.src = Dancer._makeSupportedPath( source.src, source.codecs );
+          this.loadAudioAdapter(this.source);
+
+      // Request user audio
+      } else if (source.microphone) {
+        navigator.getUserMedia({audio: true}, this._userMediaCallback, function(e) {
+          console.log("Unsupported.");
+        });
+        this.source = source;
       }
 
-      this.audio = this.audioAdapter.load( this.source );
       return this;
     },
 
-    /* Controls */
+    loadAudioAdapter: function(source) {
+      this.audio = this.audioAdapter.load( source );
+    },
 
+    /* Controls */
     play : function () {
       this.audioAdapter.play();
       return this;

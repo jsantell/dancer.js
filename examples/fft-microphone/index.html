@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href='http://fonts.googleapis.com/css?family=Duru+Sans' rel='stylesheet' type='text/css'>
+		<link href='css/dancer.css' rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+		<div id="info">
+			<h1>dancer.js</h1>
+			<h2>JavaScript Audio Library</h2>
+			<h3>Microphone input / FFT</h3>
+			<ul>
+				<li><a href="https://github.com/jsantell/dancer.js" title="dancer.js on github">view API/source</a></li>
+				<li>by <a href="http://jsantell.com" title="Jordan Santell">jordan santell</a></li>
+			</ul>
+		</div>
+		<div id="loading">Loading . . .</div>
+		<canvas id="fft" height="400" width="512"></canvas>
+		<div id="songinfo">
+			<span>Now playing...</span>
+			<h3><a href="http://zirconstudios.bandcamp.com/album/unearthed" title="Zircon Studios Bandcamp">Zircon - Devil's Spirit</a></h3>
+		</div>
+		<!-- Dancer.js -->
+		<script src="../../src/dancer.js"></script>
+		<script src="../../src/support.js"></script>
+		<script src="../../src/kick.js"></script>
+		<script src="../../src/adapterWebkit.js"></script>
+		<script src="../../src/adapterMoz.js"></script>
+		<script src="../../src/adapterFlash.js"></script>
+		<script src="../../lib/fft.js"></script>
+		<script src="../../lib/flash_detect.js"></script>
+		<script src="../../plugins/dancer.fft.js"></script>
+
+		<!-- Demo stuff -->
+		<script src="js/player.js"></script>
+	</body>
+</html>

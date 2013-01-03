@@ -6,9 +6,7 @@
   var adapter = function ( dancer ) {
     this.dancer = dancer;
     this.audio = new Audio();
-    this.context = window.AudioContext ?
-      new window.AudioContext() :
-      new window.webkitAudioContext();
+    this.context = new window.AudioContext();
   };
 
   adapter.prototype = {
@@ -37,17 +35,28 @@
         connectContext.call( _this );
       }
 
-      this.audio.addEventListener( 'progress', function ( e ) {
-        if ( e.currentTarget.duration ) {
-          _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
-        }
-      });
+
+      if (!this.isStreaming()) {
+        this.audio.addEventListener( 'progress', function ( e ) {
+          if ( e.currentTarget.duration ) {
+            _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
+          }
+        });
+      } else {
+        this.play();
+      }
 
       return this.audio;
     },
 
+    isStreaming: function() {
+      return !(this.audio instanceof Audio || this.audio instanceof HTMLElement);
+    },
+
     play : function () {
-      this.audio.play();
+      if (!this.isStreaming()) {
+        this.audio.play();
+      }
       this.isPlaying = true;
     },
 
@@ -107,7 +116,12 @@
   };
 
   function connectContext () {
-    this.source = this.context.createMediaElementSource( this.audio );
+    if (this.isStreaming()) {
+      this.source = this.audio ;
+    } else {
+      this.source = this.context.createMediaElementSource( this.audio );
+    }
+
     this.source.connect( this.proc );
     this.source.connect( this.gain );
     this.gain.connect( this.context.destination );

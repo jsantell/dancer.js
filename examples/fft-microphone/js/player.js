@@ -1,9 +1,7 @@
-(function () {
-
+(function() {
   var
-    audio = document.getElementById( 'audio' ),
-    waveform = document.getElementById( 'waveform' ),
-    ctx = waveform.getContext( '2d' ),
+    fft = document.getElementById( 'fft' ),
+    ctx = fft.getContext( '2d' ),
     dancer, kick;
 
   /*
@@ -17,16 +15,16 @@
   dancer = new Dancer();
   kick = dancer.createKick({
     onKick: function () {
-      ctx.strokeStyle = '#ff0077';
+      ctx.fillStyle = '#ff0077';
     },
     offKick: function () {
-      ctx.strokeStyle = '#666';
+      ctx.fillStyle = '#666';
     }
   }).on();
 
   dancer
-    .load( {audio: audio} )
-    .waveform( waveform, { strokeStyle: '#666', strokeWidth: 2 });
+    .fft( fft, { fillStyle: '#666' })
+    .load({microphone: true});
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
@@ -38,25 +36,17 @@
   function loaded () {
     var
       loading = document.getElementById( 'loading' ),
-      anchor  = document.createElement('A'),
       supported = Dancer.isSupported(),
       p;
-
-    anchor.appendChild( document.createTextNode( supported ? 'Play!' : 'Close' ) );
-    anchor.setAttribute( 'href', '#' );
-    loading.innerHTML = '';
-    loading.appendChild( anchor );
 
     if ( !supported ) {
       p = document.createElement('P');
       p.appendChild( document.createTextNode( 'Your browser does not currently support either Web Audio API or Audio Data API. The audio may play, but the visualizers will not move to the music; check out the latest Chrome or Firefox browsers!' ) );
       loading.appendChild( p );
+    } else {
+      loading.parentNode.removeChild(loading);
     }
 
-    anchor.addEventListener( 'click', function () {
-      dancer.play();
-      document.getElementById('loading').style.display = 'none';
-    });
   }
 
   // For debugging
