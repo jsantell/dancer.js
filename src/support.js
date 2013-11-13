@@ -21,10 +21,10 @@
   Dancer.isSupported = function () {
     if ( !window.Float32Array || !window.Uint32Array ) {
       return null;
-    } else if ( !isUnsupportedSafari() && ( window.AudioContext || window.webkitAudioContext )) {
-      return 'webaudio';
     } else if ( audioEl && audioEl.mozSetup ) {
       return 'audiodata';
+    } else if ( !isUnsupportedSafari() && ( window.AudioContext || window.webkitAudioContext )) {
+      return 'webaudio';
     } else if ( FlashDetect.versionAtLeast( 9 ) ) {
       return 'flash';
     } else {
