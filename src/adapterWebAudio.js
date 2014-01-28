@@ -20,11 +20,19 @@
       this.isLoaded = false;
       this.progress = 0;
 
-      this.proc = this.context.createJavaScriptNode( SAMPLE_SIZE / 2, 1, 1 );
+      if (!this.context.createScriptProcessor) {
+        this.context.createScriptProcessor = this.context.createJavascriptNode;
+      }
+      this.proc = this.context.createScriptProcessor( SAMPLE_SIZE / 2, 1, 1 );
+
       this.proc.onaudioprocess = function ( e ) {
         _this.update.call( _this, e );
       };
-      this.gain = this.context.createGainNode();
+      if (!this.context.createGain) {
+        this.context.createGain = this.context.createGainNode;
+      }
+
+      this.gain = this.context.createGain();
 
       this.fft = new FFT( SAMPLE_SIZE / 2, SAMPLE_RATE );
       this.signal = new Float32Array( SAMPLE_SIZE / 2 );
@@ -118,6 +126,6 @@
     this.dancer.trigger( 'loaded' );
   }
 
-  Dancer.adapters.webkit = adapter;
+  Dancer.adapters.webaudio = adapter;
 
 })();

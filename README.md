@@ -1,7 +1,7 @@
 dancer.js
 ======
 
-dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API and Webkit's Web Audio API with flash fallback, designed to make sweet visualizations.
+dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API and Web Audio API with flash fallback, designed to make sweet visualizations.
 
 http://jsantell.github.com/dancer.js
 
@@ -13,7 +13,7 @@ Features
 * Use Dancer to get audio data from any preexisting audio source
 * Leverage kick detection into your visualizations
 * Simple API to time callbacks and events to any section of a song
-* Supports Web Audio (webkit), Audio Data (mozilla) and flash fallback (v9+)
+* Supports Web Audio (webkit/mozilla), Audio Data (mozilla) and flash fallback (v9+)
 * Extensible framework supporting plugins and custom behaviours
 
 Dancer Instance Methods
@@ -184,6 +184,10 @@ This project uses [grunt](https://github.com/cowboy/grunt) to build and [jasmine
 
 Change Logs
 ----
+**v0.3.3 (1/28/2014)**
+* Update to work with new Web Audio function names. Dancer now uses Web Audio in
+  Firefox 25+.
+
 **v0.3.2 (9/29/2012)**
 * Change build process to using grunt.js
 
