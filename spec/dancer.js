@@ -129,7 +129,7 @@ describe('Dancer', function () {
           currentTime = dancer.getTime();
           waits( 1000 );
           runs(function () {
-            expect(dancer.getTime()).toBeWithin(currentTime + 1.0, 0.05);
+            expect(dancer.getTime()).toBeWithin(currentTime + 1.0, 0.1);
             dancer.pause();
           });
         });

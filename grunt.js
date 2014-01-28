@@ -16,7 +16,7 @@ module.exports = function(grunt) {
           'src/dancer.js',
           'src/support.js',
           'src/kick.js',
-          'src/adapterWebkit.js',
+          'src/adapterWebAudio.js',
           'src/adapterMoz.js',
           'src/adapterFlash.js',
           'lib/fft.js',
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
         'src/dancer.js',
         'src/support.js',
         'src/kick.js',
-        'src/adapterWebkit.js',
+        'src/adapterWebAudio.js',
         'src/adapterMoz.js',
         'src/adapterFlash.js'
       ]

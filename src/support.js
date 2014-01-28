@@ -61,7 +61,7 @@
   Dancer._getAdapter = function ( instance ) {
     switch ( Dancer.isSupported() ) {
       case 'webaudio':
-        return new Dancer.adapters.webkit( instance );
+        return new Dancer.adapters.webaudio( instance );
       case 'audiodata':
         return new Dancer.adapters.moz( instance );
       case 'flash':
