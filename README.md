@@ -5,7 +5,7 @@ dancer.js is a high-level audio API, usable with both Mozilla's Audio Data API a
 
 http://jsantell.github.com/dancer.js
 
-_v0.3.2 (9/29/2012)_
+_v0.4.0 (2/2/2014)_
 
 Features
 ---
@@ -184,9 +184,8 @@ This project uses [grunt](https://github.com/cowboy/grunt) to build and [jasmine
 
 Change Logs
 ----
-**v0.3.3 (1/28/2014)**
-* Update to work with new Web Audio function names. Dancer now uses Web Audio in
-  Firefox 25+.
+**v0.4.0 (1/28/2014)**
+* Update to work with new Web Audio function names. Dancer now uses Web Audio in Firefox 25+.
 
 **v0.3.2 (9/29/2012)**
 * Change build process to using grunt.js
