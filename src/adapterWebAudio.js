@@ -46,7 +46,9 @@
       }
 
       this.audio.addEventListener( 'progress', function ( e ) {
-        if ( e.currentTarget.duration ) {
+        var isSeekable = e.currentTarget.seekable && e.currentTarget.seekable.length > 0;
+
+        if ( e.currentTarget.duration && isSeekable ) {
           _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
         }
       });

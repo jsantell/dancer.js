@@ -1,5 +1,5 @@
 /*
- * dancer - v0.4.0 - 2014-02-01
+ * dancer - v0.4.0 - 2014-10-13
  * https://github.com/jsantell/dancer.js
  * Copyright (c) 2014 Jordan Santell
  * Licensed MIT
@@ -411,7 +411,9 @@
       }
 
       this.audio.addEventListener( 'progress', function ( e ) {
-        if ( e.currentTarget.duration ) {
+        var isSeekable = e.currentTarget.seekable && e.currentTarget.seekable.length > 0;
+
+        if ( e.currentTarget.duration && isSeekable ) {
           _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
         }
       });
@@ -524,7 +526,9 @@
       }, false);
 
       this.audio.addEventListener( 'progress', function ( e ) {
-        if ( e.currentTarget.duration ) {
+        var isSeekable = e.currentTarget.seekable && e.currentTarget.seekable.length > 0;
+
+        if ( e.currentTarget.duration && isSeekable ) {
           _this.progress = e.currentTarget.seekable.end( 0 ) / e.currentTarget.duration;
         }
       }, false);
