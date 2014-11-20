@@ -117,6 +117,8 @@
   };
 
   function connectContext () {
+    if ( this.source ) return;
+
     this.source = this.context.createMediaElementSource( this.audio );
     this.source.connect( this.proc );
     this.source.connect( this.gain );

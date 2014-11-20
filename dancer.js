@@ -1,5 +1,5 @@
 /*
- * dancer - v0.4.0 - 2014-10-13
+ * dancer - v0.4.0 - 2014-11-19
  * https://github.com/jsantell/dancer.js
  * Copyright (c) 2014 Jordan Santell
  * Licensed MIT
@@ -482,6 +482,8 @@
   };
 
   function connectContext () {
+    if ( this.source ) return;
+
     this.source = this.context.createMediaElementSource( this.audio );
     this.source.connect( this.proc );
     this.source.connect( this.gain );
