@@ -16,20 +16,20 @@
     beamGroup     = new THREE.Object3D(),
     particles     = group.children,
     colors        = [ 0xaaee22, 0x04dbe5, 0xff0077, 0xffb412, 0xf6c83d ],
-    t, dancer, beat;
+    t, dancer, kick;
 
   /*
    * Dancer.js magic
    */
 
   Dancer.setOptions({
-    flashSWF : 'lib/soundmanager2.swf',
-    flashJS  : 'lib/soundmanager2.js'
+    flashSWF : '../../lib/soundmanager2.swf',
+    flashJS  : '../../lib/soundmanager2.js'
   });
 
-  dancer = new Dancer( AUDIO_FILE, [ 'ogg', 'mp3' ] );
-  beat = dancer.createBeat({
-    onBeat: function () {
+  dancer = new Dancer();
+  kick = dancer.createKick({
+    onKick: function () {
       var i;
       if ( particles[ 0 ].scale.x > MAX_PARTICLE_SIZE ) {
         decay();
@@ -44,11 +44,11 @@
         }
       }
     },
-    offBeat: decay
+    offKick: decay
   });
 
   dancer.onceAt( 0, function () {
-    beat.on();
+    kick.on();
   }).onceAt( 8.2, function () {
     scene.add( beamGroup );
   }).after( 8.2, function () {
@@ -60,7 +60,8 @@
     changeParticleMat( 'pink' );
   }).onceAt( 75, function () {
     changeParticleMat();
-  }).fft( document.getElementById( 'fft' ) );
+  }).fft( document.getElementById( 'fft' ) )
+    .load({ src: AUDIO_FILE, codecs: [ 'ogg', 'mp3' ]})
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
