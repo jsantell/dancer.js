@@ -28,8 +28,8 @@
   });
 
   dancer = new Dancer( AUDIO_FILE, [ 'ogg', 'mp3' ] );
-  beat = dancer.createBeat({
-    onBeat: function () {
+  beat = dancer.createKick({
+    onKick: function () {
       var i;
       if ( particles[ 0 ].scale.x > MAX_PARTICLE_SIZE ) {
         decay();
