@@ -44,7 +44,7 @@
         }
       }
     },
-    offBeat: decay
+    offKick: decay
   });
 
   dancer.onceAt( 0, function () {
