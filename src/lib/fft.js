@@ -1,13 +1,10 @@
-/* 
- *  DSP.js - a comprehensive digital signal processing  library for javascript
- * 
- *  Created by Corban Brook <corbanbrook@gmail.com> on 2010-01-01.
- *  Copyright 2010 Corban Brook. All rights reserved.
- *
- */
+/*
+  Snippets from https://github.com/corbanbrook/dsp.js/blob/master/dsp.js
+  Adapted to CommonJS.
+*/
 
-// Fourier Transform Module used by DFT, FFT, RFFT
 function FourierTransform(bufferSize, sampleRate) {
+  /* Fourier Transform Module used by DFT, FFT, RFFT. */
   this.bufferSize = bufferSize;
   this.sampleRate = sampleRate;
   this.bandwidth  = 2 / bufferSize * sampleRate / 2;
@@ -36,7 +33,7 @@ function FourierTransform(bufferSize, sampleRate) {
         imag      = this.imag,
         bSi       = 2 / this.bufferSize,
         sqrt      = Math.sqrt,
-        rval, 
+        rval,
         ival,
         mag;
 
@@ -66,7 +63,7 @@ function FourierTransform(bufferSize, sampleRate) {
  */
 function FFT(bufferSize, sampleRate) {
   FourierTransform.call(this, bufferSize, sampleRate);
-   
+
   this.reverseTable = new Uint32Array(bufferSize);
 
   var limit = 1;
@@ -136,7 +133,7 @@ FFT.prototype.forward = function(buffer) {
     //phaseShiftStepImag = Math.sin(-Math.PI/halfSize);
     phaseShiftStepReal = cosTable[halfSize];
     phaseShiftStepImag = sinTable[halfSize];
-    
+
     currentPhaseShiftReal = 1;
     currentPhaseShiftImag = 0;
 
@@ -166,3 +163,6 @@ FFT.prototype.forward = function(buffer) {
 
   return this.calculateSpectrum();
 };
+
+
+export default FFT;
