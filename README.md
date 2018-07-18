@@ -180,7 +180,7 @@ You can extend the Dancer prototype by calling the static method `addPlugin( nam
 
 Development
 ---
-This project uses [grunt](https://github.com/cowboy/grunt) to build and [jasmine](http://pivotal.github.com/jasmine/) for testing. Run `grunt` from the project root to lint and build files. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test. All tests should pass in Chrome and Firefox (95% of the time) -- Flash implementations are much more annoying, need to have cleaned up tests.
+This project uses [grunt](https://github.com/cowboy/grunt) to build and [jasmine](https://jasmine.github.io/) for testing. Run `grunt` from the project root to lint and build files. A CLI for testing would be awesome, but Mozilla and WebKit implementations differ greatly -- go to `spec/index.html` in Mozilla/WebKit browsers to test. All tests should pass in Chrome and Firefox (95% of the time) -- Flash implementations are much more annoying, need to have cleaned up tests.
 
 Change Logs
 ----
